@@ -15,13 +15,13 @@ public class CardStack {
 	 * Card Stack for managing cards
 	 */
 	public CardStack() {
-		generateCards();
+		initCards();
 	}
 	
 	/**
 	 * Add every possible combination of Color and Value
 	 */
-	private void generateCards() {
+	public void initCards() {
 		for (Value value : Value.values()) {
 			for (Color color : Color.values()) {
 				cards.add(new Card(color, value));
