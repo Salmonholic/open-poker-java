@@ -12,6 +12,10 @@ public class Player {
 		super();
 		this.money = money;
 	}
+	
+	public int addMoney(int money) {
+		return this.money += money;
+	}
 
 	/**
 	 * Gets money of Player
