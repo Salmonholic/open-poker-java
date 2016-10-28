@@ -1,5 +1,6 @@
 package main.main;
 
+
 public class Main {
 	
 	/**
@@ -7,7 +8,6 @@ public class Main {
 	 * @param args Arguments
 	 */
 	public static void main(String[] args) {
-		
 	}
 	
 }
