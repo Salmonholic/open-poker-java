@@ -10,6 +10,12 @@ public class Table {
 	public Table(Player[] players) {
 		this.players = players;
 	}
+	
+	public void giveCards() {
+		for (iterable_type iterable_element : iterable) {
+			
+		}
+	}
 
 	public Player[] getPlayers() {
 		return players;
