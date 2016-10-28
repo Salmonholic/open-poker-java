@@ -14,7 +14,7 @@ public class Table {
 	}
 	
 	/**
-	 * Give 3 Cards to the players
+	 * Give 2 Cards to the players
 	 */
 	public void giveCards() {
 		cardStack.initCards();
