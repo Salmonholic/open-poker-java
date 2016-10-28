@@ -8,7 +8,7 @@ import java.util.Random;
 
 public class CardStack {
 	
-	private Random r = new Random();
+	private Random random = new Random();
 	private ArrayList<Card> cards = new ArrayList<>();
 	
 	/**
@@ -34,7 +34,7 @@ public class CardStack {
 	 * @return Random remaining card
 	 */
 	public Card getCard() {
-		int index = r.nextInt(cards.size());
+		int index = random.nextInt(cards.size());
 		Card card = cards.get(index);
 		cards.remove(index);
 		return card;
