@@ -1,7 +1,9 @@
 package main.core;
 
 public class Table {
+	
 	Player[] players;
+	CardStack cardStack;
 
 	/**
 	 * Poker table
@@ -9,6 +11,17 @@ public class Table {
 	 */
 	public Table(Player[] players) {
 		this.players = players;
+	}
+	
+	/**
+	 * Give 3 Cards to the players
+	 */
+	public void giveCards() {
+		cardStack.initCards();
+		for (Player player : players) {
+			Card[] playerCards = {cardStack.getCard(), cardStack.getCard()};
+			player.setCards(playerCards);
+		}
 	}
 
 	public Player[] getPlayers() {
