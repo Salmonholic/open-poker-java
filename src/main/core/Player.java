@@ -97,4 +97,15 @@ public class Player {
 	public void raise(int amount) {
 		
 	}
+	
+	/**
+	 * Resets the vars of the player after the round
+	 */
+	public void reset() {
+		cards = null;
+		currentBet = 0;
+		allIn = false;
+		fold = false;
+	}
+	
 }
