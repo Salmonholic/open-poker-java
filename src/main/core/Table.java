@@ -9,7 +9,7 @@ public class Table {
 	int smallBlindId = 1;
 	int bigBlindId = 1;
 	int currentBet = 0;
-	
+	int pot = 0;
 	int smallBlind = 5;
 
 	/**
@@ -141,4 +141,14 @@ public class Table {
 	public void setPlayers(Player[] players) {
 		this.players = players;
 	}
+
+	public int getPot() {
+		return pot;
+	}
+
+	public void setPot(int pot) {
+		this.pot = pot;
+	}
+	
+	
 }
