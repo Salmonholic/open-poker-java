@@ -150,5 +150,7 @@ public class Table {
 		this.pot = pot;
 	}
 	
-	
+	public void addToPot(int amount) {
+		setPot(getPot() + amount);
+	}
 }
