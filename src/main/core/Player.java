@@ -9,7 +9,6 @@ public class Player {
 	 * @param money
 	 */
 	public Player(int money) {
-		super();
 		this.money = money;
 	}
 	
@@ -18,7 +17,7 @@ public class Player {
 	}
 
 	/**
-	 * Gets money of Player
+	 * Get money of Player
 	 * @return Money of player
 	 */
 	public int getMoney() {
@@ -26,7 +25,7 @@ public class Player {
 	}
 
 	/**
-	 * Sets money of Player
+	 * Set money of Player
 	 * @param money Money for Player
 	 */
 	public void setMoney(int money) {
@@ -43,7 +42,7 @@ public class Player {
 	
 	/**
 	 * Set the cards of the Player
-	 * @param cards Card for player
+	 * @param cards Cards for player
 	 */
 	public void setCards(Card[] cards) {
 		this.cards = cards;
