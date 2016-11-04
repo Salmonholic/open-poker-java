@@ -1,24 +1,27 @@
 package main.core;
 
 public class Player {
+	private Table table;
 	private int money;
 	private Card[] cards;
+	private boolean fold;
+	private boolean allIn;
 	
 	/**
 	 * 
 	 * @param money
 	 */
-	public Player(int money) {
-		super();
+	public Player(Table table, int money) {
+		this.table = table;
 		this.money = money;
 	}
 	
-	public int addMoney(int money) {
-		return this.money += money;
+	public void addMoney(int money) {
+		setMoney(getMoney()+money);
 	}
 
 	/**
-	 * Gets money of Player
+	 * Get money of Player
 	 * @return Money of player
 	 */
 	public int getMoney() {
@@ -26,7 +29,7 @@ public class Player {
 	}
 
 	/**
-	 * Sets money of Player
+	 * Set money of Player
 	 * @param money Money for Player
 	 */
 	public void setMoney(int money) {
@@ -43,12 +46,45 @@ public class Player {
 	
 	/**
 	 * Set the cards of the Player
-	 * @param cards Card for player
+	 * @param cards Cards for player
 	 */
 	public void setCards(Card[] cards) {
 		this.cards = cards;
 	}
 	
+	public boolean isFold() {
+		return fold;
+	}
+
+	public void setFold(boolean fold) {
+		this.fold = fold;
+	}
+
+	public boolean isAllIn() {
+		return allIn;
+	}
+
+	public void setAllIn(boolean allIn) {
+		this.allIn = allIn;
+	}
+
+	public void fold() {
+		setFold(true);
+	}
 	
+	public void call() {
+		
+	}
 	
+	public void check() {
+		
+	}
+	
+	public void bet(int amount) {
+		
+	}
+	
+	public void raise(int amount) {
+		
+	}
 }

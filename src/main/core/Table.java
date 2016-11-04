@@ -35,7 +35,7 @@ public class Table {
 	}
 	
 	/**
-	 * Give 2 Cards to the players
+	 * Give 2 Cards to each player
 	 */
 	public void giveCards() {
 		cardStack.initCards();
@@ -44,6 +44,8 @@ public class Table {
 			player.setCards(playerCards);
 		}
 	}
+	
+	
 
 	public Player[] getPlayers() {
 		return players;

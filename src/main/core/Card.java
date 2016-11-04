@@ -20,6 +20,4 @@ public class Card implements PokerCard {
 		return value;
 	}
 	
-	
-	
 }
