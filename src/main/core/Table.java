@@ -4,9 +4,13 @@ public class Table {
 	
 	Player[] players;
 	CardStack cardStack;
+	Card[] cards;
 	int buttonId = 0;
-	
+	int smallBlindId = 1;
+	int bigBlindId = 1;
 	int currentBet = 0;
+	
+	int smallBlind = 5;
 
 	/**
 	 * Poker table
@@ -16,10 +20,87 @@ public class Table {
 		this.players = players;
 		// Loop for table
 		while (true) {
+			// Give the button around
 			buttonId++;
+			if (buttonId > players.length) {
+				buttonId = 0;
+			}
+			//Get the blinds from all players
+			blinds();
+			// Give 2 Cards to every player
 			giveCards();
-			break;
+			waitForBets();
+			// Flop
+			flop();
+			waitForBets();
+			// Turn
+			turn();
+			waitForBets();
+			// River
+			river();
+			waitForBets();
+			// ShowDown
+			showDown();
 		}
+	}
+	
+	/**
+	 * Adds a card to cards
+	 * @param card Card to add
+	 */
+	public void addCard(Card card) {
+		Card[] newCards = new Card[cards.length + 1];
+		for (int i = 0; i < players.length; i++) {
+			newCards[i] = cards[i];
+		}
+		newCards[newCards.length] = card;
+		setCards(newCards);
+	}
+	
+	/**
+	 * Adds 3 Cards
+	 */
+	public void flop() {
+		addCard(cardStack.getCard());
+		addCard(cardStack.getCard());
+		addCard(cardStack.getCard());
+	}
+	
+	/**
+	 * Adds 1 Card
+	 */
+	public void turn() {
+		addCard(cardStack.getCard());
+	}
+	
+	/**
+	 * Adds 1 Card
+	 */
+	public void river() {
+		addCard(cardStack.getCard());
+	}
+	
+	public void showDown() {
+		
+	}
+	
+	public void setCards(Card[] cards) {
+		this.cards = cards;
+	}
+	
+	/**
+	 * Get the blinds from all players
+	 */
+	public void blinds() {
+		players[bigBlindId].addMoney(smallBlind * -2);
+		players[smallBlindId].addMoney(smallBlind * -1);
+	}
+	
+	/**
+	 * Waits until all the players have either set the same bet or have fold
+	 */
+	public void waitForBets() {
+		
 	}
 	
 	public void removePlayer(int playerId) {
