@@ -4,6 +4,7 @@ public class Table {
 	
 	Player[] players;
 	CardStack cardStack;
+	int buttonId = 0;
 
 	/**
 	 * Poker table
@@ -11,6 +12,24 @@ public class Table {
 	 */
 	public Table(Player[] players) {
 		this.players = players;
+		// Loop for table
+		while (true) {
+			buttonId++;
+			giveCards();
+			break;
+		}
+	}
+	
+	public void removePlayer(int playerId) {
+		Player[] newPlayers = new Player[players.length - 1];
+		int newIndex = 0;
+		for (int i = 0; i < players.length; i++) {
+			if (i != playerId) {
+				newPlayers[newIndex] = players[i];
+				newIndex++;
+			}
+		}
+		players = newPlayers;
 	}
 	
 	/**
