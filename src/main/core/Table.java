@@ -44,8 +44,14 @@ public class Table {
 			player.setCards(playerCards);
 		}
 	}
-	
-	
+
+	public int getCurrentBet() {
+		return currentBet;
+	}
+
+	public void setCurrentBet(int currentBet) {
+		this.currentBet = currentBet;
+	}
 
 	public Player[] getPlayers() {
 		return players;
