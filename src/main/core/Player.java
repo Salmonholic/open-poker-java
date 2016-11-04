@@ -6,6 +6,7 @@ public class Player {
 	private Card[] cards;
 	private boolean fold;
 	private boolean allIn;
+	private int currentBet;
 	
 	/**
 	 * 
@@ -73,7 +74,16 @@ public class Player {
 	}
 	
 	public void call() {
-		
+		int amountToBet = table.getCurrentBet() - this.currentBet;
+		if(getMoney() - amountToBet > 0) { //Check for All-In
+			addMoney(-amountToBet);
+			table.addToPot(amountToBet);
+		} else {
+			//All-In
+			this.currentBet += this.getMoney();
+			setMoney(0);
+			setAllIn(true);
+		}
 	}
 	
 	public void check() {
