@@ -5,6 +5,8 @@ public class Table {
 	Player[] players;
 	CardStack cardStack;
 	int buttonId = 0;
+	
+	int currentBet = 0;
 
 	/**
 	 * Poker table
@@ -29,7 +31,7 @@ public class Table {
 				newIndex++;
 			}
 		}
-		players = newPlayers;
+		setPlayers(newPlayers);
 	}
 	
 	/**
