@@ -1,5 +1,7 @@
 package main.core;
 
+import handChecker.HandChecker;
+
 public class Table {
 	
 	Player[] players;
