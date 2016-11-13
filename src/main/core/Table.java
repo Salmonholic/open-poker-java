@@ -47,7 +47,7 @@ public class Table {
 	
 	public void reset() {
 		for (int i = 0; i < players.length; i++) {
-			if (players[i].getMoney() < 0) {
+			if (players[i].getMoney() == 0) {
 				removePlayer(i);
 				i--;
 			} else {
