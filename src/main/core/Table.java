@@ -8,8 +8,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import handChecker.HandChecker;
-
 public class Table {
 
 	Player[] players;
@@ -141,38 +139,38 @@ public class Table {
 	}
 
 	/**
-	 * 
-	 * @return
+	 * Generate an HashMap<Integer, ArrayList<Player>> displaying every place and it's players
+	 * @return HashMap<Integer, ArrayList<Player>>
 	 */
-	public HashMap<Integer, ArrayList<Player>> getWinners() {
-		HashMap<Integer, ArrayList<Player>> winners = new HashMap<>();
+	public HashMap<Integer, ArrayList<Player>> getPlaces() {
+		HashMap<Integer, ArrayList<Player>> places = new HashMap<>();
 		for (Player player : players) {
 			if (player.isFold() && (!player.isAllIn()))
 				continue;
 			// Get the HandValue
 			HandValue playerValue = checkPlayer(player);
 
-			if (winners.isEmpty()) {
+			if (places.isEmpty()) {
 				// First iteration
-				winners.put(1, getArrayListWithPlayer(player));
+				places.put(1, getArrayListWithPlayer(player));
 				continue;
 			}
 
-			for (int i = 1; i <= winners.size(); i++) {
+			for (int i = 1; i <= places.size(); i++) {
 				boolean cancel = false;
-				switch (playerValue.compareTo(checkPlayer(winners.get(i)
+				switch (playerValue.compareTo(checkPlayer(places.get(i)
 						.iterator().next()))) {
 				case 1:
 					// Player has more
 
 					// Put all players behind the player 1 lower
-					for (int j = winners.size() + 1; j > i; j++) {
-						winners.put(j + 1, winners.get(j));
-						winners.remove(j);
+					for (int j = places.size() + 1; j > i; j++) {
+						places.put(j + 1, places.get(j));
+						places.remove(j);
 					}
 
 					// Put the player into the i'th place
-					winners.put(i, getArrayListWithPlayer(player));
+					places.put(i, getArrayListWithPlayer(player));
 
 					cancel = true;
 					break;
@@ -180,13 +178,13 @@ public class Table {
 					// Player has equal
 
 					// Put the player into the i'th place
-					winners.get(i).add(player);
+					places.get(i).add(player);
 
 					cancel = true;
 					break;
 				case -1:
-					if (i == winners.size()) {
-						winners.put(i + 1, getArrayListWithPlayer(player));
+					if (i == places.size()) {
+						places.put(i + 1, getArrayListWithPlayer(player));
 						cancel = true;
 					} else {
 						cancel = false;
@@ -201,11 +199,32 @@ public class Table {
 				}
 			}
 		}
-		return winners;
+		return places;
+	}
+	
+	public void split() {
+		
 	}
 
 	public void showDown() {
-
+		// TODO finish
+		// Get places
+		HashMap<Integer, ArrayList<Player>> places = getPlaces();
+		for (int i = 1; i <= places.size(); i++) {
+			ArrayList<Player> players = places.get(i);
+			boolean allIn = false;
+			for (Player player : players) {
+				if (player.isAllIn()) {
+					allIn = true;
+					break;
+				}
+			}
+			if (allIn) {
+				
+			} else {
+				
+			}
+		}
 	}
 
 	public void setCards(Card[] cards) {
