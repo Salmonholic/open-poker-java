@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import handChecker.HandChecker;
+
 public class Table {
 
 	Player[] players;

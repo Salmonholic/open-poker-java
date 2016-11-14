@@ -70,19 +70,17 @@ public class Player {
 	}
 
 	public void fold() {
-		setFold(true);
+		fold = true;
 	}
 	
 	public void call() {
 		int amountToBet = table.getCurrentBet() - this.currentBet;
-		if(getMoney() - amountToBet > 0) { //Check for All-In
-			addMoney(-amountToBet);
+		if(money - amountToBet > 0) { //Check for All-In
+			currentBet += amountToBet;
 			table.addToPot(amountToBet);
+			addMoney(-amountToBet);
 		} else {
-			//All-In
-			this.currentBet += this.getMoney();
-			setMoney(0);
-			setAllIn(true);
+			allIn();
 		}
 	}
 	
@@ -91,11 +89,26 @@ public class Player {
 	}
 	
 	public void bet(int amount) {
-		
+		if(money > amount) {
+			currentBet += amount;
+			table.addToPot(amount);
+			addMoney(-amount);
+		} else if (money == amount) {
+			allIn();
+		} else {
+			//TODO not enough money to bet (exception?)
+		}
 	}
 	
 	public void raise(int amount) {
 		
+	}
+	
+	private void allIn() {
+		currentBet += money;
+		table.addToPot(money);
+		money = 0;
+		allIn = true;
 	}
 	
 	/**
