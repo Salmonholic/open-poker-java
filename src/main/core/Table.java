@@ -7,6 +7,7 @@ import handChecker.PokerCard;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.TreeMap;
 
 public class Table {
 
@@ -139,7 +140,9 @@ public class Table {
 	}
 
 	/**
-	 * Generate an HashMap<Integer, ArrayList<Player>> displaying every place and it's players
+	 * Generate an HashMap<Integer, ArrayList<Player>> displaying every place
+	 * and it's players
+	 * 
 	 * @return HashMap<Integer, ArrayList<Player>>
 	 */
 	public HashMap<Integer, ArrayList<Player>> getPlaces() {
@@ -158,8 +161,7 @@ public class Table {
 
 			for (int i = 1; i <= places.size(); i++) {
 				boolean cancel = false;
-				switch (playerValue.compareTo(checkPlayer(places.get(i)
-						.iterator().next()))) {
+				switch (playerValue.compareTo(checkPlayer(places.get(i).iterator().next()))) {
 				case 1:
 					// Player has more
 
@@ -201,30 +203,63 @@ public class Table {
 		}
 		return places;
 	}
-	
-	public void split() {
-		
+
+	/**
+	 * Splits the given value between players
+	 * @param value Amount to split
+	 * @param players Players
+	 */
+	public void split(int value, ArrayList<Player> splitPlayers) {
+		// TODO Handle all in correctly
+		TreeMap<Integer, ArrayList<Player>> sidePots = new TreeMap<>();
+		// Put players to their pseudo side pot value
+		for (Player player : splitPlayers) {
+			if (sidePots.containsKey(player.getCurrentBet())) {
+				sidePots.get(player.getCurrentBet()).add(player);
+			} else {
+				sidePots.put(player.getCurrentBet(), getArrayListWithPlayer(player));
+			}
+		}
+		// Calculate real side pot value
+		for (int sidePot : sidePots.keySet()) {
+			// Get least smaller side pot
+			int leastSmallerPot = sidePot;
+			for (int otherPot : sidePots.keySet()) {
+				if (otherPot < leastSmallerPot) {
+					leastSmallerPot = otherPot;
+				}
+			}
+			// There is no smaller Pot
+			if (leastSmallerPot == sidePot) leastSmallerPot = 0;
+			ArrayList<Player> sidePotPlayers = sidePots.get(sidePot);
+			// Remove players for old side pot value
+			sidePots.remove(sidePot);
+			// Put them in real pot
+			sidePots.put(leastSmallerPot, sidePotPlayers);
+		}
+		for (int sidePot : sidePots.keySet()) {
+			ArrayList<Player> sidePotPlayers = sidePots.get(sidePot);
+			// Give contents of side pot to all remaining players
+			for (Player player : splitPlayers) {
+				player.addMoney(sidePot / splitPlayers.size());
+			}
+			// Remove players from future pot splitting
+			for (Player player : sidePotPlayers) {
+				splitPlayers.remove(player);
+			}
+		}
 	}
 
 	public void showDown() {
-		// TODO finish
 		// Get places
 		HashMap<Integer, ArrayList<Player>> places = getPlaces();
 		for (int i = 1; i <= places.size(); i++) {
 			ArrayList<Player> players = places.get(i);
-			boolean allIn = false;
-			for (Player player : players) {
-				if (player.isAllIn()) {
-					allIn = true;
-					break;
-				}
-			}
-			if (allIn) {
-				
-			} else {
-				
-			}
+			// Split pot
+			split(pot, players);
 		}
+		// Reset the pot
+		pot = 0;
 	}
 
 	public void setCards(Card[] cards) {

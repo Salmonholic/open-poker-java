@@ -120,5 +120,9 @@ public class Player {
 		allIn = false;
 		fold = false;
 	}
+
+	public int getCurrentBet() {
+		return currentBet;
+	}
 	
 }
