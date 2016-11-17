@@ -1,9 +1,12 @@
 package main.core;
 
+import java.util.ArrayList;
+
 public class Player {
 	private Table table;
+	private int id;
 	private int money;
-	private Card[] cards;
+	private ArrayList<Card> cards;
 	private boolean fold;
 	private boolean allIn;
 	private int currentBet;
@@ -41,7 +44,7 @@ public class Player {
 	 * Get the cards of the Player
 	 * @return List of 2 Cards
 	 */
-	public Card[] getCards() {
+	public ArrayList<Card> getCards() {
 		return cards;
 	}
 	
@@ -49,7 +52,7 @@ public class Player {
 	 * Set the cards of the Player
 	 * @param cards Cards for player
 	 */
-	public void setCards(Card[] cards) {
+	public void setCards(ArrayList<Card> cards) {
 		this.cards = cards;
 	}
 	
@@ -67,6 +70,14 @@ public class Player {
 
 	public void setAllIn(boolean allIn) {
 		this.allIn = allIn;
+	}
+
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
 	}
 
 	public void fold() {
