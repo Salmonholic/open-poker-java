@@ -7,11 +7,12 @@ import handChecker.PokerCard;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.TreeMap;
 
 public class Table {
 
-	Player[] players;
+	HashMap<Integer, Player> players;
 	CardStack cardStack;
 	ArrayList<Card> cards;
 	int buttonId = 0;
@@ -30,9 +31,13 @@ public class Table {
 	 *            Players
 	 */
 	public Table(Player[] players) {
-		this.players = players;
+		// Put players into HashMap
+		for(int i=0; i< players.length; i++) {
+			this.players.put(i, players[i]);
+		}
 		// Loop for table
 		while (true) {
+			cardStack.initCards();
 			// Give the button around
 			buttonId++;
 			if (buttonId > players.length) {
@@ -58,14 +63,13 @@ public class Table {
 		}
 	}
 	
-	private void waitForBets() {}
+	private void waitForBets() {} //Will be removed
 
 	/**
 	 * Give 2 Cards to each player
 	 */
 	public void giveCards() {
-		cardStack.initCards();
-		for (Player player : players) {
+		for (Player player : players.values()) {
 			Card[] playerCards = { cardStack.getCard(), cardStack.getCard() };
 			player.setCards(playerCards);
 		}
@@ -75,8 +79,8 @@ public class Table {
 	 * Get the blinds from all players
 	 */
 	public void blinds() {
-		players[bigBlindId].addMoney(smallBlind * -2);
-		players[smallBlindId].addMoney(smallBlind * -1);
+		players.get(bigBlindId).addMoney(smallBlind * -2);
+		players.get(smallBlindId).addMoney(smallBlind * -1);
 	}
 
 	/**
@@ -114,22 +118,21 @@ public class Table {
 		pot = 0;
 	}
 
+	/**
+	 * Resets player flags. Has to be called each new round.
+	 */
 	public void reset() {
-		for (int i = 0; i < players.length; i++) {
-			if (players[i].getMoney() < 0) {
-				removePlayer(i);
+		for(Map.Entry<Integer, Player> entry : players.entrySet()) {
+			if (entry.getValue().getMoney() < 0) {
+				players.remove(entry.getKey());
 			} else {
-				players[i].reset();
+				entry.getValue().reset();
 			}
-	
 		}
 	}
 
 	/**
-	 * Adds a card to cards
-	 * 
-	 * @param card
-	 *            Card to add
+	 * Adds a card to the cards on the table
 	 */
 	public void addCard(Card card) {
 		cards.add(card);
@@ -175,7 +178,7 @@ public class Table {
 	 */
 	public HashMap<Integer, ArrayList<Player>> getPlaces() {
 		HashMap<Integer, ArrayList<Player>> places = new HashMap<>();
-		for (Player player : players) {
+		for (Player player : players.values()) {
 			if (player.isFold() && (!player.isAllIn()))
 				continue;
 			// Get the HandValue
@@ -278,32 +281,12 @@ public class Table {
 		}
 	}
 
-	public void removePlayer(int playerId) {
-		Player[] newPlayers = new Player[players.length - 1];
-		int newIndex = 0;
-		for (int i = 0; i < players.length; i++) {
-			if (i != playerId) {
-				newPlayers[newIndex] = players[i];
-				newIndex++;
-			}
-		}
-		setPlayers(newPlayers);
-	}
-
 	public int getCurrentBet() {
 		return currentBet;
 	}
 
 	public void setCurrentBet(int currentBet) {
 		this.currentBet = currentBet;
-	}
-
-	public Player[] getPlayers() {
-		return players;
-	}
-
-	public void setPlayers(Player[] players) {
-		this.players = players;
 	}
 
 	public void addToPot(int amount) {
