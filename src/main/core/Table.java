@@ -13,7 +13,7 @@ public class Table {
 
 	Player[] players;
 	CardStack cardStack;
-	Card[] cards;
+	ArrayList<Card> cards;
 	int buttonId = 0;
 	int smallBlindId = 1;
 	int bigBlindId = 1;
@@ -57,31 +57,26 @@ public class Table {
 			reset();
 		}
 	}
+	
+	private void waitForBets() {}
 
-	public void reset() {
-		for (int i = 0; i < players.length; i++) {
-			if (players[i].getMoney() < 0) {
-				removePlayer(i);
-			} else {
-				players[i].reset();
-			}
-
+	/**
+	 * Give 2 Cards to each player
+	 */
+	public void giveCards() {
+		cardStack.initCards();
+		for (Player player : players) {
+			Card[] playerCards = { cardStack.getCard(), cardStack.getCard() };
+			player.setCards(playerCards);
 		}
 	}
 
 	/**
-	 * Adds a card to cards
-	 * 
-	 * @param card
-	 *            Card to add
+	 * Get the blinds from all players
 	 */
-	public void addCard(Card card) {
-		Card[] newCards = new Card[cards.length + 1];
-		for (int i = 0; i < players.length; i++) {
-			newCards[i] = cards[i];
-		}
-		newCards[newCards.length] = card;
-		setCards(newCards);
+	public void blinds() {
+		players[bigBlindId].addMoney(smallBlind * -2);
+		players[smallBlindId].addMoney(smallBlind * -1);
 	}
 
 	/**
@@ -107,8 +102,41 @@ public class Table {
 		addCard(cardStack.getCard());
 	}
 
+	public void showDown() {
+		// Get places
+		HashMap<Integer, ArrayList<Player>> places = getPlaces();
+		for (int i = 1; i <= places.size(); i++) {
+			ArrayList<Player> players = places.get(i);
+			// Split pot
+			split(pot, players);
+		}
+		// Reset the pot
+		pot = 0;
+	}
+
+	public void reset() {
+		for (int i = 0; i < players.length; i++) {
+			if (players[i].getMoney() < 0) {
+				removePlayer(i);
+			} else {
+				players[i].reset();
+			}
+	
+		}
+	}
+
 	/**
-	 * Converts a Array of Cards to an List<Card>
+	 * Adds a card to cards
+	 * 
+	 * @param card
+	 *            Card to add
+	 */
+	public void addCard(Card card) {
+		cards.add(card);
+	}
+
+	/**
+	 * Converts a Array of Cards to a List<Card>
 	 * 
 	 * @param cards
 	 *            Card Array to convert
@@ -250,37 +278,6 @@ public class Table {
 		}
 	}
 
-	public void showDown() {
-		// Get places
-		HashMap<Integer, ArrayList<Player>> places = getPlaces();
-		for (int i = 1; i <= places.size(); i++) {
-			ArrayList<Player> players = places.get(i);
-			// Split pot
-			split(pot, players);
-		}
-		// Reset the pot
-		pot = 0;
-	}
-
-	public void setCards(Card[] cards) {
-		this.cards = cards;
-	}
-
-	/**
-	 * Get the blinds from all players
-	 */
-	public void blinds() {
-		players[bigBlindId].addMoney(smallBlind * -2);
-		players[smallBlindId].addMoney(smallBlind * -1);
-	}
-
-	/**
-	 * Waits until all the players have either set the same bet or have fold
-	 */
-	public void waitForBets() {
-
-	}
-
 	public void removePlayer(int playerId) {
 		Player[] newPlayers = new Player[players.length - 1];
 		int newIndex = 0;
@@ -291,17 +288,6 @@ public class Table {
 			}
 		}
 		setPlayers(newPlayers);
-	}
-
-	/**
-	 * Give 2 Cards to each player
-	 */
-	public void giveCards() {
-		cardStack.initCards();
-		for (Player player : players) {
-			Card[] playerCards = { cardStack.getCard(), cardStack.getCard() };
-			player.setCards(playerCards);
-		}
 	}
 
 	public int getCurrentBet() {
@@ -320,15 +306,7 @@ public class Table {
 		this.players = players;
 	}
 
-	public int getPot() {
-		return pot;
-	}
-
-	public void setPot(int pot) {
-		this.pot = pot;
-	}
-
 	public void addToPot(int amount) {
-		setPot(getPot() + amount);
+		pot += amount;
 	}
 }
