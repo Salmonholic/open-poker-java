@@ -210,7 +210,6 @@ public class Table {
 	 * @param players Players
 	 */
 	public void split(int value, ArrayList<Player> splitPlayers) {
-		// TODO Handle all in correctly
 		TreeMap<Integer, ArrayList<Player>> sidePots = new TreeMap<>();
 		// Put players to their pseudo side pot value
 		for (Player player : splitPlayers) {
