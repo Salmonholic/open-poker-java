@@ -1,5 +1,7 @@
 package main.main;
 
+import main.core.Player;
+import main.core.Table;
 
 public class Main {
 	

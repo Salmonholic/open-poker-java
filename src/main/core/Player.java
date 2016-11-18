@@ -10,6 +10,7 @@ public class Player {
 	private boolean fold;
 	private boolean allIn;
 	private int currentBet;
+	private int lastPot = 0;
 	
 	/**
 	 * 
@@ -118,6 +119,8 @@ public class Player {
 	private void allIn() {
 		currentBet += money;
 		table.addToPot(money);
+		lastPot = table.getPotIndex();
+		table.startSidePot(id);
 		money = 0;
 		allIn = true;
 	}
