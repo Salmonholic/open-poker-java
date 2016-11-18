@@ -158,7 +158,7 @@ public class Table {
 	}*/
 
 /*	private HandValue checkPlayer(Player player) {
-		return handChecker.check(asList(player.getCards()));// Funktioniert nicht! check() benötigt auch die Karten auf dem Tisch...
+		return handChecker.check(asList(player.getCards()));// Funktioniert nicht! check() benï¿½tigt auch die Karten auf dem Tisch...
 	}*/
 
 	/**
@@ -271,7 +271,6 @@ public class Table {
 	 * @param players Players
 	 */
 	/*private void split(int value, ArrayList<Player> splitPlayers) {
-		// TODO Handle all in correctly
 		TreeMap<Integer, ArrayList<Player>> sidePots = new TreeMap<>();
 		// Put players to their pseudo side pot value
 		for (Player player : splitPlayers) {

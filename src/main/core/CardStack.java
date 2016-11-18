@@ -34,10 +34,14 @@ public class CardStack {
 	 * @return Random remaining card
 	 */
 	public Card getCard() {
-		int index = random.nextInt(cards.size());
-		Card card = cards.get(index);
-		cards.remove(index);
-		return card;
+		if (cards.isEmpty()) {
+			return null;
+		} else {
+			int index = random.nextInt(cards.size());
+			Card card = cards.get(index);
+			cards.remove(index);
+			return card;
+		}
 	}
 	
 }
