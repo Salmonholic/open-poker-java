@@ -139,4 +139,7 @@ public class Player {
 		return currentBet;
 	}
 	
+	public int getLastPot() {
+		return lastPot;
+	}
 }

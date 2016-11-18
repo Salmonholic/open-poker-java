@@ -6,8 +6,10 @@ import handChecker.PokerCard;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.TreeMap;
 
 public class Table {
@@ -108,15 +110,40 @@ public class Table {
 	}
 
 	private void showDown() {
-		/*// Get places
-		HashMap<Integer, ArrayList<Player>> places = getPlaces();
-		for (int i = 1; i <= places.size(); i++) {
-			ArrayList<Player> players = places.get(i);
-			// Split pot
-			split(pot, players);
+		TreeMap<HandValue, List<Player>> winningOrder = new TreeMap<>();
+		// Sort out players who have fold
+		for(Entry<Integer, Player> entry : players.entrySet()) {
+			if(!entry.getValue().isFold()) {
+				List<PokerCard> list = new ArrayList<>(cards);
+				list.addAll(entry.getValue().getCards());
+				HandValue handValue = handChecker.check(list);
+				if(winningOrder.containsKey(handValue)) {
+					winningOrder.get(handValue).add(entry.getValue());
+				} else {
+					winningOrder.put(handChecker.check(list), Arrays.asList(entry.getValue()));
+				}
+			}
 		}
-		// Reset the pot
-		pot = 0;*/
+		
+		// Pay out the pot
+		while(pot.get(pot.size()-1) > 0) {
+			Iterator<List<Player>> playerLists = winningOrder.values().iterator();
+			while(playerLists.hasNext()) {
+				List<Player> playerList = playerLists.next();
+				for(int i=0; i<pot.size(); i++) {
+					ArrayList<Player> involvedPlayers = new ArrayList<>();
+					for(Player player : playerList) {
+						if(player.getLastPot() >= i) {
+							involvedPlayers.add(player);
+						}
+					}
+					for(Player player : involvedPlayers) {
+						player.addMoney(pot.get(i)/involvedPlayers.size());
+					}
+					//TODO rest des splitpots
+				}
+			}
+		}
 	}
 
 	/**
@@ -172,33 +199,7 @@ public class Table {
 		ArrayList<Player> list = new ArrayList<>();
 		list.add(player);
 		return list;
-	}*/
-
-	private void winningOrder() {
-		TreeMap<HandValue, List<Player>> winningOrder = new TreeMap<>();
-		// Sort out players who have fold
-		players.entrySet().forEach((entry) -> {
-			if(!entry.getValue().isFold()) {
-				List<PokerCard> list = new ArrayList<>(cards);
-				list.addAll(entry.getValue().getCards());
-				HandValue handValue = handChecker.check(list);
-				if(winningOrder.containsKey(handValue)) {
-					winningOrder.get(handValue).add(entry.getValue());
-				} else {
-					winningOrder.put(handChecker.check(list), Arrays.asList(entry.getValue()));
-				}
-			}
-		});
-		
-		// Pay out the pot
-		while(pot > 0) {
-			winningOrder.forEach((handValue, list) -> {
-				// Check for All-In players
-				list.forEach(action);
-			});
-		}
-	}
-	
+	}*/	
 	
 	/**
 	 * Generate an HashMap<Integer, ArrayList<Player>> displaying every place
@@ -332,13 +333,13 @@ public class Table {
 	public void startSidePot(int playerId) {
 		int allInValue = players.get(playerId).getCurrentBet();
 		int newSidePot = 0;
-		players.entrySet().forEach((entry) -> {
+		for(Entry<Integer, Player> entry : players.entrySet()) {
 			int playerBet = entry.getValue().getCurrentBet();
 			if(!entry.getValue().isFold() && playerBet > allInValue) {
 				addToPot(allInValue - playerBet);
 				newSidePot += allInValue - playerBet;
 			}
-		});
+		}
 		pot.add(newSidePot);
 	}
 }
