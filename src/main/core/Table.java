@@ -104,7 +104,7 @@ public class Table {
 				player.fold();
 				break;
 			case RAISE:
-				// TODO player.raise(value);
+				player.raise(value);
 				break;
 			default:
 				break;
