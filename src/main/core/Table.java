@@ -6,22 +6,21 @@ import handChecker.PokerCard;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
 public class Table {
 
-	TreeMap<Integer, Player> players;
-	CardStack cardStack;
-	ArrayList<Card> cards;
-	int buttonId = 0;
-	int smallBlindId = 1;
-	int bigBlindId = 1;
-	int currentBet = 0;
-	int pot = 0;
-	int smallBlind = 5;
+	private TreeMap<Integer, Player> players;
+	private CardStack cardStack;
+	private ArrayList<Card> cards;
+	private int buttonId = 0;
+	private int smallBlindId = 1;
+	private int bigBlindId = 1;
+	private int smallBlind = 5;
+	private int currentBet = 0;
+	private ArrayList<Integer> pot = new ArrayList<>(1);
 
 	HandChecker handChecker = new HandChecker();
 
@@ -121,7 +120,7 @@ public class Table {
 	}
 
 	/**
-	 * Resets player flags. Has to be called each new round.
+	 * Resets player flags and (side) pots. Has to be called each new round.
 	 */
 	private void reset() {
 		for(Map.Entry<Integer, Player> entry : players.entrySet()) {
@@ -131,6 +130,9 @@ public class Table {
 				entry.getValue().reset();
 			}
 		}
+		
+		pot.clear();
+		pot.add(0);
 	}
 
 	/**
@@ -173,19 +175,27 @@ public class Table {
 	}*/
 
 	private void winningOrder() {
-		TreeMap<HandValue, Player> winningOrder = new TreeMap<>();
+		TreeMap<HandValue, List<Player>> winningOrder = new TreeMap<>();
 		// Sort out players who have fold
 		players.entrySet().forEach((entry) -> {
 			if(!entry.getValue().isFold()) {
 				List<PokerCard> list = new ArrayList<>(cards);
 				list.addAll(entry.getValue().getCards());
-				winningOrder.put(handChecker.check(list), entry.getValue());
+				HandValue handValue = handChecker.check(list);
+				if(winningOrder.containsKey(handValue)) {
+					winningOrder.get(handValue).add(entry.getValue());
+				} else {
+					winningOrder.put(handChecker.check(list), Arrays.asList(entry.getValue()));
+				}
 			}
 		});
 		
 		// Pay out the pot
 		while(pot > 0) {
-			
+			winningOrder.forEach((handValue, list) -> {
+				// Check for All-In players
+				list.forEach(action);
+			});
 		}
 	}
 	
@@ -308,8 +318,28 @@ public class Table {
 	public void setCurrentBet(int currentBet) {
 		this.currentBet = currentBet;
 	}
+	
+	public int getPotIndex() {
+		return pot.size()-1;
+	}
 
 	public void addToPot(int amount) {
-		pot += amount;
+		pot.set(pot.size()-1, pot.get(pot.size()-1)+amount);
+	}
+	
+	/**
+	 * @param playerId Id of player who went All-In
+	 */
+	public void startSidePot(int playerId) {
+		int allInValue = players.get(playerId).getCurrentBet();
+		int newSidePot = 0;
+		players.entrySet().forEach((entry) -> {
+			int playerBet = entry.getValue().getCurrentBet();
+			if(!entry.getValue().isFold() && playerBet > allInValue) {
+				addToPot(allInValue - playerBet);
+				newSidePot += allInValue - playerBet;
+			}
+		});
+		pot.add(newSidePot);
 	}
 }
