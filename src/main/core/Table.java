@@ -14,59 +14,108 @@ import java.util.TreeMap;
 
 public class Table {
 
-	private TreeMap<Integer, Player> players;
-	private CardStack cardStack;
-	private ArrayList<Card> cards;
-	private int buttonId = 0;
-	private int smallBlindId = 1;
-	private int bigBlindId = 1;
-	private int smallBlind = 5;
-	private int currentBet = 0;
+	TreeMap<Integer, Player> players;
+	CardStack cardStack;
+	ArrayList<Card> cards;
 	private ArrayList<Integer> pot = new ArrayList<>(1);
+	int smallBlind = 5;
+	int currentBet;
+	GameState gameState = GameState.PRE_FLOP;
+	
+	int buttonId = 0;
+	int smallBlindId;
+	int bigBlindId;
+	int lastBetId;
+	int currentPlayer;
 
 	HandChecker handChecker = new HandChecker();
 
 	/**
 	 * Poker table
 	 * 
-	 * @param players
-	 *            Players
+	 * @param players Amount of players in game
+	 * @param money Start Money for each player
 	 */
-	public Table(Player[] players) {
+	public Table(int playerAmount, int money) {
 		// Put players into TreeMap and set Id
-		for(int i=0; i< players.length; i++) {
-			this.players.put(i, players[i]);
-			players[i].setId(i);
+		players = new TreeMap<>();
+		for(int i=0; i< playerAmount; i++) {
+			players.put(i, new Player(this, money));
 		}
-		// Loop for table
-		while (true) {
-			cardStack.initCards();
-			// Give the button around
-			buttonId++;
-			if (buttonId > players.length) {
-				buttonId = 0;
+		update();
+	}
+	
+	private void update() {
+		if (currentPlayer == lastBetId) {
+			gameState = GameState.values()[gameState.ordinal() % GameState.values().length];
+			switch (gameState) {
+			case PRE_FLOP:
+				preFlop();
+				break;
+			case FLOP:
+				flop();
+				break;
+			case TURN:
+				turn();
+				break;
+			case RIVER:
+				river();
+				break;
+			case SHOW_DOWN:
+				showDown();
+				reset();
+				gameState = GameState.PRE_FLOP;
+				break;
+			default:
+				break;
 			}
-			// Get the blinds from all players
-			blinds();
-			// Give 2 Cards to every player
-			giveCards();
-			waitForBets();
-			// Flop
-			flop();
-			waitForBets();
-			// Turn
-			turn();
-			waitForBets();
-			// River
-			river();
-			waitForBets();
-			// ShowDown
-			showDown();
-			reset();
 		}
 	}
 	
-	private void waitForBets() {} //Will be removed
+	/**
+	 * Get next player in players, or first player if no more player is in players
+	 * @param playerId Player
+	 */
+	private int nextPlayer(int playerId) {
+		if (players.ceilingKey(playerId) == playerId) {
+			return players.firstKey();
+		} else {
+			return players.ceilingKey(playerId);
+		}
+		
+	}
+	
+	public void action(int playerId, Action action) {
+		action(playerId, action, 0);
+	}
+	
+	public void action(int playerId, Action action, int value) {
+		if (playerId == currentPlayer) {
+			Player player = players.get(playerId);
+			switch (action) {
+			case BET:
+				player.bet(value);
+				break;
+			case CALL:
+				player.call();
+				break;
+			case CHECK:
+				player.check();
+				break;
+			case FOLD:
+				player.fold();
+				break;
+			case RAISE:
+				player.raise(value);
+				break;
+			default:
+				break;
+			}
+			currentPlayer = nextPlayer(playerId);
+		} else {
+			throw new IllegalArgumentException();
+		}
+	}
 
 	/**
 	 * Give 2 Cards to each player
@@ -84,6 +133,22 @@ public class Table {
 	private void blinds() {
 		players.get(bigBlindId).addMoney(smallBlind * -2);
 		players.get(smallBlindId).addMoney(smallBlind * -1);
+	}
+	
+	private void preFlop() {
+		buttonId = nextPlayer(buttonId);
+		if (players.size() == 2) {
+			smallBlindId = buttonId;
+			bigBlindId = nextPlayer(buttonId);
+		} else {
+			smallBlindId = nextPlayer(buttonId);
+			bigBlindId = nextPlayer(smallBlindId);
+		}
+		cardStack.initCards();
+		giveCards();
+		blinds();
+		currentBet = smallBlind * 2;
+		currentPlayer = nextPlayer(bigBlindId);
 	}
 
 	/**
@@ -168,148 +233,6 @@ public class Table {
 	private void addCard(Card card) {
 		cards.add(card);
 	}
-
-	/**
-	 * Converts a Array of Cards to a List<Card>
-	 * 
-	 * @param cards
-	 *            Card Array to convert
-	 * @return Converted cards
-	 */
-/*	private List<PokerCard> asList(Card[] cards) {
-		ArrayList<PokerCard> newCards = new ArrayList<>();
-		for (PokerCard card : cards) {
-			newCards.add(card);
-		}
-		return newCards;
-	}*/
-
-/*	private HandValue checkPlayer(Player player) {
-		return handChecker.check(asList(player.getCards()));// Funktioniert nicht! check() ben�tigt auch die Karten auf dem Tisch...
-	}*/
-
-	/**
-	 * Generate an ArrayList with just the player in it
-	 * 
-	 * @param player
-	 *            Player to be in the Array list
-	 * @return ArrayList with just the player in it
-	 */
-/*	private ArrayList<Player> getArrayListWithPlayer(Player player) {
-		ArrayList<Player> list = new ArrayList<>();
-		list.add(player);
-		return list;
-	}*/	
-	
-	/**
-	 * Generate an HashMap<Integer, ArrayList<Player>> displaying every place
-	 * and it's players
-	 * 
-	 * @return HashMap<Integer, ArrayList<Player>>
-	 */
-/*	private HashMap<Integer, ArrayList<Player>> getPlaces() {
-		HashMap<Integer, ArrayList<Player>> places = new HashMap<>();
-		for (Player player : players.values()) {
-			if (player.isFold() && (!player.isAllIn()))
-				continue;
-			// Get the HandValue
-			HandValue playerValue = checkPlayer(player);
-
-			if (places.isEmpty()) {
-				// First iteration
-				places.put(1, getArrayListWithPlayer(player));
-				continue;
-			}
-
-			for (int i = 1; i <= places.size(); i++) {
-				boolean cancel = false;
-				switch (playerValue.compareTo(checkPlayer(places.get(i).iterator().next()))) {
-				case 1:
-					// Player has more
-
-					// Put all players behind the player 1 lower
-					for (int j = places.size() + 1; j > i; j++) {
-						places.put(j + 1, places.get(j));
-						places.remove(j);
-					}
-
-					// Put the player into the i'th place
-					places.put(i, getArrayListWithPlayer(player));
-
-					cancel = true;
-					break;
-				case 0:
-					// Player has equal
-
-					// Put the player into the i'th place
-					places.get(i).add(player);
-
-					cancel = true;
-					break;
-				case -1:
-					if (i == places.size()) {
-						places.put(i + 1, getArrayListWithPlayer(player));
-						cancel = true;
-					} else {
-						cancel = false;
-					}
-					break;
-				default:
-					System.err.println("API error");
-					break;
-				}
-				if (cancel) {
-					break;
-				}
-			}
-		}
-		return places;
-	}*/
-
-	/**
-	 * Splits the given value between players
-	 * @param value Amount to split
-	 * @param players Players
-	 */
-	/*private void split(int value, ArrayList<Player> splitPlayers) {
-		TreeMap<Integer, ArrayList<Player>> sidePots = new TreeMap<>();
-		// Put players to their pseudo side pot value
-		for (Player player : splitPlayers) {
-			if (sidePots.containsKey(player.getCurrentBet())) {
-				sidePots.get(player.getCurrentBet()).add(player);
-			} else {
-				sidePots.put(player.getCurrentBet(), getArrayListWithPlayer(player));
-			}
-		}
-		// Calculate real side pot value
-		for (int sidePot : sidePots.keySet()) {
-			// Get least smaller side pot
-			int leastSmallerPot = sidePot;
-			for (int otherPot : sidePots.keySet()) {
-				if (otherPot < leastSmallerPot) {
-					leastSmallerPot = otherPot;
-				}
-			}
-			// There is no smaller Pot
-			if (leastSmallerPot == sidePot) leastSmallerPot = 0;
-			ArrayList<Player> sidePotPlayers = sidePots.get(sidePot);
-			// Remove players for old side pot value
-			sidePots.remove(sidePot);
-			// Put them in real pot
-			sidePots.put(leastSmallerPot, sidePotPlayers);
-		}
-		for (int sidePot : sidePots.keySet()) {
-			ArrayList<Player> sidePotPlayers = sidePots.get(sidePot);
-			// Give contents of side pot to all remaining players
-			for (Player player : splitPlayers) {
-				player.addMoney(sidePot / splitPlayers.size());
-			}
-			// Remove players from future pot splitting
-			for (Player player : sidePotPlayers) {
-				splitPlayers.remove(player);
-			}
-		}
-	}*/
 
 	public int getCurrentBet() {
 		return currentBet;

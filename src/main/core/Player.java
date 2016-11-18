@@ -113,7 +113,7 @@ public class Player {
 	}
 	
 	public void raise(int amount) {
-		
+		bet(amount);
 	}
 	
 	private void allIn() {
