@@ -198,7 +198,7 @@ public class Table {
 				for(int i=0; i<pot.size(); i++) {
 					ArrayList<Player> involvedPlayers = new ArrayList<>();
 					for(Player player : playerList) {
-						if(player.getLastPot() >= i) {
+						if(player.getLastPot() >= i || player.getLastPot() == -1) {
 							involvedPlayers.add(player);
 						}
 					}

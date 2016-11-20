@@ -7,10 +7,10 @@ public class Player {
 	private int id;
 	private int money;
 	private ArrayList<Card> cards;
-	private boolean fold;
-	private boolean allIn;
-	private int currentBet;
-	private int lastPot = 0;
+	private boolean fold = false;
+	private boolean allIn = false;
+	private int currentBet = 0;
+	private int lastPot = -1;
 	
 	/**
 	 * 
@@ -133,6 +133,7 @@ public class Player {
 		currentBet = 0;
 		allIn = false;
 		fold = false;
+		lastPot = -1;
 	}
 
 	public int getCurrentBet() {
