@@ -179,7 +179,7 @@ public class Table {
 		// Sort out players who have fold
 		for(Entry<Integer, Player> entry : players.entrySet()) {
 			if(!entry.getValue().isFold()) {
-				List<PokerCard> list = new ArrayList<>(cards);
+				List<PokerCard> list = new ArrayList<PokerCard>(cards);
 				list.addAll(entry.getValue().getCards());
 				HandValue handValue = handChecker.check(list);
 				if(winningOrder.containsKey(handValue)) {
