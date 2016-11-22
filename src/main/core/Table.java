@@ -82,11 +82,14 @@ public class Table {
 	 * @param playerId Player
 	 */
 	public int nextPlayer(int playerId) {
-		// TODO deos not work
-		if (players.ceilingKey(playerId) == playerId) {
+		// Integer because of null check below
+		Integer nextId = players.ceilingKey(playerId + 1);
+		System.out.println(nextId);
+		if (nextId == null) {
+			System.out.println("wasss");
 			return players.firstKey();
 		} else {
-			return players.ceilingKey(playerId);
+			return nextId;
 		}
 		
 	}

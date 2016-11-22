@@ -19,17 +19,18 @@ public class TableTest {
 
 	@Test
 	public void bigTest() {
-		int moneyAftertBlinds = table.getPlayer(0).getMoney();
+		int moneyAftertBlinds = table.getPlayer(1).getMoney();
 		System.out.println(moneyAftertBlinds);
 		// TODO player only has 85 after blind
-		table.action(0, Action.BET, 10);
-		assertEquals(90, table.getPlayer(0).getMoney() + (100 - moneyAftertBlinds));
+		table.action(1, Action.BET, 10);
+		assertEquals(90, table.getPlayer(1).getMoney() + (100 - moneyAftertBlinds));
 		
 	}
 	
 	@Test
 	public void getNextPlayerShouldReturnNextPlayer() {
 		assertEquals(1, table.nextPlayer(0));
+		assertEquals(0, table.nextPlayer(4));
 	}
 
 }
