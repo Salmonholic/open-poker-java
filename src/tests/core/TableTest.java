@@ -1,5 +1,7 @@
 package tests.core;
 
+import static org.junit.Assert.*;
+import main.core.Action;
 import main.core.Table;
 
 import org.junit.Before;
@@ -13,6 +15,21 @@ public class TableTest {
 	public void setUp() throws Exception {
 		// Create Table with 3 Players and a start money of 100
 		table = new Table(3, 100);
+	}
+
+	@Test
+	public void bigTest() {
+		int moneyAftertBlinds = table.getPlayer(0).getMoney();
+		System.out.println(moneyAftertBlinds);
+		// TODO player only has 85 after blind
+		table.action(0, Action.BET, 10);
+		assertEquals(90, table.getPlayer(0).getMoney() + (100 - moneyAftertBlinds));
+		
+	}
+	
+	@Test
+	public void getNextPlayerShouldReturnNextPlayer() {
+		assertEquals(1, table.nextPlayer(0));
 	}
 
 }

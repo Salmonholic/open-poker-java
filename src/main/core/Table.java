@@ -21,6 +21,7 @@ public class Table {
 	int smallBlind = 5;
 	int currentBet;
 	GameState gameState = GameState.PRE_FLOP;
+	boolean firstRound = true;
 	
 	int buttonId = 0;
 	int smallBlindId;
@@ -39,6 +40,7 @@ public class Table {
 	public Table(int playerAmount, int money) {
 		// Put players into TreeMap and set Id
 		players = new TreeMap<>();
+		cardStack = new CardStack();
 		for(int i=0; i< playerAmount; i++) {
 			players.put(i, new Player(this, money));
 		}
@@ -46,8 +48,10 @@ public class Table {
 	}
 	
 	private void update() {
-		if (currentPlayer == lastBetId) {
-			gameState = GameState.values()[gameState.ordinal() % GameState.values().length];
+		if (firstRound || currentPlayer == lastBetId) {
+			if (!firstRound) {
+				gameState = GameState.values()[gameState.ordinal() % GameState.values().length];
+			}
 			switch (gameState) {
 			case PRE_FLOP:
 				preFlop();
@@ -69,6 +73,7 @@ public class Table {
 			default:
 				break;
 			}
+			firstRound = false;
 		}
 	}
 	
@@ -76,7 +81,8 @@ public class Table {
 	 * Get next player in players, or first player if no more player is in players
 	 * @param playerId Player
 	 */
-	private int nextPlayer(int playerId) {
+	public int nextPlayer(int playerId) {
+		// TODO deos not work
 		if (players.ceilingKey(playerId) == playerId) {
 			return players.firstKey();
 		} else {
@@ -122,8 +128,10 @@ public class Table {
 	 */
 	private void giveCards() {
 		for (Player player : players.values()) {
-			player.setCards((ArrayList<Card>) Arrays.asList(cardStack.getCard(),
-															cardStack.getCard()));
+			ArrayList<Card> playerCards = new ArrayList<>();
+			playerCards.add(cardStack.getCard());
+			playerCards.add(cardStack.getCard());
+			player.setCards(playerCards);
 		}
 	}
 
@@ -131,6 +139,8 @@ public class Table {
 	 * Get the blinds from all players
 	 */
 	private void blinds() {
+		System.out.println(bigBlindId);
+		System.out.println(smallBlindId);
 		players.get(bigBlindId).addMoney(smallBlind * -2);
 		players.get(smallBlindId).addMoney(smallBlind * -1);
 	}
@@ -144,8 +154,13 @@ public class Table {
 			smallBlindId = nextPlayer(buttonId);
 			bigBlindId = nextPlayer(smallBlindId);
 		}
+		// Reset the CardSTack
 		cardStack.initCards();
+		// Start first pot
+		pot.add(0);
+		// Give 2 cards to players
 		giveCards();
+		// Get blinds from players
 		blinds();
 		currentBet = smallBlind * 2;
 		currentPlayer = nextPlayer(bigBlindId);
@@ -247,6 +262,9 @@ public class Table {
 	}
 
 	public void addToPot(int amount) {
+		// TODO throws error: ArrayIndexOutOfBoundsException -1
+		// I think there is no pot initialized at the beginning
+		// So I added it but I'm not totally sure if it was right
 		pot.set(pot.size()-1, pot.get(pot.size()-1)+amount);
 	}
 	
@@ -264,5 +282,9 @@ public class Table {
 			}
 		}
 		pot.add(newSidePot);
+	}
+	
+	public Player getPlayer(int playerId) {
+		return players.get(playerId);
 	}
 }
