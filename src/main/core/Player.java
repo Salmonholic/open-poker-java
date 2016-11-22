@@ -109,6 +109,7 @@ public class Player {
 			allIn();
 		} else {
 			//TODO not enough money to bet (exception?)
+			// Simon Meusel: I think you should just just go all in anyway
 		}
 	}
 	

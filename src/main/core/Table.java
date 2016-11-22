@@ -22,7 +22,7 @@ public class Table {
 	int currentBet;
 	GameState gameState = GameState.PRE_FLOP;
 	boolean firstRound = true;
-	
+
 	int buttonId = 0;
 	int smallBlindId;
 	int bigBlindId;
@@ -34,23 +34,28 @@ public class Table {
 	/**
 	 * Poker table
 	 * 
-	 * @param players Amount of players in game
-	 * @param money Start Money for each player
+	 * @param players
+	 *            Amount of players in game
+	 * @param money
+	 *            Start Money for each player
 	 */
 	public Table(int playerAmount, int money) {
+		if (playerAmount <= 0 || money <= 0)
+			throw new IllegalArgumentException();
 		// Put players into TreeMap and set Id
 		players = new TreeMap<>();
 		cardStack = new CardStack();
-		for(int i=0; i< playerAmount; i++) {
+		for (int i = 0; i < playerAmount; i++) {
 			players.put(i, new Player(this, money));
 		}
 		update();
 	}
-	
+
 	private void update() {
 		if (firstRound || currentPlayer == lastBetId) {
 			if (!firstRound) {
-				gameState = GameState.values()[gameState.ordinal() % GameState.values().length];
+				gameState = GameState.values()[gameState.ordinal()
+						% GameState.values().length];
 			}
 			switch (gameState) {
 			case PRE_FLOP:
@@ -76,10 +81,13 @@ public class Table {
 			firstRound = false;
 		}
 	}
-	
+
 	/**
-	 * Get next player in players, or first player if no more player is in players
-	 * @param playerId Player
+	 * Get next player in players, or first player if no more player is in
+	 * players
+	 * 
+	 * @param playerId
+	 *            Player
 	 */
 	public int nextPlayer(int playerId) {
 		// Integer because of null check below
@@ -91,13 +99,13 @@ public class Table {
 		} else {
 			return nextId;
 		}
-		
+
 	}
-	
+
 	public void action(int playerId, Action action) {
 		action(playerId, action, 0);
 	}
-	
+
 	public void action(int playerId, Action action, int value) {
 		if (playerId == currentPlayer) {
 			Player player = players.get(playerId);
@@ -147,7 +155,7 @@ public class Table {
 		players.get(bigBlindId).addMoney(smallBlind * -2);
 		players.get(smallBlindId).addMoney(smallBlind * -1);
 	}
-	
+
 	private void preFlop() {
 		buttonId = nextPlayer(buttonId);
 		if (players.size() == 2) {
@@ -195,35 +203,38 @@ public class Table {
 	private void showDown() {
 		TreeMap<HandValue, List<Player>> winningOrder = new TreeMap<>();
 		// Sort out players who have fold
-		for(Entry<Integer, Player> entry : players.entrySet()) {
-			if(!entry.getValue().isFold()) {
+		for (Entry<Integer, Player> entry : players.entrySet()) {
+			if (!entry.getValue().isFold()) {
 				List<PokerCard> list = new ArrayList<PokerCard>(cards);
 				list.addAll(entry.getValue().getCards());
 				HandValue handValue = handChecker.check(list);
-				if(winningOrder.containsKey(handValue)) {
+				if (winningOrder.containsKey(handValue)) {
 					winningOrder.get(handValue).add(entry.getValue());
 				} else {
-					winningOrder.put(handChecker.check(list), Arrays.asList(entry.getValue()));
+					winningOrder.put(handChecker.check(list),
+							Arrays.asList(entry.getValue()));
 				}
 			}
 		}
-		
+
 		// Pay out the pot
-		while(pot.get(pot.size()-1) > 0) {
-			Iterator<List<Player>> playerLists = winningOrder.values().iterator();
-			while(playerLists.hasNext()) {
+		while (pot.get(pot.size() - 1) > 0) {
+			Iterator<List<Player>> playerLists = winningOrder.values()
+					.iterator();
+			while (playerLists.hasNext()) {
 				List<Player> playerList = playerLists.next();
-				for(int i=0; i<pot.size(); i++) {
+				for (int i = 0; i < pot.size(); i++) {
 					ArrayList<Player> involvedPlayers = new ArrayList<>();
-					for(Player player : playerList) {
-						if(player.getLastPot() >= i || player.getLastPot() == -1) {
+					for (Player player : playerList) {
+						if (player.getLastPot() >= i
+								|| player.getLastPot() == -1) {
 							involvedPlayers.add(player);
 						}
 					}
-					for(Player player : involvedPlayers) {
-						player.addMoney(pot.get(i)/involvedPlayers.size());
+					for (Player player : involvedPlayers) {
+						player.addMoney(pot.get(i) / involvedPlayers.size());
 					}
-					//TODO rest des splitpots
+					// TODO rest des splitpots
 				}
 			}
 		}
@@ -233,14 +244,14 @@ public class Table {
 	 * Resets player flags and (side) pots. Has to be called each new round.
 	 */
 	private void reset() {
-		for(Map.Entry<Integer, Player> entry : players.entrySet()) {
+		for (Map.Entry<Integer, Player> entry : players.entrySet()) {
 			if (entry.getValue().getMoney() < 0) {
 				players.remove(entry.getKey());
 			} else {
 				entry.getValue().reset();
 			}
 		}
-		
+
 		pot.clear();
 		pot.add(0);
 	}
@@ -259,34 +270,32 @@ public class Table {
 	public void setCurrentBet(int currentBet) {
 		this.currentBet = currentBet;
 	}
-	
+
 	public int getPotIndex() {
-		return pot.size()-1;
+		return pot.size() - 1;
 	}
 
 	public void addToPot(int amount) {
-		// TODO throws error: ArrayIndexOutOfBoundsException -1
-		// I think there is no pot initialized at the beginning
-		// So I added it but I'm not totally sure if it was right
-		pot.set(pot.size()-1, pot.get(pot.size()-1)+amount);
+		pot.set(pot.size() - 1, pot.get(pot.size() - 1) + amount);
 	}
-	
+
 	/**
-	 * @param playerId Id of player who went All-In
+	 * @param playerId
+	 *            Id of player who went All-In
 	 */
 	public void startSidePot(int playerId) {
 		int allInValue = players.get(playerId).getCurrentBet();
 		int newSidePot = 0;
-		for(Entry<Integer, Player> entry : players.entrySet()) {
+		for (Entry<Integer, Player> entry : players.entrySet()) {
 			int playerBet = entry.getValue().getCurrentBet();
-			if(!entry.getValue().isFold() && playerBet > allInValue) {
+			if (!entry.getValue().isFold() && playerBet > allInValue) {
 				addToPot(allInValue - playerBet);
 				newSidePot += allInValue - playerBet;
 			}
 		}
 		pot.add(newSidePot);
 	}
-	
+
 	public Player getPlayer(int playerId) {
 		return players.get(playerId);
 	}
