@@ -84,9 +84,7 @@ public class Table {
 	public int nextPlayer(int playerId) {
 		// Integer because of null check below
 		Integer nextId = players.ceilingKey(playerId + 1);
-		System.out.println(nextId);
 		if (nextId == null) {
-			System.out.println("wasss");
 			return players.firstKey();
 		} else {
 			return nextId;
@@ -142,14 +140,12 @@ public class Table {
 	 * Get the blinds from all players
 	 */
 	private void blinds() {
-		System.out.println(bigBlindId);
-		System.out.println(smallBlindId);
 		players.get(bigBlindId).addMoney(smallBlind * -2);
 		players.get(smallBlindId).addMoney(smallBlind * -1);
 	}
 	
 	private void preFlop() {
-		buttonId = nextPlayer(buttonId);
+		buttonId = players.firstKey();
 		if (players.size() == 2) {
 			smallBlindId = buttonId;
 			bigBlindId = nextPlayer(buttonId);
@@ -290,4 +286,41 @@ public class Table {
 	public Player getPlayer(int playerId) {
 		return players.get(playerId);
 	}
+
+	public ArrayList<Card> getCards() {
+		return cards;
+	}
+
+	public int getSmallBlind() {
+		return smallBlind;
+	}
+
+	public GameState getGameState() {
+		return gameState;
+	}
+
+	public boolean isFirstRound() {
+		return firstRound;
+	}
+
+	public int getButtonId() {
+		return buttonId;
+	}
+
+	public int getSmallBlindId() {
+		return smallBlindId;
+	}
+
+	public int getBigBlindId() {
+		return bigBlindId;
+	}
+
+	public int getLastBetId() {
+		return lastBetId;
+	}
+
+	public int getCurrentPlayer() {
+		return currentPlayer;
+	}
+	
 }
