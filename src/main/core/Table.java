@@ -52,6 +52,8 @@ public class Table {
 	}
 
 	private void update() {
+		// TODO call each player action
+		// TODO check for case everyone folded but one (other special cases?)
 		if (firstRound || currentPlayer == lastBetId) {
 			if (!firstRound) {
 				gameState = GameState.values()[gameState.ordinal()
@@ -90,6 +92,7 @@ public class Table {
 	 *            Player
 	 */
 	public int nextPlayer(int playerId) {
+		// TODO ignore folded players
 		// Integer because of null check below
 		Integer nextId = players.ceilingKey(playerId + 1);
 		if (nextId == null) {
@@ -105,6 +108,8 @@ public class Table {
 	}
 
 	public void action(int playerId, Action action, int value) {
+		// TODO check for wrong input and throw exceptions
+		// (could be also be done in Player.java, but then exceptions were created a layer deeper)
 		if (playerId == currentPlayer) {
 			Player player = players.get(playerId);
 			switch (action) {
@@ -214,6 +219,25 @@ public class Table {
 		}
 
 		// Pay out the pot
+		Iterator<List<Player>> playerLists = winningOrder.values().iterator();
+		while(pot.get(pot.size()-1) > 0 && playerLists.hasNext()) {
+			List<Player> playerList = playerLists.next();
+			for(int i=0; i<pot.size(); i++) {
+				ArrayList<Player> involvedPlayers = new ArrayList<>();
+				for(Player player : playerList) {
+					if(player.getLastPot() == -1 || player.getLastPot() >= i) {
+						involvedPlayers.add(player);
+					}
+				}
+				for(Player player : involvedPlayers) {
+					player.addMoney(pot.get(i)/involvedPlayers.size());
+				}
+				//TODO rest des splitpots
+			}
+		}
+		// Last playerList finished but pot still not empty (stupid players :D)
+		
+/*		// Pay out the pot
 		while (pot.get(pot.size() - 1) > 0) {
 			Iterator<List<Player>> playerLists = winningOrder.values()
 					.iterator();
@@ -230,10 +254,10 @@ public class Table {
 					for (Player player : involvedPlayers) {
 						player.addMoney(pot.get(i) / involvedPlayers.size());
 					}
-					// TODO rest des splitpots
+					// rest des splitpots
 				}
 			}
-		}
+		}*/
 	}
 
 	/**
