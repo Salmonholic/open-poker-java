@@ -52,11 +52,10 @@ public class Table {
 	}
 
 	private void update() {
-		// TODO call each player action
 		// TODO check for case everyone folded but one (other special cases?)
 		if (firstRound || currentPlayer == lastBetId) {
 			if (!firstRound) {
-				gameState = GameState.values()[gameState.ordinal()
+				gameState = GameState.values()[(gameState.ordinal()+1)
 						% GameState.values().length];
 			}
 			switch (gameState) {
@@ -132,6 +131,7 @@ public class Table {
 				break;
 			}
 			currentPlayer = nextPlayer(playerId);
+			update();
 		} else {
 			throw new IllegalArgumentException();
 		}
