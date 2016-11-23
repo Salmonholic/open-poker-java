@@ -22,6 +22,7 @@ public class Table {
 	int currentBet;
 	GameState gameState = GameState.PRE_FLOP;
 	boolean firstRound = true;
+	int notFoldedPlayers;
 
 	int buttonId = 0;
 	int smallBlindId;
@@ -44,15 +45,23 @@ public class Table {
 			throw new IllegalArgumentException();
 		// Put players into TreeMap and set Id
 		players = new TreeMap<>();
-		cardStack = new CardStack();
 		for (int i = 0; i < playerAmount; i++) {
 			players.put(i, new Player(this, i, money));
 		}
+		cardStack = new CardStack();
+		reset();
 		update();
 	}
 
 	private void update() {
-		// TODO check for case everyone folded but one (other special cases?)
+		// TODO console output, transision from showdown to pre-flop
+		// check if only one player is not fold
+		if (notFoldedPlayers == 1) {
+			showDown();
+			reset();
+			gameState = GameState.PRE_FLOP;
+		}
+		
 		if (firstRound || currentPlayer == lastBetId) {
 			if (!firstRound) {
 				gameState = GameState.values()[(gameState.ordinal()+1)
@@ -84,22 +93,21 @@ public class Table {
 	}
 
 	/**
-	 * Get next player in players, or first player if no more player is in
-	 * players
+	 * Get next player in players, who has not fold yet
 	 * 
 	 * @param playerId
 	 *            Player
 	 */
 	public int nextPlayer(int playerId) {
-		// TODO ignore folded players
 		// Integer because of null check below
-		Integer nextId = players.ceilingKey(playerId + 1);
-		if (nextId == null) {
-			return players.firstKey();
-		} else {
-			return nextId;
-		}
-
+		Integer nextId;
+		do {
+			nextId = players.ceilingKey(playerId + 1);
+			if (nextId == null) {
+				nextId = players.firstKey();
+			}
+		} while (players.get(nextId).isFold());
+		return nextId;
 	}
 
 	public void action(int playerId, Action action) {
@@ -107,8 +115,10 @@ public class Table {
 	}
 
 	public void action(int playerId, Action action, int value) {
+		// TODO console output
 		// TODO check for wrong input and throw exceptions
-		// (could be also be done in Player.java, but then exceptions were created a layer deeper)
+		// (could also be done in Player.java, but then
+		// exceptions were created a layer deeper)
 		if (playerId == currentPlayer) {
 			Player player = players.get(playerId);
 			switch (action) {
@@ -123,6 +133,7 @@ public class Table {
 				break;
 			case FOLD:
 				player.fold();
+				notFoldedPlayers--;
 				break;
 			case RAISE:
 				player.raise(value);
@@ -166,10 +177,6 @@ public class Table {
 			smallBlindId = nextPlayer(buttonId);
 			bigBlindId = nextPlayer(smallBlindId);
 		}
-		// Reset the CardSTack
-		cardStack.initCards();
-		// Start first pot
-		pot.add(0);
 		// Give 2 cards to players
 		giveCards();
 		// Get blinds from players
@@ -257,6 +264,7 @@ public class Table {
 	 * Resets player flags and (side) pots. Has to be called each new round.
 	 */
 	private void reset() {
+		// Reset players
 		for (Map.Entry<Integer, Player> entry : players.entrySet()) {
 			if (entry.getValue().getMoney() < 0) {
 				players.remove(entry.getKey());
@@ -264,9 +272,13 @@ public class Table {
 				entry.getValue().reset();
 			}
 		}
-
+		// Reset card stack
+		cardStack.initCards();
+		// Reset pot
 		pot.clear();
 		pot.add(0);
+		// Reset number of folded players
+		notFoldedPlayers = players.size();
 	}
 
 	/**
