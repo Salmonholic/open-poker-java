@@ -37,7 +37,9 @@ public class TableTest {
 		table.action(0, Action.BET, 10);
 		assertEquals("BET Action works correctly", 90, table.getPlayer(0)
 				.getMoney());
-
+		table.action(1, Action.CHECK);
+		assertEquals("CHECK Action works correctly", 85, table.getPlayer(1)
+				.getMoney());
 	}
 
 	@Test

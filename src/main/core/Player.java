@@ -97,7 +97,18 @@ public class Player {
 	}
 	
 	public void check() {
-		
+		// TODO implement
+		// Just copied from bet
+		/*if(money > amount) {
+			currentBet += amount;
+			table.addToPot(amount);
+			addMoney(-amount);
+		} else if (money == amount) {
+			allIn();
+		} else {
+			//TODO not enough money to bet (exception?)
+			// Simon Meusel: I think you should just just go all in anyway
+		}*/
 	}
 	
 	public void bet(int amount) {
