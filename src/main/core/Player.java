@@ -16,8 +16,9 @@ public class Player {
 	 * 
 	 * @param money
 	 */
-	public Player(Table table, int money) {
+	public Player(Table table, int id, int money) {
 		this.table = table;
+		this.id = id;
 		this.money = money;
 	}
 	
@@ -77,10 +78,6 @@ public class Player {
 		return id;
 	}
 
-	public void setId(int id) {
-		this.id = id;
-	}
-
 	public void fold() {
 		fold = true;
 	}
@@ -105,20 +102,20 @@ public class Player {
 			currentBet += amount;
 			table.addToPot(amount);
 			addMoney(-amount);
+			table.setLastBetId(id);
 		} else if (money == amount) {
 			allIn();
+			table.setLastBetId(id);
 		} else {
 			// TODO not enough money to bet (exception?)
 			// Simon Meusel: I think you should just just go all in anyway
 			// Felix: Seh ich anders. Das fällt für mich unter die Kategorie undefiniertes
 			// Verhalten und sollte daher abgefangen und nicht einfach vetuscht werden.
 		}
-		// TODO change table.lastBetId
 	}
 	
 	public void raise(int amount) {
 		bet(amount);
-		// TODO change table.lastBetId
 	}
 	
 	private void allIn() {

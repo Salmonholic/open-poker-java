@@ -46,7 +46,7 @@ public class Table {
 		players = new TreeMap<>();
 		cardStack = new CardStack();
 		for (int i = 0; i < playerAmount; i++) {
-			players.put(i, new Player(this, money));
+			players.put(i, new Player(this, i, money));
 		}
 		update();
 	}
