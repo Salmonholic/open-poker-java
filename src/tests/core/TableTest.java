@@ -3,6 +3,7 @@ package tests.core;
 import static org.junit.Assert.*;
 import main.core.Action;
 import main.core.Table;
+import main.exception.NotEnoughMoneyException;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -18,7 +19,7 @@ public class TableTest {
 	}
 
 	@Test
-	public void cameShouldWorkCorrectly() {
+	public void cameShouldWorkCorrectly() throws NotEnoughMoneyException {
 		// Check IDs
 		assertEquals("ButtonId", 0, table.getButtonId());
 		assertEquals("SmallBlindId", 1, table.getSmallBlindId());

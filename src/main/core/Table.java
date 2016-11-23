@@ -12,6 +12,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
+import main.exception.NotEnoughMoneyException;
+
 public class Table {
 
 	TreeMap<Integer, Player> players;
@@ -100,11 +102,11 @@ public class Table {
 
 	}
 
-	public void action(int playerId, Action action) {
+	public void action(int playerId, Action action) throws NotEnoughMoneyException {
 		action(playerId, action, 0);
 	}
 
-	public void action(int playerId, Action action, int value) {
+	public void action(int playerId, Action action, int value) throws NotEnoughMoneyException {
 		if (playerId == currentPlayer) {
 			Player player = players.get(playerId);
 			switch (action) {

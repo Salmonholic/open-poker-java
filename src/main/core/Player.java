@@ -2,6 +2,8 @@ package main.core;
 
 import java.util.ArrayList;
 
+import main.exception.NotEnoughMoneyException;
+
 public class Player {
 	private Table table;
 	private int id;
@@ -96,14 +98,12 @@ public class Player {
 		}
 	}
 	
-	public void check() {
-		System.out.println(allIn);
+	public void check() throws NotEnoughMoneyException {
 		if (!allIn) {
 			if (table.currentBet < money + currentBet) {
-				System.out.println(table.currentBet - currentBet);
 				addMoney(currentBet - table.currentBet);
 			} else {
-				// Not Enough Money
+				throw new NotEnoughMoneyException();
 			}
 		}
 	}
