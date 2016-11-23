@@ -13,7 +13,6 @@ import java.util.Map.Entry;
 import java.util.TreeMap;
 
 public class Table {
-
 	TreeMap<Integer, Player> players;
 	CardStack cardStack;
 	ArrayList<Card> cards;
@@ -55,6 +54,7 @@ public class Table {
 
 	private void update() {
 		// TODO console output, transision from showdown to pre-flop
+		
 		// check if only one player is not fold
 		if (notFoldedPlayers == 1) {
 			showDown();
@@ -114,16 +114,15 @@ public class Table {
 		action(playerId, action, 0);
 	}
 
-	public void action(int playerId, Action action, int value) {
+	public void action(int playerId, Action action, int amount) {
 		// TODO console output
-		// TODO check for wrong input and throw exceptions
-		// (could also be done in Player.java, but then
-		// exceptions were created a layer deeper)
 		if (playerId == currentPlayer) {
 			Player player = players.get(playerId);
 			switch (action) {
 			case BET:
-				player.bet(value);
+				if (player.getMoney() < amount)
+					throw new IllegalArgumentException();
+				player.bet(amount);
 				break;
 			case CALL:
 				player.call();
@@ -132,11 +131,15 @@ public class Table {
 				player.check();
 				break;
 			case FOLD:
+				if (player.isFold())
+					throw new IllegalArgumentException();
 				player.fold();
 				notFoldedPlayers--;
 				break;
 			case RAISE:
-				player.raise(value);
+				if (player.getMoney() < amount)
+					throw new IllegalArgumentException();
+				player.raise(amount);
 				break;
 			default:
 				break;

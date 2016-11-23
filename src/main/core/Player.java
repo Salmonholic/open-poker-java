@@ -106,11 +106,6 @@ public class Player {
 		} else if (money == amount) {
 			allIn();
 			table.setLastBetId(id);
-		} else {
-			// TODO not enough money to bet (exception?)
-			// Simon Meusel: I think you should just just go all in anyway
-			// Felix: Seh ich anders. Das fällt für mich unter die Kategorie undefiniertes
-			// Verhalten und sollte daher abgefangen und nicht einfach vetuscht werden.
 		}
 	}
 	
