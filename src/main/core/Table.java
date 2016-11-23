@@ -340,6 +340,10 @@ public class Table {
 	public int getBigBlindId() {
 		return bigBlindId;
 	}
+	
+	public void setLastBetId(int id) {
+		lastBetId = id;
+	}
 
 	public int getLastBetId() {
 		return lastBetId;
