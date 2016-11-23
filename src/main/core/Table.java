@@ -219,45 +219,38 @@ public class Table {
 		}
 
 		// Pay out the pot
-		Iterator<List<Player>> playerLists = winningOrder.values().iterator();
-		while(pot.get(pot.size()-1) > 0 && playerLists.hasNext()) {
-			List<Player> playerList = playerLists.next();
-			for(int i=0; i<pot.size(); i++) {
-				ArrayList<Player> involvedPlayers = new ArrayList<>();
-				for(Player player : playerList) {
-					if(player.getLastPot() == -1 || player.getLastPot() >= i) {
-						involvedPlayers.add(player);
-					}
+		Iterator<List<Player>> winnersLists = winningOrder.values().iterator();
+		while ((pot.get(pot.size()-1) == 0) && winnersLists.hasNext()) {
+			List<Player> winners = winnersLists.next();
+			while (!winners.isEmpty()) {
+				// Get side pot in which all remaining winners are involved
+				int maxsidepot = pot.size() - 1;
+				for (Player player : winners) {
+					if (player.getLastPot() < maxsidepot)
+						maxsidepot = player.getLastPot();
 				}
-				for(Player player : involvedPlayers) {
-					player.addMoney(pot.get(i)/involvedPlayers.size());
+				// Sum up all lower side pots
+				int sidepot = 0;
+				for (int i=0; i <= maxsidepot; i++) {
+					sidepot += pot.get(i);
+					pot.set(i, 0);
 				}
-				//TODO rest des splitpots
+				// Pay out money to each winner
+				int profit = sidepot / (winners.size()); // Casino gets rest of splitpot
+				for (Player player : winners) {
+					player.addMoney(profit);
+				}
+				// Remove all winners who don't participate in higher side pots
+				Iterator<Player> winnersIterator = winners.iterator();
+				while (winnersIterator.hasNext()) {
+					Player player = winnersIterator.next();
+					if (player.getLastPot() == maxsidepot)
+						winners.remove(player);
+				}
 			}
 		}
-		// Last playerList finished but pot still not empty (stupid players :D)
-		
-/*		// Pay out the pot
-		while (pot.get(pot.size() - 1) > 0) {
-			Iterator<List<Player>> playerLists = winningOrder.values()
-					.iterator();
-			while (playerLists.hasNext()) {
-				List<Player> playerList = playerLists.next();
-				for (int i = 0; i < pot.size(); i++) {
-					ArrayList<Player> involvedPlayers = new ArrayList<>();
-					for (Player player : playerList) {
-						if (player.getLastPot() >= i
-								|| player.getLastPot() == -1) {
-							involvedPlayers.add(player);
-						}
-					}
-					for (Player player : involvedPlayers) {
-						player.addMoney(pot.get(i) / involvedPlayers.size());
-					}
-					// rest des splitpots
-				}
-			}
-		}*/
+		// Last winners payed but pot still not empty (stupid players :D)
+		// Casino gets rest of pot
 	}
 
 	/**
