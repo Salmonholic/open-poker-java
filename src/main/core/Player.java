@@ -2,6 +2,8 @@ package main.core;
 
 import java.util.ArrayList;
 
+import main.exception.NotEnoughMoneyException;
+
 public class Player {
 	private Table table;
 	private int id;
@@ -93,8 +95,14 @@ public class Player {
 		}
 	}
 	
-	public void check() {
-		
+	public void check() throws NotEnoughMoneyException {
+		if (!allIn) {
+			if (table.currentBet < money + currentBet) {
+				addMoney(currentBet - table.currentBet);
+			} else {
+				throw new NotEnoughMoneyException();
+			}
+		}
 	}
 	
 	public void bet(int amount) {
@@ -126,7 +134,9 @@ public class Player {
 	 * Resets the vars of the player after the round
 	 */
 	public void reset() {
-		cards.clear();
+		if (cards != null) {
+			cards.clear();
+		}
 		currentBet = 0;
 		allIn = false;
 		fold = false;

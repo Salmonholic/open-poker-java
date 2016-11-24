@@ -13,6 +13,8 @@ import java.util.Map.Entry;
 
 import java.util.TreeMap;
 
+import main.exception.NotEnoughMoneyException;
+
 public class Table {
 	TreeMap<Integer, Player> players;
 	CardStack cardStack;
@@ -112,11 +114,11 @@ public class Table {
 		return nextId;
 	}
 
-	public void action(int playerId, Action action) {
+	public void action(int playerId, Action action) throws NotEnoughMoneyException {
 		action(playerId, action, 0);
 	}
 
-	public void action(int playerId, Action action, int amount) {
+	public void action(int playerId, Action action, int amount) throws NotEnoughMoneyException {
 		// TODO console output
 		if (playerId == currentPlayer) {
 			Player player = players.get(playerId);

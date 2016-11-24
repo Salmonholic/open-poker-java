@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 import main.core.Action;
 import main.core.Player;
 import main.core.Table;
+import main.exception.NotEnoughMoneyException;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -16,12 +17,12 @@ public class PlayerTest {
 	
 	@Before
 	public void setUp() throws Exception {
-		table = new Table(1, 100);
+		table = new Table(2, 100);
 		player = table.getPlayer(0);
 	}
 	
 	@Test
-	public void playerShouldHandleAllInCorrecly() {
+	public void playerShouldHandleAllInCorrecly() throws NotEnoughMoneyException {
 		table.action(0, Action.BET, player.getMoney());
 		assertTrue("Player goes all in correctly", player.isAllIn());
 	}
