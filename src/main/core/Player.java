@@ -104,11 +104,11 @@ public class Player {
 			currentBet += amount;
 			table.addToPot(amount);
 			addMoney(-amount);
-			table.setLastBetId(id);
 		} else if (money == amount) {
 			allIn();
-			table.setLastBetId(id);
 		}
+		table.setLastBetId(id);
+		table.setCurrentBet(table.getCurrentBet()+amount);
 	}
 	
 	public void raise(int amount) {
