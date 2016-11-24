@@ -15,21 +15,21 @@ import java.util.TreeMap;
 public class Table {
 	TreeMap<Integer, Player> players;
 	CardStack cardStack;
+	HandChecker handChecker = new HandChecker();
 	ArrayList<Card> cards;
 	private ArrayList<Integer> pot = new ArrayList<>(1);
-	int smallBlind = 5;
-	int currentBet;
-	GameState gameState = GameState.PRE_FLOP;
-	boolean firstRound = true;
-	int notFoldedPlayers;
+	GameState gameState = GameState.SHOW_DOWN;
 
 	int buttonId = 0;
 	int smallBlindId;
 	int bigBlindId;
-	int lastBetId;
+	int smallBlind = 5;
+	
+	int lastBetId = 0;
+	int currentBet;
 	int currentPlayer;
+	int notFoldedPlayers;
 
-	HandChecker handChecker = new HandChecker();
 
 	/**
 	 * Poker table
@@ -40,7 +40,7 @@ public class Table {
 	 *            Start Money for each player
 	 */
 	public Table(int playerAmount, int money) {
-		if (playerAmount <= 0 || money <= 0)
+		if (playerAmount <= 1 || money <= 0)
 			throw new IllegalArgumentException();
 		// Put players into TreeMap and set Id
 		players = new TreeMap<>();
@@ -53,20 +53,20 @@ public class Table {
 	}
 
 	private void update() {
-		// TODO console output, transision from showdown to pre-flop
+		// TODO console output
 		
 		// check if only one player is not fold
 		if (notFoldedPlayers == 1) {
 			showDown();
 			reset();
 			gameState = GameState.PRE_FLOP;
+			preFlop();
 		}
 		
-		if (firstRound || currentPlayer == lastBetId) {
-			if (!firstRound) {
-				gameState = GameState.values()[(gameState.ordinal()+1)
-						% GameState.values().length];
-			}
+		// game state transition
+		if (currentPlayer == lastBetId) {
+			gameState = GameState.values()[(gameState.ordinal()+1)
+			                               % GameState.values().length];
 			switch (gameState) {
 			case PRE_FLOP:
 				preFlop();
@@ -84,11 +84,11 @@ public class Table {
 				showDown();
 				reset();
 				gameState = GameState.PRE_FLOP;
+				preFlop();
 				break;
 			default:
 				break;
 			}
-			firstRound = false;
 		}
 	}
 
@@ -168,7 +168,7 @@ public class Table {
 	 */
 	private void blinds() {
 		players.get(bigBlindId).addMoney(smallBlind * -2);
-		players.get(smallBlindId).addMoney(smallBlind * -1);
+		players.get(smallBlindId).addMoney(-smallBlind);
 	}
 
 	private void preFlop() {
@@ -185,6 +185,7 @@ public class Table {
 		// Get blinds from players
 		blinds();
 		currentBet = smallBlind * 2;
+		lastBetId = bigBlindId;
 		currentPlayer = nextPlayer(bigBlindId);
 	}
 
@@ -331,6 +332,10 @@ public class Table {
 	public ArrayList<Card> getCards() {
 		return cards;
 	}
+	
+	public void setSmallBlind(int smallBlind) {
+		this.smallBlind = smallBlind;
+	}
 
 	public int getSmallBlind() {
 		return smallBlind;
@@ -338,10 +343,6 @@ public class Table {
 
 	public GameState getGameState() {
 		return gameState;
-	}
-
-	public boolean isFirstRound() {
-		return firstRound;
 	}
 
 	public int getButtonId() {
