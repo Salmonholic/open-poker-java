@@ -24,7 +24,7 @@ public class PlayerTest {
 	@Test
 	public void playerShouldHandleAllInCorrecly() throws NotEnoughMoneyException {
 		table.action(0, Action.BET, player.getMoney());
-		assertTrue("Player goes all in correctly", player.isAllIn());
+		assertTrue("Player sets All-In flag", player.isAllIn());
 	}
 
 }
