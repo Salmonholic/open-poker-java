@@ -83,7 +83,7 @@ public class Player {
 	}
 	
 	public void call() {
-		int amountToBet = table.getCurrentBet() - this.currentBet;
+		int amountToBet = table.getCurrentBet();
 		if(money - amountToBet > 0) { //Check for All-In
 			currentBet += amountToBet;
 			table.addToPot(amountToBet);

@@ -26,9 +26,9 @@ public class Table {
 	int bigBlindId;
 	int smallBlind = 5;
 	
-	int lastBetId;
+	int lastBetId = 0;
 	int currentBet;
-	int currentPlayer;
+	int currentPlayer = 0;
 	int notFoldedPlayers;
 
 
@@ -127,7 +127,7 @@ public class Table {
 				player.bet(amount);
 				break;
 			case CALL:
-				if (currentBet != 0 || player.getCurrentBet() == currentBet)
+				if (currentBet == 0 || player.getCurrentBet() == currentBet)
 					throw new IllegalArgumentException();
 				player.call();
 				break;
