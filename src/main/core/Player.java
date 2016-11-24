@@ -134,7 +134,9 @@ public class Player {
 	 * Resets the vars of the player after the round
 	 */
 	public void reset() {
-		cards.clear();
+		if (cards != null) {
+			cards.clear();
+		}
 		currentBet = 0;
 		allIn = false;
 		fold = false;

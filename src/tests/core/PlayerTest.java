@@ -17,7 +17,7 @@ public class PlayerTest {
 	
 	@Before
 	public void setUp() throws Exception {
-		table = new Table(1, 100);
+		table = new Table(2, 100);
 		player = table.getPlayer(0);
 	}
 	
