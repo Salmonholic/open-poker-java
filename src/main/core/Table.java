@@ -17,7 +17,7 @@ public class Table {
 	TreeMap<Integer, Player> players;
 	CardStack cardStack;
 	HandChecker handChecker = new HandChecker();
-	ArrayList<Card> cards = new ArrayList<>();
+	ArrayList<Card> cards = new ArrayList<>(5);
 	private ArrayList<Integer> pot = new ArrayList<>(1);
 	GameState gameState = GameState.SHOW_DOWN;
 
@@ -102,9 +102,9 @@ public class Table {
 	 */
 	public int nextPlayer(int playerId) {
 		// Integer because of null check below
-		Integer nextId;
+		Integer nextId = playerId;
 		do {
-			nextId = players.ceilingKey(playerId + 1);
+			nextId = players.ceilingKey(nextId + 1);
 			if (nextId == null) {
 				nextId = players.firstKey();
 			}
@@ -172,8 +172,8 @@ public class Table {
 	 * Get the blinds from all players
 	 */
 	private void blinds() {
-		players.get(bigBlindId).bet(2*smallBlind);
 		players.get(smallBlindId).bet(smallBlind);
+		players.get(bigBlindId).raise(smallBlind);
 	}
 
 	private void preFlop() {
@@ -189,8 +189,6 @@ public class Table {
 		giveCards();
 		// Get blinds from players
 		blinds();
-		currentBet = smallBlind * 2;
-		lastBetId = bigBlindId;
 		currentPlayer = nextPlayer(bigBlindId);
 	}
 
@@ -218,7 +216,7 @@ public class Table {
 	}
 
 	private void showDown() {
-		TreeMap<HandValue, List<Player>> winningOrder = new TreeMap<>();
+		TreeMap<HandValue, ArrayList<Player>> winningOrder = new TreeMap<>();
 		// Sort out players who have fold
 		for (Entry<Integer, Player> entry : players.entrySet()) {
 			if (!entry.getValue().isFold()) {
@@ -228,21 +226,23 @@ public class Table {
 				if (winningOrder.containsKey(handValue)) {
 					winningOrder.get(handValue).add(entry.getValue());
 				} else {
-					winningOrder.put(handChecker.check(list),
-							Arrays.asList(entry.getValue()));
+					winningOrder.put(handValue, new ArrayList<Player>(
+							Arrays.asList(entry.getValue())));
 				}
 			}
 		}
 
 		// Pay out the pot
-		Iterator<List<Player>> winnersLists = winningOrder.values().iterator();
-		while ((pot.get(pot.size()-1) == 0) && winnersLists.hasNext()) {
+		Iterator<ArrayList<Player>> winnersLists = winningOrder.values().iterator();
+		while ((pot.get(pot.size()-1) != 0) && winnersLists.hasNext()) {
 			List<Player> winners = winnersLists.next();
 			while (!winners.isEmpty()) {
 				// Get side pot in which all remaining winners are involved
 				int maxsidepot = pot.size() - 1;
 				for (Player player : winners) {
-					if (player.getLastPot() < maxsidepot)
+					if (player.getLastPot() == -1) {
+						player.setLastPot(pot.size()-1);
+					} else if (player.getLastPot() < maxsidepot)
 						maxsidepot = player.getLastPot();
 				}
 				// Sum up all lower side pots
@@ -261,7 +261,7 @@ public class Table {
 				while (winnersIterator.hasNext()) {
 					Player player = winnersIterator.next();
 					if (player.getLastPot() == maxsidepot)
-						winners.remove(player);
+						winnersIterator.remove();
 				}
 			}
 		}

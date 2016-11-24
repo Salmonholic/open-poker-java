@@ -6,7 +6,7 @@ public class Player {
 	private Table table;
 	private int id;
 	private int money;
-	private ArrayList<Card> cards = new ArrayList<>();
+	private ArrayList<Card> cards = new ArrayList<>(2);
 	private boolean fold = false;
 	private boolean allIn = false;
 	private int currentBet = 0;
@@ -23,7 +23,7 @@ public class Player {
 	}
 	
 	public void addMoney(int money) {
-		setMoney(getMoney()+money);
+		this.money += money;
 	}
 
 	/**
@@ -94,9 +94,6 @@ public class Player {
 	}
 	
 	public void check() {
-		if (table.currentBet < money + currentBet) {
-			addMoney(currentBet - table.currentBet);
-		}
 	}
 	
 	public void bet(int amount) {
@@ -142,6 +139,10 @@ public class Player {
 
 	public int getCurrentBet() {
 		return currentBet;
+	}
+	
+	public void setLastPot(int potIndex) {
+		lastPot = potIndex;
 	}
 	
 	public int getLastPot() {
