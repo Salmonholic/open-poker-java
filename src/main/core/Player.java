@@ -8,7 +8,7 @@ public class Player {
 	private Table table;
 	private int id;
 	private int money;
-	private ArrayList<Card> cards;
+	private ArrayList<Card> cards = new ArrayList<>();
 	private boolean fold = false;
 	private boolean allIn = false;
 	private int currentBet = 0;
@@ -134,9 +134,7 @@ public class Player {
 	 * Resets the vars of the player after the round
 	 */
 	public void reset() {
-		if (cards != null) {
-			cards.clear();
-		}
+		cards.clear();
 		currentBet = 0;
 		allIn = false;
 		fold = false;

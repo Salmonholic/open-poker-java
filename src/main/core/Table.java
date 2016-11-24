@@ -286,7 +286,8 @@ public class Table {
 		}
 		// Reset card stack
 		cardStack.initCards();
-		// Reset pot
+		// Reset pot and cards
+		cards.clear();
 		pot.clear();
 		pot.add(0);
 		// Reset number of folded players
