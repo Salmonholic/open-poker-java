@@ -171,8 +171,8 @@ public class Table {
 	 * Get the blinds from all players
 	 */
 	private void blinds() {
-		players.get(bigBlindId).addMoney(smallBlind * -2);
-		players.get(smallBlindId).addMoney(-smallBlind);
+		players.get(bigBlindId).bet(2*smallBlind);
+		players.get(smallBlindId).bet(smallBlind);
 	}
 
 	private void preFlop() {
