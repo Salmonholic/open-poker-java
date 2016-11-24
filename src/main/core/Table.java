@@ -110,7 +110,7 @@ public class Table {
 			if (nextId == null) {
 				nextId = players.firstKey();
 			}
-		} while (players.get(nextId).isFold());
+		} while (players.get(nextId).isFold() || players.get(nextId).isAllIn());
 		return nextId;
 	}
 
@@ -129,7 +129,7 @@ public class Table {
 				player.bet(amount);
 				break;
 			case CALL:
-				if (player.getCurrentBet() == currentBet)
+				if (currentBet != 0 || player.getCurrentBet() == currentBet)
 					throw new IllegalArgumentException();
 				player.call();
 				break;
@@ -139,8 +139,6 @@ public class Table {
 				player.check();
 				break;
 			case FOLD:
-				if (player.isFold())
-					throw new IllegalArgumentException();
 				player.fold();
 				notFoldedPlayers--;
 				break;
