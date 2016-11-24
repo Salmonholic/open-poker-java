@@ -112,6 +112,7 @@ public class Player {
 	}
 	
 	public void raise(int amount) {
+		call();
 		bet(amount);
 	}
 	

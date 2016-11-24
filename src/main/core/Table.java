@@ -141,7 +141,8 @@ public class Table {
 				notFoldedPlayers--;
 				break;
 			case RAISE:
-				if (currentBet == 0 || player.getMoney() < amount)
+				if (currentBet == 0 ||
+					player.getMoney() < (amount + currentBet - player.getCurrentBet()))
 					throw new IllegalArgumentException();
 				player.raise(amount);
 				break;
@@ -381,4 +382,7 @@ public class Table {
 		return currentPlayer;
 	}
 	
+	public ArrayList<Integer> getPot() {
+		return pot;
+	}
 }
