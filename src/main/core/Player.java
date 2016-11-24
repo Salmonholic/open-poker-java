@@ -132,6 +132,10 @@ public class Player {
 		fold = false;
 		lastPot = -1;
 	}
+	
+	public void resetCurrentBet() {
+		currentBet = 0;
+	}
 
 	public int getCurrentBet() {
 		return currentBet;

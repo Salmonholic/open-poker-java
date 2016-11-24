@@ -10,13 +10,14 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+
 import java.util.TreeMap;
 
 public class Table {
 	TreeMap<Integer, Player> players;
 	CardStack cardStack;
 	HandChecker handChecker = new HandChecker();
-	ArrayList<Card> cards;
+	ArrayList<Card> cards = new ArrayList<>();
 	private ArrayList<Integer> pot = new ArrayList<>(1);
 	GameState gameState = GameState.SHOW_DOWN;
 
@@ -25,7 +26,7 @@ public class Table {
 	int bigBlindId;
 	int smallBlind = 5;
 	
-	int lastBetId = 0;
+	int lastBetId;
 	int currentBet;
 	int currentPlayer;
 	int notFoldedPlayers;
@@ -55,7 +56,7 @@ public class Table {
 	private void update() {
 		// TODO console output
 		
-		// check if only one player is not fold
+		// check if only one player has not folded
 		if (notFoldedPlayers == 1) {
 			showDown();
 			reset();
@@ -67,6 +68,7 @@ public class Table {
 		if (currentPlayer == lastBetId) {
 			gameState = GameState.values()[(gameState.ordinal()+1)
 			                               % GameState.values().length];
+			resetCurrentBet();
 			switch (gameState) {
 			case PRE_FLOP:
 				preFlop();
@@ -93,7 +95,7 @@ public class Table {
 	}
 
 	/**
-	 * Get next player in players, who has not fold yet
+	 * Get next player in players, who has not folded yet
 	 * 
 	 * @param playerId
 	 *            Player
@@ -120,14 +122,18 @@ public class Table {
 			Player player = players.get(playerId);
 			switch (action) {
 			case BET:
-				if (player.getMoney() < amount)
+				if (currentBet != 0 || player.getMoney() < amount)
 					throw new IllegalArgumentException();
 				player.bet(amount);
 				break;
 			case CALL:
+				if (player.getCurrentBet() == currentBet)
+					throw new IllegalArgumentException();
 				player.call();
 				break;
 			case CHECK:
+				if (player.getCurrentBet() != currentBet)
+					throw new IllegalArgumentException();
 				player.check();
 				break;
 			case FOLD:
@@ -137,7 +143,7 @@ public class Table {
 				notFoldedPlayers--;
 				break;
 			case RAISE:
-				if (player.getMoney() < amount)
+				if (currentBet == 0 || player.getMoney() < amount)
 					throw new IllegalArgumentException();
 				player.raise(amount);
 				break;
@@ -172,7 +178,7 @@ public class Table {
 	}
 
 	private void preFlop() {
-		buttonId = players.firstKey();
+		buttonId = nextPlayer(buttonId); // works, because no one could have folded yet
 		if (players.size() == 2) {
 			smallBlindId = buttonId;
 			bigBlindId = nextPlayer(buttonId);
@@ -180,7 +186,7 @@ public class Table {
 			smallBlindId = nextPlayer(buttonId);
 			bigBlindId = nextPlayer(smallBlindId);
 		}
-		// Give 2 cards to players
+		// Give 2 cards to each player
 		giveCards();
 		// Get blinds from players
 		blinds();
@@ -284,6 +290,13 @@ public class Table {
 		// Reset number of folded players
 		notFoldedPlayers = players.size();
 	}
+	
+	private void resetCurrentBet() {
+		currentBet = 0;
+		for (Player player : players.values()) {
+			player.resetCurrentBet();
+		}
+	}
 
 	/**
 	 * Adds a card to the cards on the table
@@ -315,9 +328,9 @@ public class Table {
 	public void startSidePot(int playerId) {
 		int allInValue = players.get(playerId).getCurrentBet();
 		int newSidePot = 0;
-		for (Entry<Integer, Player> entry : players.entrySet()) {
-			int playerBet = entry.getValue().getCurrentBet();
-			if (!entry.getValue().isFold() && playerBet > allInValue) {
+		for (Player player : players.values()) {
+			int playerBet = player.getCurrentBet();
+			if (playerBet > allInValue) {
 				addToPot(allInValue - playerBet);
 				newSidePot += allInValue - playerBet;
 			}
