@@ -96,12 +96,8 @@ public class Player {
 	}
 	
 	public void check() throws NotEnoughMoneyException {
-		if (!allIn) {
-			if (table.currentBet < money + currentBet) {
-				addMoney(currentBet - table.currentBet);
-			} else {
-				throw new NotEnoughMoneyException();
-			}
+		if (table.currentBet < money + currentBet) {
+			addMoney(currentBet - table.currentBet);
 		}
 	}
 	
