@@ -22,6 +22,7 @@ public class CardStack {
 	 * Add every possible combination of Color and Value
 	 */
 	public void initCards() {
+		cards.clear();
 		for (Value value : Value.values()) {
 			for (Color color : Color.values()) {
 				cards.add(new Card(color, value));

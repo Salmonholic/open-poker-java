@@ -15,23 +15,23 @@ import java.util.TreeMap;
 import main.exception.NotEnoughMoneyException;
 
 public class Table {
-
 	TreeMap<Integer, Player> players;
 	CardStack cardStack;
+	HandChecker handChecker = new HandChecker();
 	ArrayList<Card> cards;
 	private ArrayList<Integer> pot = new ArrayList<>(1);
-	int smallBlind = 5;
-	int currentBet;
-	GameState gameState = GameState.PRE_FLOP;
-	boolean firstRound = true;
+	GameState gameState = GameState.SHOW_DOWN;
 
 	int buttonId = 0;
 	int smallBlindId;
 	int bigBlindId;
-	int lastBetId;
+	int smallBlind = 5;
+	
+	int lastBetId = 0;
+	int currentBet;
 	int currentPlayer;
+	int notFoldedPlayers;
 
-	HandChecker handChecker = new HandChecker();
 
 	/**
 	 * Poker table
@@ -42,23 +42,33 @@ public class Table {
 	 *            Start Money for each player
 	 */
 	public Table(int playerAmount, int money) {
-		if (playerAmount <= 0 || money <= 0)
+		if (playerAmount <= 1 || money <= 0)
 			throw new IllegalArgumentException();
 		// Put players into TreeMap and set Id
 		players = new TreeMap<>();
-		cardStack = new CardStack();
 		for (int i = 0; i < playerAmount; i++) {
-			players.put(i, new Player(this, money));
+			players.put(i, new Player(this, i, money));
 		}
+		cardStack = new CardStack();
+		reset();
 		update();
 	}
 
 	private void update() {
-		if (firstRound || currentPlayer == lastBetId) {
-			if (!firstRound) {
-				gameState = GameState.values()[gameState.ordinal()
-						% GameState.values().length];
-			}
+		// TODO console output
+		
+		// check if only one player is not fold
+		if (notFoldedPlayers == 1) {
+			showDown();
+			reset();
+			gameState = GameState.PRE_FLOP;
+			preFlop();
+		}
+		
+		// game state transition
+		if (currentPlayer == lastBetId) {
+			gameState = GameState.values()[(gameState.ordinal()+1)
+			                               % GameState.values().length];
 			switch (gameState) {
 			case PRE_FLOP:
 				preFlop();
@@ -76,42 +86,45 @@ public class Table {
 				showDown();
 				reset();
 				gameState = GameState.PRE_FLOP;
+				preFlop();
 				break;
 			default:
 				break;
 			}
-			firstRound = false;
 		}
 	}
 
 	/**
-	 * Get next player in players, or first player if no more player is in
-	 * players
+	 * Get next player in players, who has not fold yet
 	 * 
 	 * @param playerId
 	 *            Player
 	 */
 	public int nextPlayer(int playerId) {
 		// Integer because of null check below
-		Integer nextId = players.ceilingKey(playerId + 1);
-		if (nextId == null) {
-			return players.firstKey();
-		} else {
-			return nextId;
-		}
-
+		Integer nextId;
+		do {
+			nextId = players.ceilingKey(playerId + 1);
+			if (nextId == null) {
+				nextId = players.firstKey();
+			}
+		} while (players.get(nextId).isFold());
+		return nextId;
 	}
 
 	public void action(int playerId, Action action) throws NotEnoughMoneyException {
 		action(playerId, action, 0);
 	}
 
-	public void action(int playerId, Action action, int value) throws NotEnoughMoneyException {
+	public void action(int playerId, Action action, int amount) throws NotEnoughMoneyException {
+		// TODO console output
 		if (playerId == currentPlayer) {
 			Player player = players.get(playerId);
 			switch (action) {
 			case BET:
-				player.bet(value);
+				if (player.getMoney() < amount)
+					throw new IllegalArgumentException();
+				player.bet(amount);
 				break;
 			case CALL:
 				player.call();
@@ -120,15 +133,21 @@ public class Table {
 				player.check();
 				break;
 			case FOLD:
+				if (player.isFold())
+					throw new IllegalArgumentException();
 				player.fold();
+				notFoldedPlayers--;
 				break;
 			case RAISE:
-				player.raise(value);
+				if (player.getMoney() < amount)
+					throw new IllegalArgumentException();
+				player.raise(amount);
 				break;
 			default:
 				break;
 			}
 			currentPlayer = nextPlayer(playerId);
+			update();
 		} else {
 			throw new IllegalArgumentException();
 		}
@@ -151,7 +170,7 @@ public class Table {
 	 */
 	private void blinds() {
 		players.get(bigBlindId).addMoney(smallBlind * -2);
-		players.get(smallBlindId).addMoney(smallBlind * -1);
+		players.get(smallBlindId).addMoney(-smallBlind);
 	}
 
 	private void preFlop() {
@@ -163,15 +182,12 @@ public class Table {
 			smallBlindId = nextPlayer(buttonId);
 			bigBlindId = nextPlayer(smallBlindId);
 		}
-		// Reset the CardSTack
-		cardStack.initCards();
-		// Start first pot
-		pot.add(0);
 		// Give 2 cards to players
 		giveCards();
 		// Get blinds from players
 		blinds();
 		currentBet = smallBlind * 2;
+		lastBetId = bigBlindId;
 		currentPlayer = nextPlayer(bigBlindId);
 	}
 
@@ -216,32 +232,45 @@ public class Table {
 		}
 
 		// Pay out the pot
-		while (pot.get(pot.size() - 1) > 0) {
-			Iterator<List<Player>> playerLists = winningOrder.values()
-					.iterator();
-			while (playerLists.hasNext()) {
-				List<Player> playerList = playerLists.next();
-				for (int i = 0; i < pot.size(); i++) {
-					ArrayList<Player> involvedPlayers = new ArrayList<>();
-					for (Player player : playerList) {
-						if (player.getLastPot() >= i
-								|| player.getLastPot() == -1) {
-							involvedPlayers.add(player);
-						}
-					}
-					for (Player player : involvedPlayers) {
-						player.addMoney(pot.get(i) / involvedPlayers.size());
-					}
-					// TODO rest des splitpots
+		Iterator<List<Player>> winnersLists = winningOrder.values().iterator();
+		while ((pot.get(pot.size()-1) == 0) && winnersLists.hasNext()) {
+			List<Player> winners = winnersLists.next();
+			while (!winners.isEmpty()) {
+				// Get side pot in which all remaining winners are involved
+				int maxsidepot = pot.size() - 1;
+				for (Player player : winners) {
+					if (player.getLastPot() < maxsidepot)
+						maxsidepot = player.getLastPot();
+				}
+				// Sum up all lower side pots
+				int sidepot = 0;
+				for (int i=0; i <= maxsidepot; i++) {
+					sidepot += pot.get(i);
+					pot.set(i, 0);
+				}
+				// Pay out money to each winner
+				int profit = sidepot / (winners.size()); // Casino gets rest of splitpot
+				for (Player player : winners) {
+					player.addMoney(profit);
+				}
+				// Remove all winners who don't participate in higher side pots
+				Iterator<Player> winnersIterator = winners.iterator();
+				while (winnersIterator.hasNext()) {
+					Player player = winnersIterator.next();
+					if (player.getLastPot() == maxsidepot)
+						winners.remove(player);
 				}
 			}
 		}
+		// Last winners payed but pot still not empty (stupid players :D)
+		// Casino gets rest of pot
 	}
 
 	/**
 	 * Resets player flags and (side) pots. Has to be called each new round.
 	 */
 	private void reset() {
+		// Reset players
 		for (Map.Entry<Integer, Player> entry : players.entrySet()) {
 			if (entry.getValue().getMoney() < 0) {
 				players.remove(entry.getKey());
@@ -249,9 +278,13 @@ public class Table {
 				entry.getValue().reset();
 			}
 		}
-
+		// Reset card stack
+		cardStack.initCards();
+		// Reset pot
 		pot.clear();
 		pot.add(0);
+		// Reset number of folded players
+		notFoldedPlayers = players.size();
 	}
 
 	/**
@@ -301,6 +334,10 @@ public class Table {
 	public ArrayList<Card> getCards() {
 		return cards;
 	}
+	
+	public void setSmallBlind(int smallBlind) {
+		this.smallBlind = smallBlind;
+	}
 
 	public int getSmallBlind() {
 		return smallBlind;
@@ -308,10 +345,6 @@ public class Table {
 
 	public GameState getGameState() {
 		return gameState;
-	}
-
-	public boolean isFirstRound() {
-		return firstRound;
 	}
 
 	public int getButtonId() {
@@ -324,6 +357,10 @@ public class Table {
 
 	public int getBigBlindId() {
 		return bigBlindId;
+	}
+	
+	public void setLastBetId(int id) {
+		lastBetId = id;
 	}
 
 	public int getLastBetId() {

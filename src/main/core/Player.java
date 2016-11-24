@@ -18,8 +18,9 @@ public class Player {
 	 * 
 	 * @param money
 	 */
-	public Player(Table table, int money) {
+	public Player(Table table, int id, int money) {
 		this.table = table;
+		this.id = id;
 		this.money = money;
 	}
 	
@@ -79,10 +80,6 @@ public class Player {
 		return id;
 	}
 
-	public void setId(int id) {
-		this.id = id;
-	}
-
 	public void fold() {
 		fold = true;
 	}
@@ -113,11 +110,10 @@ public class Player {
 			currentBet += amount;
 			table.addToPot(amount);
 			addMoney(-amount);
+			table.setLastBetId(id);
 		} else if (money == amount) {
 			allIn();
-		} else {
-			//TODO not enough money to bet (exception?)
-			// Simon Meusel: I think you should just just go all in anyway
+			table.setLastBetId(id);
 		}
 	}
 	
@@ -138,7 +134,7 @@ public class Player {
 	 * Resets the vars of the player after the round
 	 */
 	public void reset() {
-		cards = null;
+		cards.clear();
 		currentBet = 0;
 		allIn = false;
 		fold = false;
