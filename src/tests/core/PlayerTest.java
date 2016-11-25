@@ -5,7 +5,6 @@ import static org.junit.Assert.*;
 import main.core.Action;
 import main.core.Player;
 import main.core.Table;
-import main.exception.NotEnoughMoneyException;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -22,9 +21,14 @@ public class PlayerTest {
 	}
 	
 	@Test
-	public void playerShouldHandleAllInCorrecly() throws NotEnoughMoneyException {
+	public void playerShouldHandleAllInCorrecly() {
 		table.action(0, Action.RAISE, player.getMoney() - 5);
 		assertTrue("Player sets All-In flag", player.isAllIn());
+	}
+	
+	@Test(expected = IllegalArgumentException.class)
+	public void wrongBetActionShouldThrowException() {
+		table.action(0, Action.BET, 10);
 	}
 
 }

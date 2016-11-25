@@ -141,8 +141,6 @@ public class Table {
 				notFoldedPlayers--;
 				break;
 			case RAISE:
-				System.out.println(player.getMoney());
-				System.out.println(amount + currentBet - player.getCurrentBet());
 				if (currentBet == 0 ||
 					player.getMoney() < (amount + currentBet - player.getCurrentBet()))
 					throw new IllegalArgumentException();
