@@ -31,6 +31,8 @@ public class Table {
 	int currentPlayer = 0;
 	int notFoldedPlayers;
 
+	boolean bigBlindMadeDecision;
+	
 	/**
 	 * Poker table
 	 * 
@@ -64,7 +66,10 @@ public class Table {
 		}
 
 		// game state transition
-		if (currentPlayer == lastBetId) {
+		if ((!(gameState == GameState.PRE_FLOP) && currentPlayer == lastBetId) ||
+				(gameState == GameState.PRE_FLOP && bigBlindMadeDecision
+				&& currentPlayer == lastBetId)) {
+		//if (currentPlayer == lastBetId) {
 			gameState = GameState.values()[(gameState.ordinal() + 1)
 					% GameState.values().length];
 			resetCurrentBet();
@@ -149,6 +154,12 @@ public class Table {
 			default:
 				break;
 			}
+			
+			if(gameState == GameState.PRE_FLOP && bigBlindMadeDecision == false
+					&& currentPlayer == bigBlindId) {
+				bigBlindMadeDecision = true;
+			}
+			
 			currentPlayer = nextPlayer(playerId);
 			update();
 		} else {
@@ -189,6 +200,8 @@ public class Table {
 		giveCards();
 		// Get blinds from players
 		blinds();
+		bigBlindMadeDecision = false;
+		lastBetId = nextPlayer(bigBlindId);
 		currentPlayer = nextPlayer(bigBlindId);
 	}
 
