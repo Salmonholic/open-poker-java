@@ -107,10 +107,12 @@ public class Player {
 			currentBet += amount;
 			table.addToPot(amount);
 			addMoney(-amount);
+			table.setLastBetId(id);
 		} else if (money == amount) {
 			allIn();
+			table.setLastBetId(table.nextPlayer(id));
+			table.setDelayNextGameState(true);
 		}
-		table.setLastBetId(id);
 		table.setCurrentBet(table.getCurrentBet() + amount);
 	}
 

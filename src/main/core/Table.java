@@ -32,6 +32,7 @@ public class Table {
 	int notFoldedPlayers;
 
 	boolean bigBlindMadeDecision;
+	boolean delayNextGameState;
 
 	/**
 	 * Poker table
@@ -51,8 +52,17 @@ public class Table {
 		for (int i = 0; i < playerAmount; i++) {
 			players.put(i, new Player(this, i, money));
 		}
+		this.cardStack = cardStack;
 		reset();
 		update();
+	}
+
+	public boolean isDelayNextGameState() {
+		return delayNextGameState;
+	}
+
+	public void setDelayNextGameState(boolean delayNextGameState) {
+		this.delayNextGameState = delayNextGameState;
 	}
 
 	public Table(int playerAmount, int money) {
@@ -60,8 +70,6 @@ public class Table {
 	}
 
 	private void update() {
-		// TODO console output
-
 		// check if only one player has not folded
 		if (notFoldedPlayers == 1) {
 			showDown();
@@ -69,6 +77,8 @@ public class Table {
 			gameState = GameState.PRE_FLOP;
 			preFlop();
 		}
+		
+		if (delayNextGameState) return;
 
 		// game state transition
 		if ((!(gameState == GameState.PRE_FLOP) && currentPlayer == lastBetId)
@@ -127,6 +137,8 @@ public class Table {
 	public void action(int playerId, Action action, int amount) {
 		// TODO console output
 		if (playerId == currentPlayer) {
+			delayNextGameState = false;
+			
 			Player player = players.get(playerId);
 			switch (action) {
 			case BET:
@@ -206,6 +218,7 @@ public class Table {
 		// Get blinds from players
 		blinds();
 		bigBlindMadeDecision = false;
+		delayNextGameState = false;
 		lastBetId = nextPlayer(bigBlindId);
 		currentPlayer = nextPlayer(bigBlindId);
 	}
