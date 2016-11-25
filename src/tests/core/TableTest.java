@@ -5,6 +5,7 @@ import static org.hamcrest.CoreMatchers.*;
 
 import main.core.Action;
 import main.core.GameState;
+import main.core.Player;
 import main.core.Table;
 
 import org.junit.Before;
@@ -12,12 +13,12 @@ import org.junit.Test;
 
 public class TableTest {
 
-	Table exceptionTable;
+	Table exceptionTablePreflop;
 	Table exceptionTableFlop;
 
 	@Before
 	public void setUp() throws Exception {
-		exceptionTable = new Table(3, 100);
+		exceptionTablePreflop = new Table(3, 100);
 		exceptionTableFlop = new Table(3, 100);
 		exceptionTableFlop.action(0, Action.CALL);
 		exceptionTableFlop.action(1, Action.CALL);
@@ -45,6 +46,8 @@ public class TableTest {
 		// Finish preflop
 		table.action(0, Action.CALL);
 		table.action(1, Action.CALL);
+		assertEquals(GameState.PRE_FLOP, table.getGameState());
+		// TODO bigblind has to get chance to make a decision
 		table.action(2, Action.CHECK);
 		assertEquals(GameState.FLOP, table.getGameState());
 		
@@ -101,28 +104,65 @@ public class TableTest {
 				anyOf(is(55-5), is(170-5), is(112-5)));
 		
 	}
+	
+	@Test
+	public void allInShouldWork() {
+		Table table = new Table(3, 100);
+		Player player0 = table.getPlayer(0);
+		Player player1 = table.getPlayer(1);
+		// Player 0 should go All-In due to CALL and therefore gets his money reduced to 10
+		table.getPlayer(0).setMoney(10);
+		// Player 1 should go All-In due to Raise and therefore gets his money reduced to 15
+		table.getPlayer(0).setMoney(15);
+		
+		// Preflop
+		table.action(0, Action.CALL);
+		assertTrue("Player 0 goes All-In", player0.isAllIn());
+		assertEquals("Player 0 should have no money left", 0, player0.getMoney());
+		table.action(1, Action.RAISE, 5);
+		assertTrue("Player 1 goes All-In", player1.isAllIn());
+		assertEquals("Player 1 should have no money left", 0, player1.getMoney());
+		table.action(2, Action.CALL);
+		assertEquals(GameState.FLOP, table.getGameState());
+		
+		//TODO finish
+	}
+	
+	@Test
+	public void blindsShouldBeCorrectOn2PlayerTable() {
+		Table table = new Table(2, 100);
+		
+		assertEquals("ButtonId", 0, table.getButtonId());
+		assertEquals("SmallBlindId", 0, table.getSmallBlindId());
+		assertEquals("BigBlindId", 1, table.getBigBlindId());
+		assertEquals("CurrentPlayer", 0, table.getCurrentPlayer());
+		
+		assertEquals("Player 0 money", 95, table.getPlayer(0).getMoney());
+		assertEquals("Player 1 money", 90, table.getPlayer(1).getMoney());
+		
+	}
 
 	@Test
 	public void getNextPlayerShouldReturnNextPlayer() {
-		assertEquals(1, exceptionTable.nextPlayer(0));
-		assertEquals(0, exceptionTable.nextPlayer(4));
-		assertEquals(2, exceptionTable.nextPlayer(1));
-		assertEquals(0, exceptionTable.nextPlayer(-1));
+		assertEquals(1, exceptionTablePreflop.nextPlayer(0));
+		assertEquals(0, exceptionTablePreflop.nextPlayer(4));
+		assertEquals(2, exceptionTablePreflop.nextPlayer(1));
+		assertEquals(0, exceptionTablePreflop.nextPlayer(-1));
 	}
 	
 	@Test(expected = IllegalArgumentException.class)
 	public void wrongBetActionShouldThrowException() {
-		exceptionTable.action(0, Action.BET, 10);
+		exceptionTablePreflop.action(0, Action.BET, 10);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void wrongCheckActionShouldThrowException() {
-		exceptionTable.action(0, Action.CHECK);
+		exceptionTablePreflop.action(0, Action.CHECK);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void notEnoughMoneyToRaiseShouldThrowException() {
-		exceptionTable.action(0, Action.RAISE, 101);
+		exceptionTablePreflop.action(0, Action.RAISE, 101);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
