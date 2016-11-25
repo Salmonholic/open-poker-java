@@ -34,7 +34,7 @@ public class TableTest {
 		assertEquals("SmallBlindId", 1, table.getSmallBlindId());
 		assertEquals("BigBlindId", 2, table.getBigBlindId());
 		assertEquals("CurrentPlayer", 0, table.getCurrentPlayer());
-		assertEquals("LastBetId", 2, table.getLastBetId());
+		assertEquals("LastBetId", 0, table.getLastBetId());
 
 		// Check money
 		assertEquals("CurrentBet", 10, table.getCurrentBet());
