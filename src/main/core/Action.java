@@ -2,10 +2,6 @@ package main.core;
 
 public enum Action {
 
-	BET,
-	CALL,
-	CHECK,
-	FOLD,
-	RAISE
-	
+	BET, CALL, CHECK, FOLD, RAISE
+
 }

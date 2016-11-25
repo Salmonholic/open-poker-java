@@ -25,12 +25,11 @@ public class Table {
 	int smallBlindId;
 	int bigBlindId;
 	int smallBlind = 5;
-	
+
 	int lastBetId = 0;
 	int currentBet;
 	int currentPlayer = 0;
 	int notFoldedPlayers;
-
 
 	/**
 	 * Poker table
@@ -55,7 +54,7 @@ public class Table {
 
 	private void update() {
 		// TODO console output
-		
+
 		// check if only one player has not folded
 		if (notFoldedPlayers == 1) {
 			showDown();
@@ -63,11 +62,11 @@ public class Table {
 			gameState = GameState.PRE_FLOP;
 			preFlop();
 		}
-		
+
 		// game state transition
 		if (currentPlayer == lastBetId) {
-			gameState = GameState.values()[(gameState.ordinal()+1)
-			                               % GameState.values().length];
+			gameState = GameState.values()[(gameState.ordinal() + 1)
+					% GameState.values().length];
 			resetCurrentBet();
 			switch (gameState) {
 			case PRE_FLOP:
@@ -141,8 +140,9 @@ public class Table {
 				notFoldedPlayers--;
 				break;
 			case RAISE:
-				if (currentBet == 0 ||
-					player.getMoney() < (amount + currentBet - player.getCurrentBet()))
+				if (currentBet == 0
+						|| player.getMoney() < (amount + currentBet - player
+								.getCurrentBet()))
 					throw new IllegalArgumentException();
 				player.raise(amount);
 				break;
@@ -177,7 +177,7 @@ public class Table {
 	}
 
 	private void preFlop() {
-		buttonId = nextPlayer(buttonId); // works, because no one could have folded yet
+		buttonId = nextPlayer(buttonId);
 		if (players.size() == 2) {
 			smallBlindId = buttonId;
 			bigBlindId = nextPlayer(buttonId);
@@ -226,33 +226,37 @@ public class Table {
 				if (winningOrder.containsKey(handValue)) {
 					winningOrder.get(handValue).add(entry.getValue());
 				} else {
-					winningOrder.put(handValue, new ArrayList<Player>(
-							Arrays.asList(entry.getValue())));
+					winningOrder.put(
+							handValue,
+							new ArrayList<Player>(Arrays.asList(entry
+									.getValue())));
 				}
 			}
 		}
 
 		// Pay out the pot
-		Iterator<ArrayList<Player>> winnersLists = winningOrder.values().iterator();
-		while ((pot.get(pot.size()-1) != 0) && winnersLists.hasNext()) {
+		Iterator<ArrayList<Player>> winnersLists = winningOrder.values()
+				.iterator();
+		while ((pot.get(pot.size() - 1) != 0) && winnersLists.hasNext()) {
 			List<Player> winners = winnersLists.next();
 			while (!winners.isEmpty()) {
 				// Get side pot in which all remaining winners are involved
 				int maxsidepot = pot.size() - 1;
 				for (Player player : winners) {
 					if (player.getLastPot() == -1) {
-						player.setLastPot(pot.size()-1);
+						player.setLastPot(pot.size() - 1);
 					} else if (player.getLastPot() < maxsidepot)
 						maxsidepot = player.getLastPot();
 				}
 				// Sum up all lower side pots
 				int sidepot = 0;
-				for (int i=0; i <= maxsidepot; i++) {
+				for (int i = 0; i <= maxsidepot; i++) {
 					sidepot += pot.get(i);
 					pot.set(i, 0);
 				}
 				// Pay out money to each winner
-				int profit = sidepot / (winners.size()); // Casino gets rest of splitpot
+				int profit = sidepot / (winners.size()); // Casino gets rest of
+															// splitpot
 				for (Player player : winners) {
 					player.addMoney(profit);
 				}
@@ -290,7 +294,7 @@ public class Table {
 		// Reset number of folded players
 		notFoldedPlayers = players.size();
 	}
-	
+
 	private void resetCurrentBet() {
 		currentBet = 0;
 		for (Player player : players.values()) {
@@ -345,7 +349,7 @@ public class Table {
 	public ArrayList<Card> getCards() {
 		return cards;
 	}
-	
+
 	public void setSmallBlind(int smallBlind) {
 		this.smallBlind = smallBlind;
 	}
@@ -369,7 +373,7 @@ public class Table {
 	public int getBigBlindId() {
 		return bigBlindId;
 	}
-	
+
 	public void setLastBetId(int id) {
 		lastBetId = id;
 	}
@@ -381,7 +385,7 @@ public class Table {
 	public int getCurrentPlayer() {
 		return currentPlayer;
 	}
-	
+
 	public ArrayList<Integer> getPot() {
 		return pot;
 	}
