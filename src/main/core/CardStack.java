@@ -7,17 +7,17 @@ import java.util.ArrayList;
 import java.util.Random;
 
 public class CardStack {
-	
+
 	private Random random = new Random();
 	private ArrayList<Card> cards = new ArrayList<>();
-	
+
 	/**
 	 * Card Stack for managing cards
 	 */
 	public CardStack() {
 		initCards();
 	}
-	
+
 	/**
 	 * Add every possible combination of Color and Value
 	 */
@@ -29,9 +29,10 @@ public class CardStack {
 			}
 		}
 	}
-	
+
 	/**
 	 * Get a random remaining card
+	 * 
 	 * @return Random remaining card
 	 */
 	public Card getCard() {
@@ -44,5 +45,5 @@ public class CardStack {
 			return card;
 		}
 	}
-	
+
 }

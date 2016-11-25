@@ -11,7 +11,7 @@ public class Player {
 	private boolean allIn = false;
 	private int currentBet = 0;
 	private int lastPot = -1;
-	
+
 	/**
 	 * 
 	 * @param money
@@ -21,13 +21,14 @@ public class Player {
 		this.id = id;
 		this.money = money;
 	}
-	
+
 	public void addMoney(int money) {
 		this.money += money;
 	}
 
 	/**
 	 * Get money of Player
+	 * 
 	 * @return Money of player
 	 */
 	public int getMoney() {
@@ -36,28 +37,33 @@ public class Player {
 
 	/**
 	 * Set money of Player
-	 * @param money Money for Player
+	 * 
+	 * @param money
+	 *            Money for Player
 	 */
 	public void setMoney(int money) {
 		this.money = money;
 	}
-	
+
 	/**
 	 * Get the cards of the Player
+	 * 
 	 * @return List of 2 Cards
 	 */
 	public ArrayList<Card> getCards() {
 		return cards;
 	}
-	
+
 	/**
 	 * Set the cards of the Player
-	 * @param cards Cards for player
+	 * 
+	 * @param cards
+	 *            Cards for player
 	 */
 	public void setCards(ArrayList<Card> cards) {
 		this.cards = cards;
 	}
-	
+
 	public boolean isFold() {
 		return fold;
 	}
@@ -81,10 +87,10 @@ public class Player {
 	public void fold() {
 		fold = true;
 	}
-	
+
 	public void call() {
-		int amountToBet = table.getCurrentBet()-currentBet;
-		if(money - amountToBet > 0) { //Check for All-In
+		int amountToBet = table.getCurrentBet() - currentBet;
+		if (money - amountToBet > 0) { // Check for All-In
 			currentBet += amountToBet;
 			table.addToPot(amountToBet);
 			addMoney(-amountToBet);
@@ -92,12 +98,12 @@ public class Player {
 			allIn();
 		}
 	}
-	
+
 	public void check() {
 	}
-	
+
 	public void bet(int amount) {
-		if(money > amount) {
+		if (money > amount) {
 			currentBet += amount;
 			table.addToPot(amount);
 			addMoney(-amount);
@@ -105,14 +111,14 @@ public class Player {
 			allIn();
 		}
 		table.setLastBetId(id);
-		table.setCurrentBet(table.getCurrentBet()+amount);
+		table.setCurrentBet(table.getCurrentBet() + amount);
 	}
-	
+
 	public void raise(int amount) {
 		call();
 		bet(amount);
 	}
-	
+
 	private void allIn() {
 		currentBet += money;
 		table.addToPot(money);
@@ -121,7 +127,7 @@ public class Player {
 		money = 0;
 		allIn = true;
 	}
-	
+
 	/**
 	 * Resets the vars of the player after the round
 	 */
@@ -132,7 +138,7 @@ public class Player {
 		fold = false;
 		lastPot = -1;
 	}
-	
+
 	public void resetCurrentBet() {
 		currentBet = 0;
 	}
@@ -140,11 +146,11 @@ public class Player {
 	public int getCurrentBet() {
 		return currentBet;
 	}
-	
+
 	public void setLastPot(int potIndex) {
 		lastPot = potIndex;
 	}
-	
+
 	public int getLastPot() {
 		return lastPot;
 	}

@@ -41,20 +41,20 @@ public class TableTest {
 		assertEquals("Dealer", 100, table.getPlayer(0).getMoney());
 		assertEquals("SmallBlind", 95, table.getPlayer(1).getMoney());
 		assertEquals("BigBlind", 90, table.getPlayer(2).getMoney());
-		
+
 		// Finish preflop
 		table.action(0, Action.CALL);
 		table.action(1, Action.CALL);
 		table.action(2, Action.CHECK);
 		assertEquals(GameState.FLOP, table.getGameState());
-		
+
 		// Check money
 		assertEquals("CurrentBet", 0, table.getCurrentBet());
 		assertEquals("Pot", 30, table.getPot().get(0).intValue());
 		assertEquals("Player 0 money", 90, table.getPlayer(0).getMoney());
 		assertEquals("Player 1 money", 90, table.getPlayer(1).getMoney());
 		assertEquals("Player 2 money", 90, table.getPlayer(2).getMoney());
-		
+
 		// Finish flop
 		table.action(0, Action.CHECK);
 		table.action(1, Action.BET, 15);
@@ -68,7 +68,7 @@ public class TableTest {
 		assertEquals("Player 0 money", 75, table.getPlayer(0).getMoney());
 		assertEquals("Player 1 money", 75, table.getPlayer(1).getMoney());
 		assertEquals("Player 2 money", 75, table.getPlayer(2).getMoney());
-		
+
 		// Finish turn
 		table.action(1, Action.BET, 10);
 		assertEquals("CurrentBet", 10, table.getCurrentBet());
@@ -83,12 +83,12 @@ public class TableTest {
 		assertEquals("Player 0 money", 75, table.getPlayer(0).getMoney());
 		assertEquals("Player 1 money", 55, table.getPlayer(1).getMoney());
 		assertEquals("Player 2 money", 55, table.getPlayer(2).getMoney());
-		
+
 		// Finish river
 		table.action(2, Action.CHECK);
 		table.action(1, Action.CHECK);
 		assertEquals(GameState.PRE_FLOP, table.getGameState());
-		
+
 		// Check money (player 2 is smallblind, player 0 is bigblind)
 		assertEquals("New ButtonId", 1, table.getButtonId());
 		assertEquals("New SmallBlindId", 2, table.getSmallBlindId());
@@ -98,8 +98,8 @@ public class TableTest {
 		assertThat("Player 1 money", table.getPlayer(1).getMoney(),
 				anyOf(is(55), is(170), is(112)));
 		assertThat("Player 2 money", table.getPlayer(2).getMoney(),
-				anyOf(is(55-5), is(170-5), is(112-5)));
-		
+				anyOf(is(55 - 5), is(170 - 5), is(112 - 5)));
+
 	}
 
 	@Test
@@ -109,7 +109,7 @@ public class TableTest {
 		assertEquals(2, exceptionTable.nextPlayer(1));
 		assertEquals(0, exceptionTable.nextPlayer(-1));
 	}
-	
+
 	@Test(expected = IllegalArgumentException.class)
 	public void wrongBetActionShouldThrowException() {
 		exceptionTable.action(0, Action.BET, 10);
@@ -139,6 +139,5 @@ public class TableTest {
 	public void notEnoughMoneyToBetShouldThrowException() {
 		exceptionTableFlop.action(0, Action.BET, 101);
 	}
-	
 
 }

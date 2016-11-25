@@ -13,7 +13,8 @@ public class CardTest {
 	@Test
 	public void cardShouldBeComparable() {
 		Card card = new Card(Color.DIAMONDS, Value.EIGHT);
-		if (!card.getValue().equals(Value.EIGHT) || !card.getColor().equals(Color.DIAMONDS)) {
+		if (!card.getValue().equals(Value.EIGHT)
+				|| !card.getColor().equals(Color.DIAMONDS)) {
 			fail("Card has incorrect Color or Value");
 		}
 	}
