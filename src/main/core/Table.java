@@ -32,7 +32,7 @@ public class Table {
 	int notFoldedPlayers;
 
 	boolean bigBlindMadeDecision;
-	
+
 	/**
 	 * Poker table
 	 * 
@@ -40,8 +40,10 @@ public class Table {
 	 *            Amount of players in game
 	 * @param money
 	 *            Start Money for each player
+	 * @param cardStack
+	 *            CardStack generating Cards
 	 */
-	public Table(int playerAmount, int money) {
+	public Table(int playerAmount, int money, CardStack cardStack) {
 		if (playerAmount <= 1 || money <= 0)
 			throw new IllegalArgumentException();
 		// Put players into TreeMap and set Id
@@ -49,9 +51,12 @@ public class Table {
 		for (int i = 0; i < playerAmount; i++) {
 			players.put(i, new Player(this, i, money));
 		}
-		cardStack = new CardStack();
 		reset();
 		update();
+	}
+
+	public Table(int playerAmount, int money) {
+		this(playerAmount, money, new CardStack());
 	}
 
 	private void update() {
@@ -66,10 +71,9 @@ public class Table {
 		}
 
 		// game state transition
-		if ((!(gameState == GameState.PRE_FLOP) && currentPlayer == lastBetId) ||
-				(gameState == GameState.PRE_FLOP && bigBlindMadeDecision
-				&& currentPlayer == lastBetId)) {
-		//if (currentPlayer == lastBetId) {
+		if ((!(gameState == GameState.PRE_FLOP) && currentPlayer == lastBetId)
+				|| (gameState == GameState.PRE_FLOP && bigBlindMadeDecision && currentPlayer == lastBetId)) {
+			// if (currentPlayer == lastBetId) {
 			gameState = GameState.values()[(gameState.ordinal() + 1)
 					% GameState.values().length];
 			resetCurrentBet();
@@ -154,12 +158,13 @@ public class Table {
 			default:
 				break;
 			}
-			
-			if(gameState == GameState.PRE_FLOP && bigBlindMadeDecision == false
+
+			if (gameState == GameState.PRE_FLOP
+					&& bigBlindMadeDecision == false
 					&& currentPlayer == bigBlindId) {
 				bigBlindMadeDecision = true;
 			}
-			
+
 			currentPlayer = nextPlayer(playerId);
 			update();
 		} else {
