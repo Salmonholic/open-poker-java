@@ -141,6 +141,8 @@ public class Table {
 				notFoldedPlayers--;
 				break;
 			case RAISE:
+				System.out.println(player.getMoney());
+				System.out.println(amount + currentBet - player.getCurrentBet());
 				if (currentBet == 0 ||
 					player.getMoney() < (amount + currentBet - player.getCurrentBet()))
 					throw new IllegalArgumentException();
@@ -177,7 +179,7 @@ public class Table {
 	}
 
 	private void preFlop() {
-		buttonId = nextPlayer(buttonId); // works, because no one could have folded yet
+		buttonId = nextPlayer(buttonId);
 		if (players.size() == 2) {
 			smallBlindId = buttonId;
 			bigBlindId = nextPlayer(buttonId);
