@@ -110,10 +110,15 @@ public class TableTest {
 		Table table = new Table(3, 100);
 		Player player0 = table.getPlayer(0);
 		Player player1 = table.getPlayer(1);
+
+		// Check IDs
+		assertEquals("SmallBlindId", 1, table.getSmallBlindId());
+		assertEquals("BigBlindId", 2, table.getBigBlindId());
+		
 		// Player 0 should go All-In due to CALL and therefore gets his money reduced to 10
-		table.getPlayer(0).setMoney(10);
+		table.getPlayer(0).setMoney(5);
 		// Player 1 should go All-In due to Raise and therefore gets his money reduced to 15
-		table.getPlayer(0).setMoney(15);
+		table.getPlayer(1).setMoney(10);
 		
 		// Preflop
 		table.action(0, Action.CALL);
@@ -123,7 +128,7 @@ public class TableTest {
 		assertTrue("Player 1 goes All-In", player1.isAllIn());
 		assertEquals("Player 1 should have no money left", 0, player1.getMoney());
 		table.action(2, Action.CALL);
-		assertEquals(GameState.FLOP, table.getGameState());
+		assertEquals(GameState.PRE_FLOP, table.getGameState());
 		
 		//TODO finish
 	}
