@@ -13,9 +13,12 @@ import java.util.Map.Entry;
 
 import java.util.TreeMap;
 
+import main.server.TableController;
+
 public class Table {
 	TreeMap<Integer, Player> players;
 	CardStack cardStack;
+	TableController tableController;
 	HandChecker handChecker = new HandChecker();
 	ArrayList<Card> cards = new ArrayList<>(5);
 	private ArrayList<Integer> pot = new ArrayList<>(1);
@@ -44,7 +47,8 @@ public class Table {
 	 * @param cardStack
 	 *            CardStack generating Cards
 	 */
-	public Table(int playerAmount, int money, CardStack cardStack) {
+	public Table(TableController tableController, int playerAmount, int money,
+			CardStack cardStack) {
 		if (playerAmount <= 1 || money <= 0)
 			throw new IllegalArgumentException();
 		// Put players into TreeMap and set Id
@@ -53,8 +57,21 @@ public class Table {
 			players.put(i, new Player(this, i, money));
 		}
 		this.cardStack = cardStack;
+		this.tableController = tableController;
 		reset();
 		update();
+	}
+
+	public Table(TableController tableController, int playerAmount, int money) {
+		this(tableController, playerAmount, money, new CardStack());
+	}
+
+	public Table(int playerAmount, int money, CardStack cardStack) {
+		this(null, playerAmount, money, cardStack);
+	}
+
+	public Table(int playerAmount, int money) {
+		this(null, playerAmount, money, new CardStack());
 	}
 
 	public boolean isDelayNextGameState() {
@@ -65,10 +82,6 @@ public class Table {
 		this.delayNextGameState = delayNextGameState;
 	}
 
-	public Table(int playerAmount, int money) {
-		this(playerAmount, money, new CardStack());
-	}
-
 	private void update() {
 		// check if only one player has not folded
 		if (notFoldedPlayers == 1) {
@@ -77,8 +90,9 @@ public class Table {
 			gameState = GameState.PRE_FLOP;
 			preFlop();
 		}
-		
-		if (delayNextGameState) return;
+
+		if (delayNextGameState)
+			return;
 
 		// game state transition
 		if ((!(gameState == GameState.PRE_FLOP) && currentPlayer == lastBetId)
@@ -138,7 +152,7 @@ public class Table {
 		// TODO console output
 		if (playerId == currentPlayer) {
 			delayNextGameState = false;
-			
+
 			Player player = players.get(playerId);
 			switch (action) {
 			case BET:
@@ -179,6 +193,9 @@ public class Table {
 
 			currentPlayer = nextPlayer(playerId);
 			update();
+			if (tableController != null) {
+				tableController.resend();
+			}
 		} else {
 			throw new IllegalArgumentException();
 		}
