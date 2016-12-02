@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
-import java.net.UnknownHostException;
 import java.util.HashMap;
 
 import main.core.Action;
@@ -18,11 +17,17 @@ public class Client {
 
 	private Table table;
 
-	public Client(String host, int port, String username)
-			throws UnknownHostException, IOException {
+	public Client(String host, int port, String username, int room)
+			throws Exception {
 		socket = new Socket(host, port);
 		in = new ObjectInputStream(socket.getInputStream());
 		out = new ObjectOutputStream(socket.getOutputStream());
+		
+		HashMap<String, Object> data = new HashMap<>();
+		data.put("username", username);
+		data.put("table", room);
+		data.put("type", "player");
+		out.writeObject(new Packet("connect", data));
 	}
 
 	/**

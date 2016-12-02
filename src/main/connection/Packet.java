@@ -1,9 +1,12 @@
 package main.connection;
 
+import java.io.Serializable;
 import java.util.HashMap;
 
-public class Packet {
+public class Packet implements Serializable {
 
+	private static final long serialVersionUID = 4711025230974983083L;
+	
 	private String type;
 	private HashMap<String, Object> data;
 

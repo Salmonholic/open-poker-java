@@ -1,5 +1,7 @@
 package main.main;
 
+import main.connection.Client;
+
 public class Main {
 
 	/**
@@ -10,7 +12,7 @@ public class Main {
 	 * @throws Exception
 	 */
 	public static void main(String[] args) throws Exception {
-		throw new Exception("Not impleted yet!");
+		new Client("127.0.0.1", 10101, "user", 1);
 	}
 
 }
