@@ -125,6 +125,7 @@ public class Player {
 		lastPot = table.getPotIndex();
 		table.startSidePot(id);
 		money = 0;
+		table.oneMoreFoldOrAllInPlayer();
 		allIn = true;
 	}
 

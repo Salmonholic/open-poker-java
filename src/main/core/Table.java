@@ -29,7 +29,7 @@ public class Table {
 	int lastBetId = 0;
 	int currentBet;
 	int currentPlayer = 0;
-	int notFoldedPlayers;
+	int notFoldedOrAllInPlayers;
 
 	boolean bigBlindMadeDecision;
 	
@@ -58,7 +58,7 @@ public class Table {
 		// TODO console output
 
 		// check if only one player has not folded
-		if (notFoldedPlayers == 1) {
+		if (notFoldedOrAllInPlayers == 1) {
 			showDown();
 			reset();
 			gameState = GameState.PRE_FLOP;
@@ -142,7 +142,7 @@ public class Table {
 				break;
 			case FOLD:
 				player.fold();
-				notFoldedPlayers--;
+				notFoldedOrAllInPlayers--;
 				break;
 			case RAISE:
 				if (currentBet == 0
@@ -305,7 +305,7 @@ public class Table {
 		pot.clear();
 		pot.add(0);
 		// Reset number of folded players
-		notFoldedPlayers = players.size();
+		notFoldedOrAllInPlayers = players.size();
 	}
 
 	private void resetCurrentBet() {
@@ -401,5 +401,9 @@ public class Table {
 
 	public ArrayList<Integer> getPot() {
 		return pot;
+	}
+	
+	public void oneMoreFoldOrAllInPlayer() {
+		notFoldedOrAllInPlayers--;
 	}
 }

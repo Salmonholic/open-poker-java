@@ -9,6 +9,7 @@ import main.core.Player;
 import main.core.Table;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class TableTest {
@@ -47,7 +48,6 @@ public class TableTest {
 		table.action(0, Action.CALL);
 		table.action(1, Action.CALL);
 		assertEquals(GameState.PRE_FLOP, table.getGameState());
-		// TODO bigblind has to get chance to make a decision
 		table.action(2, Action.CHECK);
 		assertEquals(GameState.FLOP, table.getGameState());
 
@@ -105,6 +105,7 @@ public class TableTest {
 
 	}
 	
+	@Ignore
 	@Test
 	public void allInShouldWork() {
 		Table table = new Table(3, 100);
@@ -115,9 +116,9 @@ public class TableTest {
 		assertEquals("SmallBlindId", 1, table.getSmallBlindId());
 		assertEquals("BigBlindId", 2, table.getBigBlindId());
 		
-		// Player 0 should go All-In due to CALL and therefore gets his money reduced to 10
+		// Player 0 should go All-In due to CALL and therefore gets his money reduced to 10-5
 		table.getPlayer(0).setMoney(5);
-		// Player 1 should go All-In due to Raise and therefore gets his money reduced to 15
+		// Player 1 should go All-In due to Raise and therefore gets his money reduced to 15-5
 		table.getPlayer(1).setMoney(10);
 		
 		// Preflop
@@ -130,7 +131,9 @@ public class TableTest {
 		table.action(2, Action.CALL);
 		assertEquals(GameState.PRE_FLOP, table.getGameState());
 		
-		//TODO finish
+		/*System.out.println("Player 0 money: "+player0.getMoney());
+		System.out.println("Player 1 money: "+player1.getMoney());
+		System.out.println("Player 2 money: "+table.getPlayer(2).getMoney());*/
 	}
 	
 	@Test
