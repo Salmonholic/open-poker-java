@@ -12,6 +12,8 @@ public class Server {
 		serverSocket = new ServerSocket(port);
 		System.out.println("Server started");
 		update();
+		
+		tables.put(0, new TableController(3, 1000));
 	}
 
 	/**
@@ -31,6 +33,9 @@ public class Server {
 	}
 
 	public TableController getTableController(int id) {
+		if (!tables.containsKey(id)) {
+			throw new IllegalArgumentException();
+		}
 		return tables.get(id);
 	}
 

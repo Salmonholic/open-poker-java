@@ -1,22 +1,43 @@
 package main.server;
 
-import java.util.HashMap;
-import java.util.Observable;
+import java.util.ArrayList;
 
-import main.connection.Packet;
 import main.core.Table;
 
-public class TableController extends Observable{
+public class TableController {
 	
 	private Table table;
+	private ArrayList<PlayerController> playerControllers = new ArrayList<>();
+	int playerAmount;
+	int money;
+	int currentPlayer = 0;
+	boolean started = false;
+	
+	public TableController(int playerAmount, int money) {
+		this.playerAmount = playerAmount;
+		this.money = money;
+	}
+	
+	public int addPlayerController(PlayerController playerController) {
+		if (started) {
+			throw new IllegalArgumentException();
+		}
+		currentPlayer++;
+		playerControllers.add(playerController);
+		if (currentPlayer == playerAmount) {
+			started = true;
+			table = new Table(playerAmount, money);
+		}
+		return currentPlayer;
+	}
 
 	/**
 	 * Resends all data to clients
 	 */
 	public void resend() {
-		HashMap<String, Object> data = new HashMap<>();
-		data.put("table", table);
-		Packet packet = new Packet("update", data);
+		for (PlayerController playerController : playerControllers) {
+			playerController.resend(table);
+		}
 	}
 	
 }

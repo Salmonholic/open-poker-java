@@ -5,12 +5,11 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.HashMap;
-import java.util.Observable;
-import java.util.Observer;
 
 import main.connection.Packet;
+import main.core.Table;
 
-public class PlayerController implements Runnable, Observer{
+public class PlayerController implements Runnable{
 	
 	private Socket socket;
 	private TableController tableController;
@@ -22,7 +21,6 @@ public class PlayerController implements Runnable, Observer{
 	
 	public PlayerController(Socket socket, Server server) throws Exception {
 		this.socket = socket;
-		this.tableController = tableController;
 		
 		out = new ObjectOutputStream(socket.getOutputStream());
 		in = new ObjectInputStream(socket.getInputStream());
@@ -33,7 +31,7 @@ public class PlayerController implements Runnable, Observer{
 		tableController = server.getTableController((int) data.get("table"));
 		type = (String) data.get("type");
 		
-		tableController.addObserver(this);
+		tableController.addPlayerController(this);
 	}
 	
 	@Override
@@ -43,9 +41,8 @@ public class PlayerController implements Runnable, Observer{
 		}
 	}
 
-	@Override
-	public void update(Observable o, Object packetObject) {
-		Packet packet = (Packet) packetObject;
+	public void resend(Table table) {
+		Packet packet = null;
 		try {
 			out.writeObject(packet);
 		} catch (IOException e) {

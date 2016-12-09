@@ -437,4 +437,8 @@ public class Table {
 	public ArrayList<Integer> getPot() {
 		return pot;
 	}
+	
+	public TreeMap<Integer, Player> getPlayers() {
+		return players;
+	}
 }
