@@ -64,6 +64,9 @@ public class Table {
 
 		// check if only one player has not folded
 		if (notFoldedOrAllInPlayers == 1) {
+			for (int i=cards.size(); i<5; i++) {
+				cards.add(cardStack.getCard());
+			}
 			showDown();
 			reset();
 			gameState = GameState.PRE_FLOP;
