@@ -1,9 +1,18 @@
 package tests.core;
 
-import static org.junit.Assert.*;
-import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.CoreMatchers.anyOf;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+
+import handChecker.PokerCard.Color;
+import handChecker.PokerCard.Value;
+
+import java.util.ArrayList;
 
 import main.core.Action;
+import main.core.Card;
 import main.core.GameState;
 import main.core.Player;
 import main.core.Table;
@@ -11,6 +20,8 @@ import main.core.Table;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+
+import tests.core.cardstack.TestCardStack;
 
 public class TableTest {
 
@@ -116,10 +127,10 @@ public class TableTest {
 		assertEquals("SmallBlindId", 1, table.getSmallBlindId());
 		assertEquals("BigBlindId", 2, table.getBigBlindId());
 		
-		// Player 0 should go All-In due to CALL and therefore gets his money reduced to 10-5
-		table.getPlayer(0).setMoney(5);
-		// Player 1 should go All-In due to Raise and therefore gets his money reduced to 15-5
-		table.getPlayer(1).setMoney(10);
+		// Player 0 should go All-In due to CALL and therefore gets his money reduced to 10
+		player0.setMoney(10);
+		// Player 1 should go All-In due to Raise and therefore gets his money reduced to 15
+		player1.setMoney(10);
 		
 		// Preflop
 		table.action(0, Action.CALL);
@@ -134,6 +145,109 @@ public class TableTest {
 		/*System.out.println("Player 0 money: "+player0.getMoney());
 		System.out.println("Player 1 money: "+player1.getMoney());
 		System.out.println("Player 2 money: "+table.getPlayer(2).getMoney());*/
+	}
+	
+	@Test
+	public void sidePotShouldWork() {
+		ArrayList<Card> cards = new ArrayList<>();
+		// Player 1
+		cards.add(new Card(Color.CLUBS, Value.SEVEN));
+		cards.add(new Card(Color.CLUBS, Value.KING));
+		// Player 2
+		cards.add(new Card(Color.CLUBS, Value.SEVEN));
+		cards.add(new Card(Color.CLUBS, Value.EIGHT));
+		// Player 3
+		cards.add(new Card(Color.CLUBS, Value.ASS));
+		cards.add(new Card(Color.DIAMONDS, Value.ASS));
+		// Table
+		cards.add(new Card(Color.HEARTS, Value.KING));
+		cards.add(new Card(Color.DIAMONDS, Value.KING));
+		cards.add(new Card(Color.SPADES, Value.JACK));
+		cards.add(new Card(Color.HEARTS, Value.NINE));
+		cards.add(new Card(Color.DIAMONDS, Value.NINE));
+
+		cards.add(new Card(Color.DIAMONDS, Value.NINE));
+		cards.add(new Card(Color.DIAMONDS, Value.NINE));
+		cards.add(new Card(Color.DIAMONDS, Value.NINE));
+		cards.add(new Card(Color.DIAMONDS, Value.NINE));
+		cards.add(new Card(Color.DIAMONDS, Value.NINE));
+		cards.add(new Card(Color.DIAMONDS, Value.NINE));
+		Table table = new Table(3, 100, new TestCardStack(cards));
+		Player player0 = table.getPlayer(0);
+		Player player1 = table.getPlayer(1);
+		Player player2 = table.getPlayer(2);
+		System.out.println(player0.getMoney());
+		player0.setMoney(10);
+		player1.setMoney(200);
+		player2.setMoney(50);
+		
+		table.action(0, Action.CALL);
+		assertTrue("Player 0 goes All-In", player0.isAllIn());
+		table.action(1, Action.RAISE, 20);
+		assertTrue(player1.isAllIn() == false);
+		table.action(2, Action.RAISE, 30);
+		assertTrue(player2.isAllIn());
+		
+		table.action(1, Action.CALL);
+		assertEquals(GameState.FLOP, table.getGameState());
+		table.action(1, Action.CHECK);
+		assertEquals(GameState.TURN, table.getGameState());
+		table.action(1, Action.CHECK);
+		assertEquals(GameState.RIVER, table.getGameState());
+		table.action(1, Action.CHECK);
+		assertEquals(GameState.PRE_FLOP, table.getGameState());
+		
+		assertEquals(15, player0.getMoney());
+		System.out.println(player0.getMoney());
+		System.out.println(player1.getMoney());
+		System.out.println(player2.getMoney());
+		
+	}
+	
+	public static boolean cardArrayContainsCards(ArrayList<Card> cards, ArrayList<Card> contained) {
+		for (Card card : contained) {
+			boolean contains = false;
+			for (Card container : cards) {
+				if (container.getValue().equals(card.getValue())) {
+					contains = true;
+					break;
+				}
+			}
+			if (!contains) return false;
+		}
+		return true;
+	}
+	
+	@Test
+	public void testCardStackShouldGiveCards() {
+		ArrayList<Card> cards = new ArrayList<>();
+		// Player 1
+		cards.add(new Card(Color.CLUBS, Value.SEVEN));
+		cards.add(new Card(Color.CLUBS, Value.EIGHT));
+		// Player 2
+		cards.add(new Card(Color.CLUBS, Value.NINE));
+		cards.add(new Card(Color.CLUBS, Value.TEN));
+		// Player 3
+		cards.add(new Card(Color.CLUBS, Value.TEN));
+		cards.add(new Card(Color.CLUBS, Value.JACK));
+		// Table
+		cards.add(new Card(Color.CLUBS, Value.QUEEN));
+		cards.add(new Card(Color.CLUBS, Value.KING));
+		cards.add(new Card(Color.DIAMONDS, Value.ASS));
+		cards.add(new Card(Color.DIAMONDS, Value.SEVEN));
+		cards.add(new Card(Color.DIAMONDS, Value.NINE));
+		Table table = new Table(3, 100, new TestCardStack(cards));
+		
+		ArrayList<Card> player1Cards = new ArrayList<>();
+		player1Cards.add(new Card(Color.CLUBS, Value.SEVEN));
+		player1Cards.add(new Card(Color.CLUBS, Value.EIGHT));
+		assertTrue(cardArrayContainsCards(table.getPlayer(0).getCards(), player1Cards));
+		
+		ArrayList<Card> table1Cards = new ArrayList<>();
+		cards.add(new Card(Color.CLUBS, Value.QUEEN));
+		cards.add(new Card(Color.CLUBS, Value.KING));
+		cards.add(new Card(Color.DIAMONDS, Value.ASS));
+		assertTrue(cardArrayContainsCards(table.getCards(), table1Cards));
 	}
 	
 	@Test
