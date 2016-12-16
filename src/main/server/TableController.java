@@ -2,6 +2,7 @@ package main.server;
 
 import java.util.ArrayList;
 
+import main.core.Action;
 import main.core.Table;
 
 public class TableController {
@@ -30,6 +31,10 @@ public class TableController {
 			table.resend();
 		}
 		return currentPlayer;
+	}
+	
+	public void action(int playerId, Action action, int amount) {
+		table.action(playerId, action, amount);
 	}
 
 	/**

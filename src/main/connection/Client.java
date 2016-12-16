@@ -13,12 +13,12 @@ public class Client implements Runnable{
 	private Socket socket;
 	private ObjectInputStream in;
 	private ObjectOutputStream out;
-	Thread thread;
+	private Thread thread;
 
 	private String username;
 	private int room;
 	
-	Update update;
+	private Update update;
 
 	public Client(String host, int port, String username, int room)
 			throws Exception {
@@ -61,9 +61,7 @@ public class Client implements Runnable{
 		switch (packet.getType()) {
 		case "update":
 			HashMap<String, Object> data = packet.getData();
-			if (data.containsKey("update") && data.get("update") instanceof Update) {
-				update = (Update) data.get("update");
-			}
+			update = (Update) data.get("update");
 			break;
 		default:
 			break;
@@ -94,6 +92,7 @@ public class Client implements Runnable{
 		data.put("action", action);
 		data.put("amount", amount);
 		out.writeObject(new Packet("action", data));
+		out.flush();
 	}
 
 	/**

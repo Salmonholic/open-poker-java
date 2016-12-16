@@ -8,13 +8,16 @@ import java.util.HashMap;
 
 import main.connection.Packet;
 import main.connection.Update;
+import main.core.Action;
 import main.core.Table;
 
 public class PlayerController implements Runnable {
 
 	private Socket socket;
 	private TableController tableController;
-	int id;
+	private Thread thread;
+	
+	private int id;
 	private int tableId;
 	private String username;
 	private String type;
@@ -47,12 +50,48 @@ public class PlayerController implements Runnable {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		
+		thread = new Thread(this);
+		thread.start();
 	}
 
 	@Override
 	public void run() {
 		while (true) {
+			try {
+				read();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	/**
+	 * Read all arrived packets
+	 * 
+	 * @throws Exception
+	 */
+	private void read() throws Exception {
+		Packet packet = (Packet) in.readObject();
+		parsePacket(packet);
+	}
 
+	/**
+	 * Parse a packet
+	 * 
+	 * @param packet
+	 *            Packet to parse
+	 */
+	private void parsePacket(Packet packet) {
+		switch (packet.getType()) {
+		case "update":
+			HashMap<String, Object> data = packet.getData();
+			Action action = (Action) data.get("action");
+			int amount = (Integer) data.get("amount");
+			tableController.action(id, action, amount);
+			break;
+		default:
+			break;
 		}
 	}
 
