@@ -26,7 +26,8 @@ public class TableController {
 		playerControllers.add(playerController);
 		if (currentPlayer == playerAmount) {
 			started = true;
-			table = new Table(playerAmount, money);
+			table = new Table(this, playerAmount, money);
+			table.resend();
 		}
 		return currentPlayer;
 	}

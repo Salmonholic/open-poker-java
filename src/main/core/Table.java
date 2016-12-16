@@ -193,9 +193,7 @@ public class Table {
 
 			currentPlayer = nextPlayer(playerId);
 			update();
-			if (tableController != null) {
-				tableController.resend();
-			}
+			resend();
 		} else {
 			throw new IllegalArgumentException();
 		}
@@ -440,5 +438,14 @@ public class Table {
 	
 	public TreeMap<Integer, Player> getPlayers() {
 		return players;
+	}
+	
+	/**
+	 * Notify tableController to resend data if it exists
+	 */
+	public void resend() {
+		if (tableController != null) {
+			tableController.resend();
+		}
 	}
 }

@@ -7,27 +7,37 @@ import java.net.Socket;
 import java.util.HashMap;
 
 import main.core.Action;
-import main.core.Table;
 
-public class Client {
+public class Client implements Runnable{
 
 	private Socket socket;
 	private ObjectInputStream in;
 	private ObjectOutputStream out;
+	Thread thread;
 
-	private Table table;
+	private String username;
+	private int room;
+	
+	Update update;
 
 	public Client(String host, int port, String username, int room)
 			throws Exception {
+		this.username = username;
+		this.room = room;
+		
 		socket = new Socket(host, port);
 		in = new ObjectInputStream(socket.getInputStream());
 		out = new ObjectOutputStream(socket.getOutputStream());
 		
 		HashMap<String, Object> data = new HashMap<>();
 		data.put("username", username);
-		data.put("table", room);
+		data.put("room", room);
 		data.put("type", "player");
 		out.writeObject(new Packet("connect", data));
+		out.flush();
+		
+		thread = new Thread(this);
+		thread.start();
 	}
 
 	/**
@@ -35,11 +45,10 @@ public class Client {
 	 * 
 	 * @throws Exception
 	 */
-	public void read() throws Exception {
-		while (in.available() > 0) {
-			Packet packet = (Packet) in.readObject();
-			parsePacket(packet);
-		}
+	private void read() throws Exception {
+		Packet packet = (Packet) in.readObject();
+		System.out.println(username + " got packet " + packet.getType());
+		parsePacket(packet);
 	}
 
 	/**
@@ -52,8 +61,8 @@ public class Client {
 		switch (packet.getType()) {
 		case "update":
 			HashMap<String, Object> data = packet.getData();
-			if (data.containsKey("table") && data.get("table") instanceof Table) {
-				table = (Table) data.get(table);
+			if (data.containsKey("update") && data.get("update") instanceof Update) {
+				update = (Update) data.get("update");
 			}
 			break;
 		default:
@@ -62,14 +71,13 @@ public class Client {
 	}
 
 	/**
-	 * Get the most recent table
+	 * Get the most recent update
 	 * 
-	 * @return Table
+	 * @return Update
 	 * @throws Exception
 	 */
-	public Table getTable() throws Exception {
-		read();
-		return table;
+	public Update getUpdate() throws Exception {
+		return update;
 	}
 
 	/**
@@ -97,6 +105,17 @@ public class Client {
 	 */
 	public void sendAction(Action action) throws IOException {
 		sendAction(action, 0);
+	}
+
+	@Override
+	public void run() {
+		while (true) {
+			try {
+				read();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 }

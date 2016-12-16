@@ -12,7 +12,9 @@ public class Main {
 	 * @throws Exception
 	 */
 	public static void main(String[] args) throws Exception {
-		new Client("127.0.0.1", 10101, "user", 0);
+		Client client1 = new Client("127.0.0.1", 10101, "user1", 0);
+		Client client2 = new Client("127.0.0.1", 10101, "user2", 0);
+		Client client3 = new Client("127.0.0.1", 10101, "user3", 0);
 	}
 
 }

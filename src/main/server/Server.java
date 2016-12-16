@@ -1,5 +1,6 @@
 package main.server;
 
+import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.HashMap;
@@ -8,12 +9,13 @@ public class Server {
 	private ServerSocket serverSocket;
 	private HashMap<Integer, TableController> tables = new HashMap<>();
 
-	public Server(int port) throws Exception {
+	public Server(int port, int players) throws Exception {
 		serverSocket = new ServerSocket(port);
 		System.out.println("Server started");
-		update();
 		
-		tables.put(0, new TableController(3, 1000));
+		tables.put(0, new TableController(players, 1000));
+		
+		update();
 	}
 
 	/**
@@ -37,6 +39,10 @@ public class Server {
 			throw new IllegalArgumentException();
 		}
 		return tables.get(id);
+	}
+	
+	public void close() throws IOException {
+		serverSocket.close();
 	}
 
 }
