@@ -84,7 +84,7 @@ public class PlayerController implements Runnable {
 	 */
 	private void parsePacket(Packet packet) {
 		switch (packet.getType()) {
-		case "update":
+		case "action":
 			HashMap<String, Object> data = packet.getData();
 			Action action = (Action) data.get("action");
 			int amount = (Integer) data.get("amount");

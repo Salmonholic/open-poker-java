@@ -24,6 +24,11 @@ public class Update implements Serializable {
 	private int currentPlayer = 0;
 
 	private ArrayList<Card> yourCards;
+	private int yourId;
+
+	public int getYourId() {
+		return yourId;
+	}
 
 	TreeMap<Integer, Player> players;
 
@@ -42,6 +47,7 @@ public class Update implements Serializable {
 		currentPlayer = table.getCurrentPlayer();
 
 		yourCards = table.getPlayer(id).getCards();
+		yourId = id;
 		
 		players = new TreeMap<>();
 		for (int playerId : table.getPlayers().keySet()) {

@@ -34,7 +34,10 @@ public class TableController {
 	}
 	
 	public void action(int playerId, Action action, int amount) {
-		table.action(playerId, action, amount);
+		if (started) {
+			System.out.println("Player " + playerId + " did " + action + " amount " + amount);
+			table.action(playerId, action, amount);
+		}
 	}
 
 	/**
