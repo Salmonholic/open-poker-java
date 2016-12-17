@@ -18,7 +18,6 @@ import main.core.Player;
 import main.core.Table;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import tests.core.cardstack.TestCardStack;
@@ -50,7 +49,7 @@ public class TableTest {
 
 		// Check money
 		assertEquals("CurrentBet", 10, table.getCurrentBet());
-		assertEquals("Pot", 15, table.getPot().get(0).intValue());
+		assertEquals("Pot", 15, table.getPotValue());
 		assertEquals("Dealer", 100, table.getPlayer(0).getMoney());
 		assertEquals("SmallBlind", 95, table.getPlayer(1).getMoney());
 		assertEquals("BigBlind", 90, table.getPlayer(2).getMoney());
@@ -64,7 +63,7 @@ public class TableTest {
 
 		// Check money
 		assertEquals("CurrentBet", 0, table.getCurrentBet());
-		assertEquals("Pot", 30, table.getPot().get(0).intValue());
+		assertEquals("Pot", 30, table.getPotValue());
 		assertEquals("Player 0 money", 90, table.getPlayer(0).getMoney());
 		assertEquals("Player 1 money", 90, table.getPlayer(1).getMoney());
 		assertEquals("Player 2 money", 90, table.getPlayer(2).getMoney());
@@ -78,7 +77,7 @@ public class TableTest {
 		assertEquals(GameState.TURN, table.getGameState());
 
 		// Check money
-		assertEquals("Pot", 75, table.getPot().get(0).intValue());
+		assertEquals("Pot", 75, table.getPotValue());
 		assertEquals("Player 0 money", 75, table.getPlayer(0).getMoney());
 		assertEquals("Player 1 money", 75, table.getPlayer(1).getMoney());
 		assertEquals("Player 2 money", 75, table.getPlayer(2).getMoney());
@@ -93,7 +92,7 @@ public class TableTest {
 		assertEquals(GameState.RIVER, table.getGameState());
 
 		// Check money
-		assertEquals("Pot", 115, table.getPot().get(0).intValue());
+		assertEquals("Pot", 115, table.getPotValue());
 		assertEquals("Player 0 money", 75, table.getPlayer(0).getMoney());
 		assertEquals("Player 1 money", 55, table.getPlayer(1).getMoney());
 		assertEquals("Player 2 money", 55, table.getPlayer(2).getMoney());
@@ -107,7 +106,7 @@ public class TableTest {
 		assertEquals("New ButtonId", 1, table.getButtonId());
 		assertEquals("New SmallBlindId", 2, table.getSmallBlindId());
 		assertEquals("New BigBlindId", 0, table.getBigBlindId());
-		assertEquals("Pot", 15, table.getPot().get(0).intValue());
+		assertEquals("Pot", 15, table.getPotValue());
 		assertEquals("Player 0 money", 65, table.getPlayer(0).getMoney());
 		assertThat("Player 1 money", table.getPlayer(1).getMoney(),
 				anyOf(is(55), is(170), is(112)));
@@ -116,7 +115,6 @@ public class TableTest {
 
 	}
 	
-	@Ignore
 	@Test
 	public void allInShouldWork() {
 		Table table = new Table(3, 100);
@@ -139,6 +137,7 @@ public class TableTest {
 		table.action(1, Action.RAISE, 5);
 		assertTrue("Player 1 goes All-In", player1.isAllIn());
 		assertEquals("Player 1 should have no money left", 0, player1.getMoney());
+		assertEquals(GameState.PRE_FLOP, table.getGameState());
 		table.action(2, Action.CALL);
 		assertEquals(GameState.PRE_FLOP, table.getGameState());
 		
@@ -150,13 +149,13 @@ public class TableTest {
 	@Test
 	public void sidePotShouldWork() {
 		ArrayList<Card> cards = new ArrayList<>();
+		// Player 0
+		cards.add(new Card(Color.CLUBS, Value.SEVEN));
+		cards.add(new Card(Color.CLUBS, Value.TWO));
 		// Player 1
 		cards.add(new Card(Color.CLUBS, Value.SEVEN));
-		cards.add(new Card(Color.CLUBS, Value.KING));
-		// Player 2
-		cards.add(new Card(Color.CLUBS, Value.SEVEN));
 		cards.add(new Card(Color.CLUBS, Value.EIGHT));
-		// Player 3
+		// Player 2
 		cards.add(new Card(Color.CLUBS, Value.ASS));
 		cards.add(new Card(Color.DIAMONDS, Value.ASS));
 		// Table
@@ -176,7 +175,7 @@ public class TableTest {
 		Player player0 = table.getPlayer(0);
 		Player player1 = table.getPlayer(1);
 		Player player2 = table.getPlayer(2);
-		System.out.println(player0.getMoney());
+		// player1 paid 5, player2 paid 10
 		player0.setMoney(10);
 		player1.setMoney(200);
 		player2.setMoney(50);
@@ -186,21 +185,13 @@ public class TableTest {
 		table.action(1, Action.RAISE, 20);
 		assertTrue(player1.isAllIn() == false);
 		table.action(2, Action.RAISE, 30);
-		assertTrue(player2.isAllIn());
-		
+		assertTrue("Player 2 goes All-In", player2.isAllIn());
 		table.action(1, Action.CALL);
-		assertEquals(GameState.FLOP, table.getGameState());
-		table.action(1, Action.CHECK);
-		assertEquals(GameState.TURN, table.getGameState());
-		table.action(1, Action.CHECK);
-		assertEquals(GameState.RIVER, table.getGameState());
-		table.action(1, Action.CHECK);
 		assertEquals(GameState.PRE_FLOP, table.getGameState());
 		
-		assertEquals(15, player0.getMoney());
-		System.out.println(player0.getMoney());
-		System.out.println(player1.getMoney());
-		System.out.println(player2.getMoney());
+		assertEquals(0, player0.getMoney());
+		assertEquals(275, player1.getMoney());
+		assertEquals(0, player2.getMoney());
 		
 	}
 	

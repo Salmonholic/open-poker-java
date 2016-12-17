@@ -14,25 +14,27 @@ import java.util.Map.Entry;
 import java.util.TreeMap;
 
 public class Table {
-	TreeMap<Integer, Player> players;
-	CardStack cardStack;
-	HandChecker handChecker = new HandChecker();
-	ArrayList<Card> cards = new ArrayList<>(5);
-	private ArrayList<Integer> pot = new ArrayList<>(1);
-	GameState gameState = GameState.SHOW_DOWN;
+	private TreeMap<Integer, Player> players;
+	private CardStack cardStack;
+	private HandChecker handChecker = new HandChecker();
+	private ArrayList<Card> cards = new ArrayList<>(5);
+	// Pot: Each entry is a sidepot with
+	//[value each player has to pay into sidepot, current value of sidepot]
+	private ArrayList<int[]> pot = new ArrayList<>(1);
+	private GameState gameState = GameState.SHOW_DOWN;
 
-	int buttonId = -1;
-	int smallBlindId;
-	int bigBlindId;
-	int smallBlind = 5;
+	private int buttonId = -1;
+	private int smallBlindId;
+	private int bigBlindId;
+	private int smallBlind = 5;
 
-	int lastBetId = 0;
-	int currentBet;
-	int currentPlayer = 0;
-	int notFoldedOrAllInPlayers;
+	private int lastBetId = 0;
+	private int currentBet;
+	private int currentPlayer = 0;
+	private int notFoldedOrAllInPlayers;
 
-	boolean bigBlindMadeDecision;
-	boolean delayNextGameState;
+	private boolean bigBlindMadeDecision;
+	private boolean delayNextGameState;
 
 	/**
 	 * Poker table
@@ -70,6 +72,8 @@ public class Table {
 	}
 
 	private void update() {
+		if (delayNextGameState) return;
+
 		// check if only one player has not folded
 		if (notFoldedOrAllInPlayers == 1) {
 			for (int i=cards.size(); i<5; i++) {
@@ -81,8 +85,6 @@ public class Table {
 			preFlop();
 		}
 		
-		if (delayNextGameState) return;
-
 		// game state transition
 		if ((!(gameState == GameState.PRE_FLOP) && currentPlayer == lastBetId)
 				|| (gameState == GameState.PRE_FLOP && bigBlindMadeDecision && currentPlayer == lastBetId)) {
@@ -138,7 +140,6 @@ public class Table {
 	}
 
 	public void action(int playerId, Action action, int amount) {
-		// TODO console output
 		if (playerId == currentPlayer) {
 			delayNextGameState = false;
 			
@@ -271,7 +272,7 @@ public class Table {
 		// Pay out the pot
 		Iterator<ArrayList<Player>> winnersLists = winningOrder.values()
 				.iterator();
-		while ((pot.get(pot.size() - 1) != 0) && winnersLists.hasNext()) {
+		while ((pot.get(pot.size() - 1)[1] != 0) && winnersLists.hasNext()) {
 			List<Player> winners = winnersLists.next();
 			while (!winners.isEmpty()) {
 				// Get side pot in which all remaining winners are involved
@@ -285,8 +286,8 @@ public class Table {
 				// Sum up all lower side pots
 				int sidepot = 0;
 				for (int i = 0; i <= maxsidepot; i++) {
-					sidepot += pot.get(i);
-					pot.set(i, 0);
+					sidepot += pot.get(i)[1];
+					pot.get(i)[1] = sidepot;
 				}
 				// Pay out money to each winner
 				int profit = sidepot / (winners.size()); // Casino gets rest of
@@ -324,7 +325,7 @@ public class Table {
 		// Reset pot and cards
 		cards.clear();
 		pot.clear();
-		pot.add(0);
+		pot.add(new int[] {0, 0});
 		// Reset number of folded players
 		notFoldedOrAllInPlayers = players.size();
 	}
@@ -348,6 +349,7 @@ public class Table {
 	}
 
 	public void setCurrentBet(int currentBet) {
+		pot.get(pot.size() - 1)[0] += currentBet - this.currentBet;
 		this.currentBet = currentBet;
 	}
 
@@ -355,26 +357,89 @@ public class Table {
 		return pot.size() - 1;
 	}
 
-	public void addToPot(int amount) {
-		pot.set(pot.size() - 1, pot.get(pot.size() - 1) + amount);
+	public void addToPot(int totalBet, int amount) {
+		int sidepotSum = 0;
+		for (int[] sidepot : pot) {
+			sidepotSum += sidepot[0];
+			if (sidepotSum > totalBet) {
+				int amountForSidepot = sidepotSum - totalBet;
+				if (amountForSidepot < amount) {
+					sidepot[1] += amountForSidepot;
+					amount -= amountForSidepot;
+				} else {
+					sidepot[1] += amount;
+					amount = 0;
+					break;
+				}
+			}
+		}
+		pot.get(pot.size() - 1)[1] += amount;
+	}
+	
+	public int getPotValue() {
+		int potValue = 0;
+		for (int[] sidepot : pot) {
+			potValue += sidepot[1];
+		}
+		return potValue;
 	}
 
 	/**
-	 * @param playerId
-	 *            Id of player who went All-In
+	 * @param allInBet
+	 *            totalBet of player, who went all-In
 	 */
 	public void startSidePot(int playerId) {
-		int allInValue = players.get(playerId).getCurrentBet();
-		int newSidePot = 0;
-		for (Player player : players.values()) {
-			int playerBet = player.getCurrentBet();
-			if (playerBet > allInValue) {
-				addToPot(allInValue - playerBet);
-				newSidePot += allInValue - playerBet;
+		int allInBet = players.get(playerId).getTotalBet();
+		int sidePotPayInSum = 0;
+		for (int i=0; i<pot.size(); i++) {
+			sidePotPayInSum += pot.get(i)[0];
+			if (sidePotPayInSum > allInBet) {
+				// split this sidePot into 2
+				int[] newSidePot = {sidePotPayInSum - allInBet, 0};
+				int[] oldSidePot = pot.get(i);
+				oldSidePot[0] -= newSidePot[0];
+				for (Player player : players.values()) {
+					if (player.getId() != playerId) {
+						int playerTotalBet = player.getTotalBet();
+						if (playerTotalBet > allInBet) {
+							if (playerTotalBet >= sidePotPayInSum) {
+								oldSidePot[1] -= newSidePot[0];
+								newSidePot[1] += newSidePot[0];
+							} else {
+								oldSidePot[1] -= playerTotalBet - allInBet;
+								newSidePot[1] += playerTotalBet - allInBet;
+							}
+						}
+					}
+				}
+				pot.add(i+1, newSidePot);
+				// fix player.lastPot for every player
+				for (Player player : players.values()) {
+					if (player.getId() != playerId && player.getLastPot() >= i)
+						player.setLastPot(player.getLastPot() + 1);
+				}
+				return;
 			}
 		}
-		pot.add(newSidePot);
+		// add void sidePot at the end
+		pot.add(pot.size() - 1, new int[] {0, 0});
+		for (Player player : players.values()) {
+			if (player.getId() != playerId && player.getLastPot() == pot.size()-2)
+				player.setLastPot(player.getLastPot() + 1);
+		}
 	}
+		
+		/*int newSidePot = 0;
+		for (Player player : players.values()) {
+			int playerBet = player.getCurrentBet();
+			if (playerBet > allInBet) {
+				//TODO iterate over all sidepots
+				pot.get(pot.size() - 1)[1] -= (allInBet - playerBet);
+				newSidePot += allInBet - playerBet;
+			}
+		}
+		pot.add(new int[] {currentBet - allInBet, newSidePot});
+	}*/
 
 	public Player getPlayer(int playerId) {
 		return players.get(playerId);
@@ -420,7 +485,7 @@ public class Table {
 		return currentPlayer;
 	}
 
-	public ArrayList<Integer> getPot() {
+	public ArrayList<int[]> getPot() {
 		return pot;
 	}
 	

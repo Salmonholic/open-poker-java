@@ -9,6 +9,7 @@ public class Player {
 	private ArrayList<Card> cards = new ArrayList<>(2);
 	private boolean fold = false;
 	private boolean allIn = false;
+	private int totalBet = 0;
 	private int currentBet = 0;
 	private int lastPot = -1;
 
@@ -91,8 +92,9 @@ public class Player {
 	public void call() {
 		int amountToBet = table.getCurrentBet() - currentBet;
 		if (money - amountToBet > 0) { // Check for All-In
+			totalBet += amountToBet;
 			currentBet += amountToBet;
-			table.addToPot(amountToBet);
+			table.addToPot(totalBet, amountToBet);
 			addMoney(-amountToBet);
 		} else {
 			allIn();
@@ -103,17 +105,18 @@ public class Player {
 	}
 
 	public void bet(int amount) {
+		table.setCurrentBet(table.getCurrentBet() + amount);
 		if (money > amount) {
+			totalBet += amount;
 			currentBet += amount;
-			table.addToPot(amount);
+			table.addToPot(totalBet, amount);
 			addMoney(-amount);
 			table.setLastBetId(id);
-		} else if (money == amount) {
+		} else { // money == amount
 			allIn();
 			table.setLastBetId(table.nextPlayer(id));
 			table.setDelayNextGameState(true);
 		}
-		table.setCurrentBet(table.getCurrentBet() + amount);
 	}
 
 	public void raise(int amount) {
@@ -122,8 +125,9 @@ public class Player {
 	}
 
 	private void allIn() {
+		totalBet += money;
 		currentBet += money;
-		table.addToPot(money);
+		table.addToPot(totalBet, money);
 		lastPot = table.getPotIndex();
 		table.startSidePot(id);
 		money = 0;
@@ -136,6 +140,7 @@ public class Player {
 	 */
 	public void reset() {
 		cards.clear();
+		totalBet = 0;
 		currentBet = 0;
 		allIn = false;
 		fold = false;
@@ -148,6 +153,10 @@ public class Player {
 
 	public int getCurrentBet() {
 		return currentBet;
+	}
+	
+	public int getTotalBet() {
+		return totalBet;
 	}
 
 	public void setLastPot(int potIndex) {
