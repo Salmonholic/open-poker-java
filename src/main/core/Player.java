@@ -92,9 +92,9 @@ public class Player {
 	public void call() {
 		int amountToBet = table.getCurrentBet() - currentBet;
 		if (money - amountToBet > 0) { // Check for All-In
+			table.addToPot(totalBet, amountToBet);
 			totalBet += amountToBet;
 			currentBet += amountToBet;
-			table.addToPot(totalBet, amountToBet);
 			addMoney(-amountToBet);
 		} else {
 			allIn();
@@ -107,9 +107,9 @@ public class Player {
 	public void bet(int amount) {
 		table.setCurrentBet(table.getCurrentBet() + amount);
 		if (money > amount) {
+			table.addToPot(totalBet, amount);
 			totalBet += amount;
 			currentBet += amount;
-			table.addToPot(totalBet, amount);
 			addMoney(-amount);
 			table.setLastBetId(id);
 		} else { // money == amount

@@ -6,6 +6,7 @@ import handChecker.PokerCard;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -251,7 +252,7 @@ public class Table {
 	}
 
 	private void showDown() {
-		TreeMap<HandValue, ArrayList<Player>> winningOrder = new TreeMap<>();
+		TreeMap<HandValue, ArrayList<Player>> winningOrder = new TreeMap<>(Collections.reverseOrder());
 		// Sort out players who have fold
 		for (Entry<Integer, Player> entry : players.entrySet()) {
 			if (!entry.getValue().isFold()) {
@@ -272,7 +273,7 @@ public class Table {
 		// Pay out the pot
 		Iterator<ArrayList<Player>> winnersLists = winningOrder.values()
 				.iterator();
-		while ((pot.get(pot.size() - 1)[1] != 0) && winnersLists.hasNext()) {
+		while ((getPotValue() != 0) && winnersLists.hasNext()) {
 			List<Player> winners = winnersLists.next();
 			while (!winners.isEmpty()) {
 				// Get side pot in which all remaining winners are involved
@@ -287,7 +288,7 @@ public class Table {
 				int sidepot = 0;
 				for (int i = 0; i <= maxsidepot; i++) {
 					sidepot += pot.get(i)[1];
-					pot.get(i)[1] = sidepot;
+					pot.get(i)[1] = 0;
 				}
 				// Pay out money to each winner
 				int profit = sidepot / (winners.size()); // Casino gets rest of
@@ -312,13 +313,14 @@ public class Table {
 	 * Resets player flags and (side) pots. Has to be called each new round.
 	 */
 	private void reset() {
-		// Reset players
-		for (Map.Entry<Integer, Player> entry : players.entrySet()) {
-			if (entry.getValue().getMoney() < 0) {
-				players.remove(entry.getKey());
-			} else {
-				entry.getValue().reset();
-			}
+		// Remove players
+		Iterator<Player> playerIterator = players.values().iterator();
+		while(playerIterator.hasNext()) {
+			Player player = playerIterator.next();
+			if (player.getMoney() == 0)
+				playerIterator.remove();
+			else
+				player.reset();
 		}
 		// Reset card stack
 		cardStack.initCards();
@@ -326,6 +328,7 @@ public class Table {
 		cards.clear();
 		pot.clear();
 		pot.add(new int[] {0, 0});
+		currentBet = 0;
 		// Reset number of folded players
 		notFoldedOrAllInPlayers = players.size();
 	}
@@ -422,11 +425,7 @@ public class Table {
 			}
 		}
 		// add void sidePot at the end
-		pot.add(pot.size() - 1, new int[] {0, 0});
-		for (Player player : players.values()) {
-			if (player.getId() != playerId && player.getLastPot() == pot.size()-2)
-				player.setLastPot(player.getLastPot() + 1);
-		}
+		pot.add(pot.size(), new int[] {0, 0});
 	}
 		
 		/*int newSidePot = 0;

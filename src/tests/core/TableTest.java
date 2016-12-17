@@ -187,11 +187,16 @@ public class TableTest {
 		table.action(2, Action.RAISE, 30);
 		assertTrue("Player 2 goes All-In", player2.isAllIn());
 		table.action(1, Action.CALL);
+		//table.action(1, Action.RAISE, 10); // Works as well.
 		assertEquals(GameState.PRE_FLOP, table.getGameState());
 		
-		assertEquals(0, player0.getMoney());
-		assertEquals(275, player1.getMoney());
-		assertEquals(0, player2.getMoney());
+		// Player 2 wins everything.
+		// Remember blinds have been payed again.
+		// Remember player 0 was dealer. So player 1 is dealer and small blind now.
+		assertEquals("Player 0 money after round", 0, player0.getMoney());
+		assertEquals("Player 0 should be removed", null, table.getPlayer(0));
+		assertEquals("Player 1 money after round", 145-5, player1.getMoney());
+		assertEquals("Player 2 money after round", 130-10, player2.getMoney());
 		
 	}
 	
