@@ -6,6 +6,8 @@ import handChecker.PokerCard;
 
 public class Card implements PokerCard, Serializable{
 
+	private static final long serialVersionUID = -6482007440355885437L;
+	
 	private Color color;
 	private Value value;
 

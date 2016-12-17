@@ -30,7 +30,7 @@ public class TableController {
 			table = new Table(this, playerAmount, money);
 			table.resend();
 		}
-		return currentPlayer;
+		return currentPlayer - 1;
 	}
 	
 	public void action(int playerId, Action action, int amount) {

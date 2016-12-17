@@ -4,8 +4,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.TreeMap;
 
-import javax.print.attribute.HashAttributeSet;
-
 import main.core.Card;
 import main.core.Table;
 
@@ -25,10 +23,6 @@ public class Update implements Serializable {
 
 	private ArrayList<Card> yourCards;
 	private int yourId;
-
-	public int getYourId() {
-		return yourId;
-	}
 
 	TreeMap<Integer, Player> players;
 
@@ -55,6 +49,10 @@ public class Update implements Serializable {
 			players.put(playerId, new Player(player.getMoney(),
 					player.isFold(), player.isAllIn(), player.getCurrentBet()));
 		}
+	}
+
+	public int getYourId() {
+		return yourId;
 	}
 
 	public ArrayList<Card> getCommunityCards() {

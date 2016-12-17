@@ -1,7 +1,6 @@
 package main.main;
 
 import main.connection.Client;
-import main.core.Action;
 
 public class Main {
 

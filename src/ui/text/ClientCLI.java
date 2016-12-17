@@ -1,7 +1,5 @@
 package ui.text;
 
-import java.io.ObjectOutputStream;
-
 import main.connection.Client;
 import main.connection.Player;
 import main.connection.Update;
@@ -20,6 +18,7 @@ public class ClientCLI extends CLI {
 		super();
 		System.out.println("Host / IP:");
 		String host = scanner.nextLine();
+		if (host == "") host = "127.0.0.1";
 		System.out.println("Port (10101):");
 		int port = Integer.parseInt(scanner.nextLine());
 		System.out.println("Username:");

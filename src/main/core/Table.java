@@ -149,7 +149,6 @@ public class Table {
 	}
 
 	public void action(int playerId, Action action, int amount) {
-		// TODO console output
 		if (playerId == currentPlayer) {
 			delayNextGameState = false;
 
