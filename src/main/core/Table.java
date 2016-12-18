@@ -9,10 +9,11 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 
 import java.util.TreeMap;
+
+import main.server.TableController;
 
 public class Table {
 	private TreeMap<Integer, Player> players;
@@ -23,6 +24,8 @@ public class Table {
 	//[value each player has to pay into sidepot, current value of sidepot]
 	private ArrayList<int[]> pot = new ArrayList<>(1);
 	private GameState gameState = GameState.SHOW_DOWN;
+
+	private TableController tableController;
 
 	private int buttonId = -1;
 	private int smallBlindId;
@@ -47,7 +50,8 @@ public class Table {
 	 * @param cardStack
 	 *            CardStack generating Cards
 	 */
-	public Table(int playerAmount, int money, CardStack cardStack) {
+	public Table(TableController tableController, int playerAmount, int money,
+			CardStack cardStack) {
 		if (playerAmount <= 1 || money <= 0)
 			throw new IllegalArgumentException();
 		// Put players into TreeMap and set Id
@@ -56,8 +60,21 @@ public class Table {
 			players.put(i, new Player(this, i, money));
 		}
 		this.cardStack = cardStack;
+		this.tableController = tableController;
 		reset();
 		update();
+	}
+
+	public Table(TableController tableController, int playerAmount, int money) {
+		this(tableController, playerAmount, money, new CardStack());
+	}
+
+	public Table(int playerAmount, int money, CardStack cardStack) {
+		this(null, playerAmount, money, cardStack);
+	}
+
+	public Table(int playerAmount, int money) {
+		this(null, playerAmount, money, new CardStack());
 	}
 
 	public boolean isDelayNextGameState() {
@@ -66,10 +83,6 @@ public class Table {
 
 	public void setDelayNextGameState(boolean delayNextGameState) {
 		this.delayNextGameState = delayNextGameState;
-	}
-
-	public Table(int playerAmount, int money) {
-		this(playerAmount, money, new CardStack());
 	}
 
 	private void update() {
@@ -85,7 +98,7 @@ public class Table {
 			gameState = GameState.PRE_FLOP;
 			preFlop();
 		}
-		
+
 		// game state transition
 		if ((!(gameState == GameState.PRE_FLOP) && currentPlayer == lastBetId)
 				|| (gameState == GameState.PRE_FLOP && bigBlindMadeDecision && currentPlayer == lastBetId)) {
@@ -143,7 +156,7 @@ public class Table {
 	public void action(int playerId, Action action, int amount) {
 		if (playerId == currentPlayer) {
 			delayNextGameState = false;
-			
+
 			Player player = players.get(playerId);
 			switch (action) {
 			case BET:
@@ -184,6 +197,7 @@ public class Table {
 
 			currentPlayer = nextPlayer(playerId);
 			update();
+			resend();
 		} else {
 			throw new IllegalArgumentException();
 		}
@@ -427,18 +441,6 @@ public class Table {
 		// add void sidePot at the end
 		pot.add(pot.size(), new int[] {0, 0});
 	}
-		
-		/*int newSidePot = 0;
-		for (Player player : players.values()) {
-			int playerBet = player.getCurrentBet();
-			if (playerBet > allInBet) {
-				//TODO iterate over all sidepots
-				pot.get(pot.size() - 1)[1] -= (allInBet - playerBet);
-				newSidePot += allInBet - playerBet;
-			}
-		}
-		pot.add(new int[] {currentBet - allInBet, newSidePot});
-	}*/
 
 	public Player getPlayer(int playerId) {
 		return players.get(playerId);
@@ -490,5 +492,18 @@ public class Table {
 	
 	public void oneMoreFoldOrAllInPlayer() {
 		notFoldedOrAllInPlayers--;
+	}
+	
+	public TreeMap<Integer, Player> getPlayers() {
+		return players;
+	}
+	
+	/**
+	 * Notify tableController to resend data if it exists
+	 */
+	public void resend() {
+		if (tableController != null) {
+			tableController.resend();
+		}
 	}
 }
