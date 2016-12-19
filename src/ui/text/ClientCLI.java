@@ -8,7 +8,7 @@ import main.core.Card;
 
 public class ClientCLI extends CLI {
 
-	Client client;
+	private Client client;
 	
 	public static void main(String[] args) throws Exception {
 		new ClientCLI();
@@ -32,6 +32,7 @@ public class ClientCLI extends CLI {
 
 	@Override
 	void onCommand(String command, String[] args) throws Exception {
+		System.out.println();
 		switch (command) {
 		case "action":
 			System.out.println("Action");
