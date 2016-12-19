@@ -108,7 +108,7 @@ public class Client implements Runnable{
 
 	@Override
 	public void run() {
-		while (true) {
+		while (!socket.isClosed()) {
 			try {
 				read();
 			} catch (Exception e) {
