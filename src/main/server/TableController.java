@@ -19,10 +19,11 @@ public class TableController {
 		this.money = money;
 	}
 	
-	public int addPlayerController(PlayerController playerController) {
+	public void addPlayerController(PlayerController playerController) {
 		if (started) {
 			throw new IllegalArgumentException();
 		}
+		playerController.setId(currentPlayer);
 		currentPlayer++;
 		playerControllers.add(playerController);
 		if (currentPlayer == playerAmount) {
@@ -30,7 +31,6 @@ public class TableController {
 			table = new Table(this, playerAmount, money);
 			table.resend();
 		}
-		return currentPlayer - 1;
 	}
 	
 	public void action(int playerId, Action action, int amount) {

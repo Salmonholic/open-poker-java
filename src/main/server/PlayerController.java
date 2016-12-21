@@ -38,7 +38,7 @@ public class PlayerController implements Runnable {
 		tableController = server.getTableController(tableId);
 		type = (String) data.get("type");
 
-		id = tableController.addPlayerController(this);
+		tableController.addPlayerController(this);
 
 		System.out.println("New " + type + " connected with id " + id + " on table "
 				+ tableId + " with name " + username);
@@ -108,4 +108,7 @@ public class PlayerController implements Runnable {
 		}
 	}
 
+	public void setId(int id) {
+		this.id = id;
+	}
 }
