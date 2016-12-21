@@ -1,29 +1,34 @@
 package ui.text;
 
 import main.server.Server;
-import main.server.TableController;
 
 public class ServerCLI extends CLI {
 	
 	private Server server;
 	
-	public static void main(String[] args) throws Exception {
+	public static void main(String[] args) {
 		new ServerCLI();
 	}
 	
-	public ServerCLI() throws Exception {
+	public ServerCLI() {
 		super();
 		System.out.println("Port (10101):");
 		int port = Integer.parseInt(scanner.nextLine());
 		System.out.println("Players:");
 		int players = Integer.parseInt(scanner.nextLine());
-		server = new Server(port, players);
+		try {
+			server = new Server(port, players);
+		} catch (Exception e) {
+			System.out.println("Start up error!");
+			e.printStackTrace();
+			return;
+		}
 
 		startCLI();
 	}
 
 	@Override
-	void onCommand(String command, String[] args) throws Exception {
+	void onCommand(String command, String[] args) {
 		System.out.println();
 		switch (command) {
 		case "info":

@@ -1,5 +1,7 @@
 package ui.text;
 
+import java.io.IOException;
+
 import main.connection.Client;
 import main.connection.Player;
 import main.connection.Update;
@@ -10,11 +12,11 @@ public class ClientCLI extends CLI {
 
 	private Client client;
 	
-	public static void main(String[] args) throws Exception {
+	public static void main(String[] args) {
 		new ClientCLI();
 	}
 
-	public ClientCLI() throws Exception {
+	public ClientCLI() {
 		super();
 		System.out.println("Host / IP:");
 		String host = scanner.nextLine();
@@ -25,23 +27,43 @@ public class ClientCLI extends CLI {
 		String username = scanner.nextLine();
 		System.out.println("Room (0):");
 		int room = Integer.parseInt(scanner.nextLine());
-		client = new Client(host, port, username, room);
+		try {
+			client = new Client(host, port, username, room);
+		} catch (Exception e) {
+			System.out.println("Start up error!");
+			e.printStackTrace();
+			return;
+		}
 
 		startCLI();
 	}
 
 	@Override
-	void onCommand(String command, String[] args) throws Exception {
+	void onCommand(String command, String[] args) {
 		System.out.println();
 		switch (command) {
 		case "action":
 			System.out.println("Action");
 			switch (args.length) {
 			case 1:
-				client.sendAction(Action.valueOf(args[0]));
+				try {
+					client.sendAction(Action.valueOf(args[0].toUpperCase()));
+				} catch (IllegalArgumentException e) {
+					System.out.println("Action not found!");
+				} catch (IOException e) {
+					System.out.println("Network error!");
+					//TODO shut down?
+				}
 				break;
 			case 2:
-				client.sendAction(Action.valueOf(args[0]), Integer.parseInt(args[1]));
+				try {
+					client.sendAction(Action.valueOf(args[0]), Integer.parseInt(args[1]));
+				} catch (IllegalArgumentException e) {
+					System.out.println("Action not found!");
+				} catch (IOException e) {
+					System.out.println("Network error!");
+					//TODO shut down?
+				}
 				break;
 			default:
 				System.out.println("Wrong use!");
@@ -80,7 +102,9 @@ public class ClientCLI extends CLI {
 			// Help
 			System.out.println("Command not found!");
 			System.out.println("Commands:");
+			System.out.println("info - Display game information");
 			System.out.println("action <action> [amount] - Send an action to the server");
+			System.out.println("  <action> may be one of: check, call, bet, raise, fold");
 			break;
 		}
 	}

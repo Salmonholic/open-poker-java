@@ -21,7 +21,7 @@ public class TableController {
 	
 	public void addPlayerController(PlayerController playerController) {
 		if (started) {
-			throw new IllegalArgumentException();
+			throw new IllegalStateException();
 		}
 		playerController.setId(currentPlayer);
 		currentPlayer++;

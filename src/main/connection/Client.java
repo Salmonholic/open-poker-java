@@ -20,8 +20,7 @@ public class Client implements Runnable{
 	
 	private Update update;
 
-	public Client(String host, int port, String username, int room)
-			throws Exception {
+	public Client(String host, int port, String username, int room) throws Exception{
 		this.username = username;
 		this.room = room;
 		
@@ -74,7 +73,7 @@ public class Client implements Runnable{
 	 * @return Update
 	 * @throws Exception
 	 */
-	public Update getUpdate() throws Exception {
+	public Update getUpdate() {
 		return update;
 	}
 

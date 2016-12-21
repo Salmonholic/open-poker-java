@@ -20,11 +20,7 @@ public abstract class CLI implements Runnable {
 		// Remove first entry which is the command
 		String[] args = Arrays.copyOfRange(commandWithArgs, 1, commandWithArgs.length);
 		
-		try {
-			onCommand(command, args);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		onCommand(command, args);
 	}
 	
 	public void startCLI() {
@@ -32,7 +28,7 @@ public abstract class CLI implements Runnable {
 		thread.start();
 	}
 	
-	abstract void onCommand(String command, String[] args) throws Exception;
+	abstract void onCommand(String command, String[] args);
 
 	@Override
 	public void run() {

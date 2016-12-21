@@ -25,7 +25,8 @@ public class PlayerController implements Runnable {
 	private ObjectInputStream in;
 	private ObjectOutputStream out;
 
-	public PlayerController(Socket socket, Server server) throws Exception {
+	public PlayerController(Socket socket, Server server) throws IOException,
+			ClassNotFoundException, IllegalStateException {
 		this.socket = socket;
 
 		out = new ObjectOutputStream(socket.getOutputStream());
@@ -35,7 +36,7 @@ public class PlayerController implements Runnable {
 		HashMap<String, Object> data = packet.getData();
 		tableId = (int) data.get("room");
 		username = (String) data.get("username");
-		tableController = server.getTableController(tableId);
+		tableController = server.getTableController(tableId);//TODO catch
 		type = (String) data.get("type");
 
 		tableController.addPlayerController(this);
@@ -43,13 +44,9 @@ public class PlayerController implements Runnable {
 		System.out.println("New " + type + " connected with id " + id + " on table "
 				+ tableId + " with name " + username);
 		
-		packet = new Packet("accept", new HashMap<String, Object>());
-		try {
-			out.writeObject(packet);
-			out.flush();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		packet = new Packet("accept", null);
+		out.writeObject(packet);
+		out.flush();
 		
 		thread = new Thread(this);
 		thread.start();
@@ -71,9 +68,19 @@ public class PlayerController implements Runnable {
 	 * 
 	 * @throws Exception
 	 */
-	private void read() throws Exception {
-		Packet packet = (Packet) in.readObject();
-		parsePacket(packet);
+	private void read() {
+		try {
+			Packet packet = (Packet) in.readObject();
+			parsePacket(packet);
+		} catch (ClassNotFoundException e) {
+			System.out.println("Recieved corrupt client paket.");
+			//TODO in.reset()?
+		} catch (IOException e) {
+			System.out.println("Network error!");
+			e.printStackTrace();
+			//TODO in.reset()?
+			//TODO kick player?
+		}
 	}
 
 	/**
@@ -104,7 +111,7 @@ public class PlayerController implements Runnable {
 			out.writeObject(packet);
 			out.flush();
 		} catch (IOException e) {
-			e.printStackTrace();
+			System.out.println("Failed to send update to client " + id);
 		}
 	}
 

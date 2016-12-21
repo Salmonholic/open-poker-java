@@ -23,13 +23,19 @@ public class Server {
 	 * 
 	 * @throws Exception
 	 */
-	public void update() throws Exception {
+	public void update() {
 		while (true) {
 			try {
 				Socket socket = serverSocket.accept();
 				new PlayerController(socket, this);
-			} catch (Exception e) {
+			} catch (IOException e) {
+				System.out.println("Network error!");
 				e.printStackTrace();
+				//TODO server shut down?
+			} catch (ClassNotFoundException e) {
+				System.out.println("Recieved corrupt client paket.");
+			} catch (IllegalStateException e) {
+				System.out.println("A client tried to join a started table."); //TODO add room
 			}
 		}
 	}
