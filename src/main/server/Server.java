@@ -41,6 +41,10 @@ public class Server {
 		return tables.get(id);
 	}
 	
+	public HashMap<Integer, TableController> getTables() {
+		return tables;
+	}
+	
 	public void close() throws IOException {
 		serverSocket.close();
 	}
