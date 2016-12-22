@@ -5,8 +5,8 @@ import java.util.Scanner;
 
 public abstract class CLI implements Runnable {
 	
-	Scanner scanner;
-	Thread thread;
+	protected Scanner scanner;
+	protected Thread thread;
 	
 	public CLI() {
 		scanner = new Scanner(System.in);

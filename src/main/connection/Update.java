@@ -37,8 +37,10 @@ public class Update implements Serializable {
 
 		currentBet = table.getCurrentBet();
 		currentPlayer = table.getCurrentPlayer();
-
-		yourCards = table.getPlayer(id).getCards();
+		
+		if (table.getPlayers().containsKey(id)) {
+			yourCards = table.getPlayer(id).getCards();
+		}
 		yourId = id;
 		
 		players = new TreeMap<>();

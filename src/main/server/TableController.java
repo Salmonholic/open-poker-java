@@ -9,9 +9,9 @@ public class TableController {
 	
 	private Table table;
 	private ArrayList<PlayerController> playerControllers = new ArrayList<>();
-	int playerAmount;
-	int money;
-	int currentPlayer = 0;
+	private int playerAmount;
+	private int money;
+	private int currentPlayer = 0;
 	boolean started = false;
 	
 	public TableController(int playerAmount, int money) {
