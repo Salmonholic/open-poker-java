@@ -5,8 +5,8 @@ import java.util.Scanner;
 
 public abstract class CLI implements Runnable {
 	
-	Scanner scanner;
-	Thread thread;
+	protected Scanner scanner;
+	protected Thread thread;
 	
 	public CLI() {
 		scanner = new Scanner(System.in);
@@ -28,13 +28,15 @@ public abstract class CLI implements Runnable {
 		thread.start();
 	}
 	
-	abstract void onCommand(String command, String[] args);
+	abstract protected void onCommand(String command, String[] args);
 
 	@Override
 	public void run() {
-		while (true) {
+		while (checkRunningCondition()) {
 			parseCommand();
 		}
 	}
+	
+	abstract protected boolean checkRunningCondition();
 	
 }

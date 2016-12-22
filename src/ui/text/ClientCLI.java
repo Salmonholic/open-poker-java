@@ -39,7 +39,7 @@ public class ClientCLI extends CLI {
 	}
 
 	@Override
-	void onCommand(String command, String[] args) {
+	protected void onCommand(String command, String[] args) {
 		System.out.println();
 		switch (command) {
 		case "action":
@@ -51,8 +51,8 @@ public class ClientCLI extends CLI {
 				} catch (IllegalArgumentException e) {
 					System.out.println("Action not found!");
 				} catch (IOException e) {
-					System.out.println("Network error!");
-					//TODO shut down?
+					System.out.println("Network error! Could not send Action.");
+					//TODO restore connection?
 				}
 				break;
 			case 2:
@@ -61,8 +61,8 @@ public class ClientCLI extends CLI {
 				} catch (IllegalArgumentException e) {
 					System.out.println("Action not found!");
 				} catch (IOException e) {
-					System.out.println("Network error!");
-					//TODO shut down?
+					System.out.println("Network error! Could not send Action.");
+					//TODO restore connection?
 				}
 				break;
 			default:
@@ -98,15 +98,29 @@ public class ClientCLI extends CLI {
 				System.out.println("  " + card.getColor()+ " " + card.getValue());
 			}
 			break;
-		default:
-			// Help
-			System.out.println("Command not found!");
+		case "exit":
+		case "q":
+			// terminate
+			client.close();
+			break;
+		case "help":
 			System.out.println("Commands:");
 			System.out.println("info - Display game information");
 			System.out.println("action <action> [amount] - Send an action to the server");
 			System.out.println("  <action> may be one of: check, call, bet, raise, fold");
+			System.out.println("exit, q - Quit game");
+			break;
+		default:
+			// Help
+			System.out.println("Command not found!");
+			onCommand("help", null);
 			break;
 		}
+	}
+
+	@Override
+	protected boolean checkRunningCondition() {
+		return client.isRunning();
 	}
 
 }

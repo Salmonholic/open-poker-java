@@ -14,6 +14,7 @@ public class Client implements Runnable{
 	private ObjectInputStream in;
 	private ObjectOutputStream out;
 	private Thread thread;
+	private boolean running = true;
 
 	private String username;
 	private int room;
@@ -41,10 +42,8 @@ public class Client implements Runnable{
 
 	/**
 	 * Read all arrived packets
-	 * 
-	 * @throws Exception
 	 */
-	private void read() throws Exception {
+	private void read() throws ClassNotFoundException, IOException {
 		Packet packet = (Packet) in.readObject();
 		System.out.println(username + " got packet " + packet.getType());
 		parsePacket(packet);
@@ -69,16 +68,13 @@ public class Client implements Runnable{
 
 	/**
 	 * Get the most recent update
-	 * 
-	 * @return Update
-	 * @throws Exception
 	 */
 	public Update getUpdate() {
 		return update;
 	}
 
 	/**
-	 * Send an action to the server amount defaults to 0
+	 * Send an action to the server
 	 * 
 	 * @param action
 	 *            Action
@@ -95,7 +91,7 @@ public class Client implements Runnable{
 	}
 
 	/**
-	 * Send an action to the server amount defaults to 0
+	 * Send an action to the server with amount 0
 	 * 
 	 * @param action
 	 *            Action
@@ -107,13 +103,37 @@ public class Client implements Runnable{
 
 	@Override
 	public void run() {
-		while (!socket.isClosed()) {
+		while (running) {
 			try {
 				read();
-			} catch (Exception e) {
+			} catch (ClassNotFoundException e) {
+				System.out.println("Recieved corrupt server paket.");
+				try {
+					in.reset();
+				} catch (IOException e1) {
+					System.out.println("Fatal: Could not reset input stream.");
+					e1.printStackTrace();
+					running = false;
+				}
+			} catch (IOException e) {
+				System.out.println("Fatal: Network error!\n");
 				e.printStackTrace();
+				running = false;
 			}
 		}
+		//TODO send info to server
+		try {
+			socket.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void close() {
+		running = false;
 	}
 
+	public boolean isRunning() {
+		return running;
+	}
 }

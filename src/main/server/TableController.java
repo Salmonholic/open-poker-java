@@ -35,8 +35,14 @@ public class TableController {
 	
 	public void action(int playerId, Action action, int amount) {
 		if (started) {
-			System.out.println("Player " + playerId + " did " + action + " amount " + amount);
-			table.action(playerId, action, amount);
+			try {
+				System.out.println("Player " + playerId + " does " + action + " amount " + amount);
+				table.action(playerId, action, amount);
+			} catch (IllegalArgumentException e) {
+				System.out.println("Player " + playerId + " tried forbidden action.");
+				//TODO inform client
+				resend();
+			}
 		}
 	}
 

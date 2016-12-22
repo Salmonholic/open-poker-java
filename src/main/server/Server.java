@@ -8,6 +8,7 @@ import java.util.HashMap;
 public class Server {
 	private ServerSocket serverSocket;
 	private HashMap<Integer, TableController> tables = new HashMap<>();
+	private boolean running = true;
 
 	public Server(int port, int players) throws Exception {
 		serverSocket = new ServerSocket(port);
@@ -24,7 +25,7 @@ public class Server {
 	 * @throws Exception
 	 */
 	public void update() {
-		while (true) {
+		while (running) {
 			try {
 				Socket socket = serverSocket.accept();
 				new PlayerController(socket, this);
@@ -33,10 +34,16 @@ public class Server {
 				e.printStackTrace();
 				//TODO server shut down?
 			} catch (ClassNotFoundException e) {
-				System.out.println("Recieved corrupt client paket.");
+				System.out.println("Recieved corrupt client paket."); //TODO resend update?
 			} catch (IllegalStateException e) {
 				System.out.println("A client tried to join a started table."); //TODO add room
 			}
+		}
+		//send info to clients
+		try {
+			serverSocket.close();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 
@@ -51,8 +58,11 @@ public class Server {
 		return tables;
 	}
 	
-	public void close() throws IOException {
-		serverSocket.close();
+	public void close() {
+		running = false;
 	}
 
+	public boolean isRunning() {
+		return running;
+	}
 }

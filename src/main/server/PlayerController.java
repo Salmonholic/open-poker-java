@@ -16,6 +16,7 @@ public class PlayerController implements Runnable {
 	private Socket socket;
 	private TableController tableController;
 	private Thread thread;
+	private boolean running = true;
 	
 	private int id;
 	private int tableId;
@@ -54,33 +55,40 @@ public class PlayerController implements Runnable {
 
 	@Override
 	public void run() {
-		while (!socket.isClosed()) {
+		while (running) {
 			try {
 				read();
-			} catch (Exception e) {
+			} catch (ClassNotFoundException e) {
+				System.out.println("Recieved corrupt client paket.");
+				try {
+					in.reset();
+				} catch (IOException e1) {
+					System.out.println("Fatal: Could not reset input stream.");
+					e1.printStackTrace();
+					running = false;
+				}
+			} catch (IOException e) {
+				System.out.println("Fatal: Network error!\n");
 				e.printStackTrace();
+				running = false;
+				//TODO kick player?
 			}
+		}
+		//TODO kick player
+		//TODO send info to player
+		try {
+			socket.close();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 	
 	/**
 	 * Read all arrived packets
-	 * 
-	 * @throws Exception
 	 */
-	private void read() {
-		try {
-			Packet packet = (Packet) in.readObject();
-			parsePacket(packet);
-		} catch (ClassNotFoundException e) {
-			System.out.println("Recieved corrupt client paket.");
-			//TODO in.reset()?
-		} catch (IOException e) {
-			System.out.println("Network error!");
-			e.printStackTrace();
-			//TODO in.reset()?
-			//TODO kick player?
-		}
+	private void read() throws ClassNotFoundException, IOException {
+		Packet packet = (Packet) in.readObject();
+		parsePacket(packet);
 	}
 
 	/**
@@ -112,6 +120,14 @@ public class PlayerController implements Runnable {
 			out.flush();
 		} catch (IOException e) {
 			System.out.println("Failed to send update to client " + id);
+			try {
+				out.reset();
+				out.writeObject(packet);
+				out.flush();
+			} catch (IOException e1) {
+				e1.printStackTrace();
+				//TODO kick
+			}
 		}
 	}
 

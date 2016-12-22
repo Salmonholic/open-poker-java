@@ -28,7 +28,7 @@ public class ServerCLI extends CLI {
 	}
 
 	@Override
-	void onCommand(String command, String[] args) {
+	protected void onCommand(String command, String[] args) {
 		System.out.println();
 		switch (command) {
 		case "info":
@@ -44,4 +44,8 @@ public class ServerCLI extends CLI {
 		}
 	}
 
+	@Override
+	protected boolean checkRunningCondition() {
+		return server.isRunning();
+	}
 }
