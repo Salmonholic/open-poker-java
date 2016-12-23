@@ -14,14 +14,14 @@ public class Server implements Runnable {
 	public Server(int port) throws Exception {
 		serverSocket = new ServerSocket(port);
 		System.out.println("Server started");
-		
+
 		System.out.println("Creating table with id 0 and 3 players");
 		createTableController(0, 3, 1000);
-		
+
 		thread = new Thread(this);
 		thread.start();
 	}
-	
+
 	@Override
 	public void run() {
 		while (running) {
@@ -35,16 +35,14 @@ public class Server implements Runnable {
 				System.out.println("Recieved corrupt client paket.");
 			} catch (IllegalStateException e) {
 				System.out.println("A client tried to join a started table.");
-				// TODO add room?
 			} catch (IllegalArgumentException e) {
 				System.out
 						.println("A client tried to join a not existing room.");
-				// TODO add room?
 			}
 		}
 		// Close server
 		if (!serverSocket.isClosed()) {
-			//TODO send info to clients
+			// TODO send info to clients
 			try {
 				serverSocket.close();
 			} catch (IOException e) {
@@ -81,7 +79,7 @@ public class Server implements Runnable {
 	}
 
 	public void close() {
-		//TODO send info to clients
+		// TODO send info to clients
 		running = false;
 		try {
 			serverSocket.close();
@@ -93,7 +91,7 @@ public class Server implements Runnable {
 	public boolean isRunning() {
 		return running;
 	}
-	
+
 	public int getPort() {
 		return serverSocket.getLocalPort();
 	}
