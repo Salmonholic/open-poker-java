@@ -70,7 +70,16 @@ public class ServerCLI extends CLI {
 		case "q":
 			server.close();
 			break;
+		case "help":
+			System.out.println("Commands:");
+			System.out.println("info - Display server information");
+			System.out.println("create <id> <players> <money> - Display server information");
+			System.out.println("exit, q - Quit game");
+			break;
 		default:
+			// Help
+			System.out.println("Command not found!");
+			onCommand("help", null);
 			break;
 		}
 	}
