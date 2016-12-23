@@ -68,17 +68,21 @@ public class PlayerController implements Runnable {
 					running = false;
 				}
 			} catch (IOException e) {
-				System.out.println("Fatal: Network error!");
-				running = false;
+				if (running) {
+					System.out.println("Fatal: Network error!");
+					running = false;
+				}
 			}
 		}
 		System.out.println("Kick player " + id);
 		tableController.removePlayer(id);
 		//TODO send info to client
-		try {
-			socket.close();
-		} catch (IOException e) {
-			e.printStackTrace();
+		if (!socket.isClosed()) {
+			try {
+				socket.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 	
@@ -142,5 +146,10 @@ public class PlayerController implements Runnable {
 	
 	public void close() {
 		running = false;
+		try {
+			socket.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 }

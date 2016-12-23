@@ -61,7 +61,8 @@ public class TableController {
 	}
 	
 	public void removePlayer(int id) {
-		table.removePlayer(id);
+		if (started)
+			table.removePlayer(id);
 		playerAmount--;
 		Iterator<PlayerController> iterator = playerControllers.iterator();
 		while (iterator.hasNext()) {
@@ -78,8 +79,8 @@ public class TableController {
 	}
 	
 	public void close() {
-		for (PlayerController p : playerControllers) {
-			p.close();
+		while(playerControllers.size() > 0) {
+			playerControllers.get(0).close();
 		}
 	}
 }
