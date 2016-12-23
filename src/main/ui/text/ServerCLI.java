@@ -52,7 +52,7 @@ public class ServerCLI extends CLI {
 				}
 				int players = Integer.parseInt(args[1]);
 				if (players <= 1) {
-					System.out.println("There have to be more than 2 players!");
+					System.out.println("There have to at least 2 players!");
 					break;
 				}
 				int money = Integer.parseInt(args[2]);
