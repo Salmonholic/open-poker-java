@@ -5,9 +5,10 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.HashMap;
 
-public class Server {
+public class Server implements Runnable {
 	private ServerSocket serverSocket;
 	private HashMap<Integer, TableController> tables = new HashMap<>();
+	private Thread thread;
 	private boolean running = true;
 
 	public Server(int port, int players) throws Exception {
@@ -16,21 +17,22 @@ public class Server {
 		
 		tables.put(0, new TableController(players, 1000, 0));
 		
-		update();
+		thread = new Thread(this);
+		thread.start();
 	}
 
 	/**
 	 * Start main update loop
-	 * 
-	 * @throws Exception
 	 */
-	public void update() {
+	@Override
+	public void run() {
 		while (running) {
 			try {
 				Socket socket = serverSocket.accept();
 				new PlayerController(socket, this);
 			} catch (IOException e) {
-				System.out.println("Network error!");
+				if (running)
+					System.out.println("Network error!");
 			} catch (ClassNotFoundException e) {
 				System.out.println("Recieved corrupt client paket.");
 			} catch (IllegalStateException e) {
@@ -42,16 +44,16 @@ public class Server {
 			}
 		}
 		// Close server
-		//TODO send info to clients
-		for (TableController t : tables.values())
-			t.close();
 		if (!serverSocket.isClosed()) {
+			//TODO send info to clients
 			try {
 				serverSocket.close();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
+		for (TableController t : tables.values())
+			t.close();
 	}
 
 	public TableController getTableController(int id) throws IllegalArgumentException {
@@ -67,12 +69,12 @@ public class Server {
 	
 	public void close() {
 		//TODO send info to clients
+		running = false;
 		try {
 			serverSocket.close();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		running = false;
 	}
 
 	public boolean isRunning() {

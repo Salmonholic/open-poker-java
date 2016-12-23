@@ -8,7 +8,7 @@ import java.util.HashMap;
 
 import main.core.Action;
 
-public class Client implements Runnable{
+public class Client implements Runnable {
 
 	private Socket socket;
 	private ObjectInputStream in;
@@ -117,7 +117,7 @@ public class Client implements Runnable{
 				}
 			} catch (IOException e) {
 				if (running) {
-					System.out.println("Fatal: Network error1!\n");
+					System.out.println("Fatal: Network error!\n");
 					e.printStackTrace();
 					running = false;
 				}
