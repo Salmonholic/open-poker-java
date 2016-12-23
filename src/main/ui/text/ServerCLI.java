@@ -1,4 +1,4 @@
-package ui.text;
+package main.ui.text;
 
 import main.server.Server;
 
