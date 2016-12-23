@@ -87,6 +87,9 @@ public class Player {
 
 	public void fold() {
 		fold = true;
+		if (table.getLastBetId() == id) {
+			table.setLastBetId(table.nextPlayer(id));
+		}
 	}
 
 	public void call() {

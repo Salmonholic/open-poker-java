@@ -89,7 +89,7 @@ public class Table {
 		if (delayNextGameState) return;
 
 		// check if only one player has not folded
-		if (notFoldedOrAllInPlayers == 1) {
+		if (notFoldedOrAllInPlayers <= 1) {
 			for (int i=cards.size(); i<5; i++) {
 				cards.add(cardStack.getCard());
 			}
@@ -100,7 +100,7 @@ public class Table {
 		}
 
 		// game state transition
-		if ((!(gameState == GameState.PRE_FLOP) && currentPlayer == lastBetId)
+		if ((gameState != GameState.PRE_FLOP && currentPlayer == lastBetId)
 				|| (gameState == GameState.PRE_FLOP && bigBlindMadeDecision && currentPlayer == lastBetId)) {
 			// if (currentPlayer == lastBetId) {
 			gameState = GameState.values()[(gameState.ordinal() + 1)
@@ -138,6 +138,9 @@ public class Table {
 	 *            Player
 	 */
 	public int nextPlayer(int playerId) {
+		if (notFoldedOrAllInPlayers == 0) {
+			return playerId;
+		}
 		// Integer because of null check below
 		Integer nextId = playerId;
 		do {

@@ -119,9 +119,9 @@ public class PlayerController implements Runnable {
 		data.put("update", new Update(table, id));
 		Packet packet = new Packet("update", data);
 		try {
+			out.reset();
 			out.writeObject(packet);
 			out.flush();
-			out.reset();
 		} catch (IOException e) {
 			System.out.println("Failed to send update to client " + id);
 			try {
