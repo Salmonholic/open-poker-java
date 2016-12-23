@@ -1,6 +1,9 @@
 package main.server;
 
 import java.util.ArrayList;
+import java.util.Iterator;
+
+import javax.swing.plaf.TableHeaderUI;
 
 import main.core.Action;
 import main.core.Table;
@@ -8,15 +11,17 @@ import main.core.Table;
 public class TableController {
 	
 	private Table table;
+	private int tableId;
 	private ArrayList<PlayerController> playerControllers = new ArrayList<>();
 	private int playerAmount;
 	private int money;
 	private int currentPlayer = 0;
 	boolean started = false;
 	
-	public TableController(int playerAmount, int money) {
+	public TableController(int playerAmount, int money, int tableId) {
 		this.playerAmount = playerAmount;
 		this.money = money;
+		this.tableId = tableId;
 	}
 	
 	public void addPlayerController(PlayerController playerController) {
@@ -40,7 +45,7 @@ public class TableController {
 				table.action(playerId, action, amount);
 			} catch (IllegalArgumentException e) {
 				System.out.println("Player " + playerId + " tried forbidden action.");
-				//TODO inform client
+				//TODO send info to client
 				resend();
 			}
 		}
@@ -55,4 +60,26 @@ public class TableController {
 		}
 	}
 	
+	public void removePlayer(int id) {
+		table.removePlayer(id);
+		playerAmount--;
+		Iterator<PlayerController> iterator = playerControllers.iterator();
+		while (iterator.hasNext()) {
+			PlayerController playerController = iterator.next();
+			if (playerController.getId() == id) {
+				iterator.remove();
+				break;
+			}
+		}
+		if (playerAmount == 1) {
+			System.out.println("Table " + tableId + " finished.");
+			//TODO inform client, delete room
+		}
+	}
+	
+	public void close() {
+		for (PlayerController p : playerControllers) {
+			p.close();
+		}
+	}
 }

@@ -47,7 +47,7 @@ public class Update implements Serializable {
 		for (int playerId : table.getPlayers().keySet()) {
 			main.core.Player player = table.getPlayer(playerId);
 			players.put(playerId, new Player(player.getMoney(),
-					player.isFold(), player.isAllIn(), player.getCurrentBet()));
+					player.isFold(), player.isAllIn(), player.getTotalBet()));
 		}
 	}
 

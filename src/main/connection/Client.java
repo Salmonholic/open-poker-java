@@ -21,7 +21,7 @@ public class Client implements Runnable{
 	
 	private Update update;
 
-	public Client(String host, int port, String username, int room) throws Exception{
+	public Client(String host, int port, String username, int room) throws Exception {
 		this.username = username;
 		this.room = room;
 		
@@ -116,21 +116,32 @@ public class Client implements Runnable{
 					running = false;
 				}
 			} catch (IOException e) {
-				System.out.println("Fatal: Network error!\n");
-				e.printStackTrace();
-				running = false;
+				if (running) {
+					System.out.println("Fatal: Network error1!\n");
+					e.printStackTrace();
+					running = false;
+				}
 			}
 		}
+		// Close client
+		if (!socket.isClosed()) {
+			//TODO send info to server
+			try {
+				socket.close();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	public void close() {
 		//TODO send info to server
+		running = false;
 		try {
 			socket.close();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-	}
-	
-	public void close() {
-		running = false;
 	}
 
 	public boolean isRunning() {

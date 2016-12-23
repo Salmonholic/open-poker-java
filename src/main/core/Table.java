@@ -332,7 +332,7 @@ public class Table {
 		while(playerIterator.hasNext()) {
 			Player player = playerIterator.next();
 			if (player.getMoney() == 0)
-				playerIterator.remove();
+				playerIterator.remove(); //TODO check if working
 			else
 				player.reset();
 		}
@@ -505,5 +505,17 @@ public class Table {
 		if (tableController != null) {
 			tableController.resend();
 		}
+	}
+	
+	public void removePlayer(int id) {
+		Player player = players.get(id);
+		if (currentPlayer == id)
+			currentPlayer = nextPlayer(currentPlayer);
+		if (!(player.isAllIn()||player.isFold()))
+			notFoldedOrAllInPlayers--;
+		if (bigBlindId == id)
+			bigBlindMadeDecision = true;
+		delayNextGameState = false;
+		players.remove(id);
 	}
 }

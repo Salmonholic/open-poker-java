@@ -27,7 +27,7 @@ public class PlayerController implements Runnable {
 	private ObjectOutputStream out;
 
 	public PlayerController(Socket socket, Server server) throws IOException,
-			ClassNotFoundException, IllegalStateException {
+			ClassNotFoundException, IllegalStateException, IllegalArgumentException {
 		this.socket = socket;
 
 		out = new ObjectOutputStream(socket.getOutputStream());
@@ -37,7 +37,7 @@ public class PlayerController implements Runnable {
 		HashMap<String, Object> data = packet.getData();
 		tableId = (int) data.get("room");
 		username = (String) data.get("username");
-		tableController = server.getTableController(tableId);//TODO catch
+		tableController = server.getTableController(tableId);
 		type = (String) data.get("type");
 
 		tableController.addPlayerController(this);
@@ -68,14 +68,13 @@ public class PlayerController implements Runnable {
 					running = false;
 				}
 			} catch (IOException e) {
-				System.out.println("Fatal: Network error!\n");
-				e.printStackTrace();
+				System.out.println("Fatal: Network error!");
 				running = false;
-				//TODO kick player?
 			}
 		}
-		//TODO kick player
-		//TODO send info to player
+		System.out.println("Kick player " + id);
+		tableController.removePlayer(id);
+		//TODO send info to client
 		try {
 			socket.close();
 		} catch (IOException e) {
@@ -118,6 +117,7 @@ public class PlayerController implements Runnable {
 		try {
 			out.writeObject(packet);
 			out.flush();
+			out.reset();
 		} catch (IOException e) {
 			System.out.println("Failed to send update to client " + id);
 			try {
@@ -126,12 +126,21 @@ public class PlayerController implements Runnable {
 				out.flush();
 			} catch (IOException e1) {
 				e1.printStackTrace();
-				//TODO kick
+				// Kick player
+				running = false;
 			}
 		}
 	}
 
 	public void setId(int id) {
 		this.id = id;
+	}
+	
+	public int getId() {
+		return id;
+	}
+	
+	public void close() {
+		running = false;
 	}
 }

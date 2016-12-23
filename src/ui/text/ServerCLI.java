@@ -38,7 +38,10 @@ public class ServerCLI extends CLI {
 				System.out.println("  " + tableId);
 			}
 			break;
-
+		case "exit":
+		case "q":
+			server.close();
+			break;
 		default:
 			break;
 		}

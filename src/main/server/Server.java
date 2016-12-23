@@ -14,7 +14,7 @@ public class Server {
 		serverSocket = new ServerSocket(port);
 		System.out.println("Server started");
 		
-		tables.put(0, new TableController(players, 1000));
+		tables.put(0, new TableController(players, 1000, 0));
 		
 		update();
 	}
@@ -31,23 +31,30 @@ public class Server {
 				new PlayerController(socket, this);
 			} catch (IOException e) {
 				System.out.println("Network error!");
-				e.printStackTrace();
-				//TODO server shut down?
 			} catch (ClassNotFoundException e) {
-				System.out.println("Recieved corrupt client paket."); //TODO resend update?
+				System.out.println("Recieved corrupt client paket.");
 			} catch (IllegalStateException e) {
-				System.out.println("A client tried to join a started table."); //TODO add room
+				System.out.println("A client tried to join a started table.");
+				//TODO add room?
+			} catch (IllegalArgumentException e) {
+				System.out.println("A client tried to join a not existing room.");
+				//TODO add room?
 			}
 		}
-		//send info to clients
-		try {
-			serverSocket.close();
-		} catch (IOException e) {
-			e.printStackTrace();
+		// Close server
+		//TODO send info to clients
+		for (TableController t : tables.values())
+			t.close();
+		if (!serverSocket.isClosed()) {
+			try {
+				serverSocket.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
-	public TableController getTableController(int id) {
+	public TableController getTableController(int id) throws IllegalArgumentException {
 		if (!tables.containsKey(id)) {
 			throw new IllegalArgumentException();
 		}
@@ -59,6 +66,12 @@ public class Server {
 	}
 	
 	public void close() {
+		//TODO send info to clients
+		try {
+			serverSocket.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		running = false;
 	}
 
