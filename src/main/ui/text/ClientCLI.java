@@ -1,4 +1,4 @@
-package ui.text;
+package main.ui.text;
 
 import java.io.IOException;
 
@@ -57,7 +57,7 @@ public class ClientCLI extends CLI {
 				break;
 			case 2:
 				try {
-					client.sendAction(Action.valueOf(args[0].toUpperCase()), Integer.parseInt(args[1]));
+					client.sendAction(Action.valueOf(args[0]), Integer.parseInt(args[1]));
 				} catch (IllegalArgumentException e) {
 					System.out.println("Action not found!");
 				} catch (IOException e) {
@@ -66,7 +66,7 @@ public class ClientCLI extends CLI {
 				}
 				break;
 			default:
-				System.out.println("Wrong use!");
+				System.out.println("Wrong usage!");
 				break;
 			}
 			break;

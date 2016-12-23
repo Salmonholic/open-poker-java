@@ -11,19 +11,17 @@ public class Server implements Runnable {
 	private Thread thread;
 	private boolean running = true;
 
-	public Server(int port, int players) throws Exception {
+	public Server(int port) throws Exception {
 		serverSocket = new ServerSocket(port);
 		System.out.println("Server started");
 		
-		tables.put(0, new TableController(players, 1000, 0));
+		System.out.println("Creating table with id 0 and 3 players");
+		createTableController(0, 3, 1000);
 		
 		thread = new Thread(this);
 		thread.start();
 	}
-
-	/**
-	 * Start main update loop
-	 */
+	
 	@Override
 	public void run() {
 		while (running) {
@@ -37,10 +35,11 @@ public class Server implements Runnable {
 				System.out.println("Recieved corrupt client paket.");
 			} catch (IllegalStateException e) {
 				System.out.println("A client tried to join a started table.");
-				//TODO add room?
+				// TODO add room?
 			} catch (IllegalArgumentException e) {
-				System.out.println("A client tried to join a not existing room.");
-				//TODO add room?
+				System.out
+						.println("A client tried to join a not existing room.");
+				// TODO add room?
 			}
 		}
 		// Close server
@@ -56,17 +55,31 @@ public class Server implements Runnable {
 			t.close();
 	}
 
-	public TableController getTableController(int id) throws IllegalArgumentException {
+	/**
+	 * Create a new table
+	 * 
+	 * @param id
+	 *            Id for new TableController
+	 * @param money
+	 *            Start-money for Players
+	 */
+	public void createTableController(int id, int players, int money) {
+		tables.put(id, new TableController(players, money, id));
+
+	}
+
+	public TableController getTableController(int id)
+			throws IllegalArgumentException {
 		if (!tables.containsKey(id)) {
 			throw new IllegalArgumentException();
 		}
 		return tables.get(id);
 	}
-	
+
 	public HashMap<Integer, TableController> getTables() {
 		return tables;
 	}
-	
+
 	public void close() {
 		//TODO send info to clients
 		running = false;
@@ -79,5 +92,9 @@ public class Server implements Runnable {
 
 	public boolean isRunning() {
 		return running;
+	}
+	
+	public int getPort() {
+		return serverSocket.getLocalPort();
 	}
 }
