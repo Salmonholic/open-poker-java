@@ -66,7 +66,7 @@ public class ClientCLI extends CLI {
 				}
 				break;
 			default:
-				System.out.println("Wrong use!");
+				System.out.println("Wrong usage!");
 				break;
 			}
 			break;

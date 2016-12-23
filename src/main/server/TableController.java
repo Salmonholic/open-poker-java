@@ -3,8 +3,6 @@ package main.server;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import javax.swing.plaf.TableHeaderUI;
-
 import main.core.Action;
 import main.core.Table;
 
@@ -13,11 +11,13 @@ public class TableController {
 	private Table table;
 	private int tableId;
 	private ArrayList<PlayerController> playerControllers = new ArrayList<>();
+	// Amount of players to start
 	private int playerAmount;
 	private int money;
+	// Id of last Player connected (Amount of online players)
 	private int currentPlayer = 0;
 	boolean started = false;
-	
+
 	public TableController(int playerAmount, int money, int tableId) {
 		this.playerAmount = playerAmount;
 		this.money = money;
@@ -83,4 +83,21 @@ public class TableController {
 			playerControllers.get(0).close();
 		}
 	}
+	
+	public int getPlayerAmount() {
+		return playerAmount;
+	}
+
+	public int getMoney() {
+		return money;
+	}
+
+	public int getCurrentPlayer() {
+		return currentPlayer;
+	}
+
+	public boolean isStarted() {
+		return started;
+	}
+	
 }
