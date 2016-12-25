@@ -10,23 +10,46 @@ import main.core.Card;
 
 public class ClientCLI extends CLI {
 
+	public static final String DEFAULT_HOST = "127.0.0.1";
+	public static final String DEFAULT_PORT = "10101";
+	public static final String DEFAULT_USERNAME = System.getProperty("user.name");
+	public static final String DEFAULT_ROOM = "0";
+
 	private Client client;
-	
+
 	public static void main(String[] args) {
 		new ClientCLI();
 	}
 
 	public ClientCLI() {
 		super();
-		System.out.println("Host / IP:");
+		
+		// Host
+		System.out.println("Host / IP (" + DEFAULT_HOST + "):");
 		String host = scanner.nextLine();
-		if (host == "") host = "127.0.0.1";
-		System.out.println("Port (10101):");
-		int port = Integer.parseInt(scanner.nextLine());
-		System.out.println("Username:");
+		if (host.isEmpty())
+			host = DEFAULT_HOST;
+		
+		// Port
+		System.out.println("Port (" + DEFAULT_PORT + "):");
+		String portString = scanner.nextLine();
+		if (portString.isEmpty())
+			portString = DEFAULT_PORT;
+		int port = Integer.parseInt(portString);
+		
+		// Username
+		System.out.println("Username (" + DEFAULT_USERNAME + "):");
 		String username = scanner.nextLine();
-		System.out.println("Room (0):");
-		int room = Integer.parseInt(scanner.nextLine());
+		if (username.isEmpty())
+			username = DEFAULT_USERNAME;
+		
+		// Room
+		System.out.println("Room (" + DEFAULT_ROOM + "):");
+		String roomString = scanner.nextLine();
+		if (roomString.isEmpty())
+			roomString = DEFAULT_ROOM;
+		int room = Integer.parseInt(roomString);
+		
 		try {
 			client = new Client(host, port, username, room);
 		} catch (Exception e) {
@@ -52,7 +75,7 @@ public class ClientCLI extends CLI {
 					System.out.println("Action not found!");
 				} catch (IOException e) {
 					System.out.println("Network error! Could not send Action.");
-					//TODO restore connection?
+					// TODO restore connection?
 				}
 				break;
 			case 2:
@@ -62,7 +85,7 @@ public class ClientCLI extends CLI {
 					System.out.println("Action not found!");
 				} catch (IOException e) {
 					System.out.println("Network error! Could not send Action.");
-					//TODO restore connection?
+					// TODO restore connection?
 				}
 				break;
 			default:
@@ -84,7 +107,7 @@ public class ClientCLI extends CLI {
 			System.out.println("  Current Pot: " + update.getCurrentPot());
 			System.out.println("  Community Cards: ");
 			for (Card card : update.getCommunityCards()) {
-				System.out.println("    " + card.getColor()+ " " + card.getValue());
+				System.out.println("    " + card.getColor() + " " + card.getValue());
 			}
 			System.out.println("Players");
 			System.out.println("  id: CurrentBet Money");
@@ -95,7 +118,7 @@ public class ClientCLI extends CLI {
 			System.out.println("You");
 			System.out.println("  ID: " + update.getYourId());
 			for (Card card : update.getYourCards()) {
-				System.out.println("  " + card.getColor()+ " " + card.getValue());
+				System.out.println("  " + card.getColor() + " " + card.getValue());
 			}
 			break;
 		case "exit":
