@@ -334,9 +334,10 @@ public class Table {
 		Iterator<Player> playerIterator = players.values().iterator();
 		while(playerIterator.hasNext()) {
 			Player player = playerIterator.next();
-			if (player.getMoney() == 0)
+			if (player.getMoney() == 0) {
 				playerIterator.remove(); //TODO check if working
-			else
+				tableController.removePlayer(player.getId());
+			} else
 				player.reset();
 		}
 		// Reset card stack
@@ -512,13 +513,15 @@ public class Table {
 	
 	public void removePlayer(int id) {
 		Player player = players.get(id);
-		if (currentPlayer == id)
-			currentPlayer = nextPlayer(currentPlayer);
-		if (!(player.isAllIn()||player.isFold()))
-			notFoldedOrAllInPlayers--;
-		if (bigBlindId == id)
-			bigBlindMadeDecision = true;
-		delayNextGameState = false;
-		players.remove(id);
+			if(player != null) {
+			if (currentPlayer == id)
+				currentPlayer = nextPlayer(currentPlayer);
+			if (!(player.isAllIn()||player.isFold()))
+				notFoldedOrAllInPlayers--;
+			if (bigBlindId == id)
+				bigBlindMadeDecision = true;
+			delayNextGameState = false;
+			players.remove(id);
+		}
 	}
 }
