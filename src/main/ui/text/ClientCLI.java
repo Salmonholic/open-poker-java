@@ -80,7 +80,7 @@ public class ClientCLI extends CLI {
 				break;
 			case 2:
 				try {
-					client.sendAction(Action.valueOf(args[0]), Integer.parseInt(args[1]));
+					client.sendAction(Action.valueOf(args[0].toUpperCase()), Integer.parseInt(args[1]));
 				} catch (IllegalArgumentException e) {
 					System.out.println("Action not found!");
 				} catch (IOException e) {
