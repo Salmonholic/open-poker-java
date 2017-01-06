@@ -41,7 +41,7 @@ public class LobbyState extends State {
 			
 			@Override
 			public void handle(ActionEvent e) {
-				clientGUI.setState(new LobbyState(clientGUI));
+				clientGUI.setState(new SelectTableState(clientGUI));
 			}
 		});
 		
