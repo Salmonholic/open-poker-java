@@ -5,6 +5,8 @@ import main.server.TableController;
 
 public class ServerCLI extends CLI {
 
+	public static final String DEFAULT_PORT = "10101";
+
 	private Server server;
 
 	public static void main(String[] args) {
@@ -13,8 +15,14 @@ public class ServerCLI extends CLI {
 
 	public ServerCLI() {
 		super();
-		System.out.println("Port (10101):");
-		int port = Integer.parseInt(scanner.nextLine());
+		
+		// Port
+		System.out.println("Port (" + DEFAULT_PORT + "):");
+		String portString = scanner.nextLine();
+		if (portString.isEmpty())
+			portString = DEFAULT_PORT;
+		int port = Integer.parseInt(portString);
+		
 		try {
 			server = new Server(port);
 		} catch (Exception e) {
