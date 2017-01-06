@@ -1,8 +1,11 @@
 package main.ui.graphical.states;
 
 import main.ui.graphical.ClientGUI;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
@@ -32,8 +35,18 @@ public class LobbyState extends State {
 		PasswordField loginPasswordField = new PasswordField();
 		loginPasswordField.setTooltip(new Tooltip("Password"));
 		loginPasswordField.setPromptText("Password");
+		
+		Button loginButton = new Button("Log in");
+		loginButton.setOnAction(new EventHandler<ActionEvent>() {
+			
+			@Override
+			public void handle(ActionEvent e) {
+				clientGUI.setState(new LobbyState(clientGUI));
+			}
+		});
+		
 		root.getChildren().addAll(loginText, loginUsernameTextField,
-				loginPasswordField);
+				loginPasswordField, loginButton);
 
 		Text signupText = new Text("Sign up");
 		TextField signupUsernameTextField = new TextField();
@@ -45,8 +58,11 @@ public class LobbyState extends State {
 		PasswordField signupRepeatPasswordField = new PasswordField();
 		signupRepeatPasswordField.setTooltip(new Tooltip("Repeat password"));
 		signupRepeatPasswordField.setPromptText("Password");
+		
+		Button signupButton = new Button("Sign up");
+		
 		root.getChildren().addAll(signupText, signupUsernameTextField,
-				signupPasswordField, signupRepeatPasswordField);
+				signupPasswordField, signupRepeatPasswordField, signupButton);
 
 		Scene scene = new Scene(root);
 		return scene;
