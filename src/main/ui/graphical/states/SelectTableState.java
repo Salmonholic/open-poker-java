@@ -2,7 +2,6 @@ package main.ui.graphical.states;
 
 import java.util.Iterator;
 
-import javafx.application.Application;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -20,7 +19,6 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import main.ui.graphical.ClientGUI;
-import main.ui.graphical.states.SelectTableState.PokerTable;
 
 public class SelectTableState extends State {
 	ClientGUI clientGUI;
