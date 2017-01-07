@@ -1,5 +1,7 @@
 package main.ui.graphical.states;
 
+import java.util.Iterator;
+
 import javafx.application.Application;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.collections.FXCollections;
@@ -18,6 +20,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import main.ui.graphical.ClientGUI;
+import main.ui.graphical.states.SelectTableState.PokerTable;
 
 public class SelectTableState extends State {
 	ClientGUI clientGUI;
@@ -89,6 +92,8 @@ public class SelectTableState extends State {
 		final Stage stage = new Stage();
 		stage.setTitle("Add a new table");
 		VBox root = new VBox();
+		root.setPadding(new Insets(20));
+		root.setSpacing(5);
 
 		Text text = new Text("Add a new table");
 
@@ -131,6 +136,18 @@ public class SelectTableState extends State {
 	}
 
 	public void addPokerTable(PokerTable pokerTable) {
+		// Validate values
+		
+		if (pokerTable.getMaxPlayers() < 2) return;
+		if (pokerTable.getStartMoney() <= 0) return;
+		
+		// Check if id is unique
+		for (Iterator<PokerTable> iterator = data.iterator(); iterator.hasNext();) {
+			PokerTable otherPokerTable = iterator.next();
+			if (pokerTable.getId() == otherPokerTable.getId()) {
+				return;
+			}
+		}
 		data.add(pokerTable);
 	}
 

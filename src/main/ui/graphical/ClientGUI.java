@@ -7,8 +7,8 @@ import main.ui.graphical.states.State;
 
 public class ClientGUI extends Application {
 	
-	Stage primaryStage;
-	State state;
+	private Stage primaryStage;
+	private State state;
 
 	public static void main(String[] args) {
 		launch(args);
@@ -25,6 +25,10 @@ public class ClientGUI extends Application {
 	public void setState(State state) {
 		this.state = state;
 		primaryStage.setScene(state.getScene());
+	}
+	
+	public State getState() {
+		return state;
 	}
 	
 }
