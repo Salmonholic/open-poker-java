@@ -14,13 +14,11 @@ import javafx.scene.text.Text;
 
 public class LobbyState extends State {
 	private ClientGUI clientGUI;
+	Scene scene;
 
 	public LobbyState(ClientGUI clientGUI) {
 		this.clientGUI = clientGUI;
-	}
-
-	@Override
-	public Scene getScene() {
+		
 		VBox root = new VBox();
 		root.setPadding(new Insets(20));
 		root.setSpacing(5);
@@ -64,7 +62,11 @@ public class LobbyState extends State {
 		root.getChildren().addAll(signupText, signupUsernameTextField,
 				signupPasswordField, signupRepeatPasswordField, signupButton);
 
-		Scene scene = new Scene(root);
+		scene = new Scene(root);
+	}
+
+	@Override
+	public Scene getScene() {
 		return scene;
 	}
 

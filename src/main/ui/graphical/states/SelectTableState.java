@@ -22,6 +22,7 @@ import main.ui.graphical.ClientGUI;
 
 public class SelectTableState extends State {
 	ClientGUI clientGUI;
+	Scene scene;
 
 	TableView<PokerTable> tableView = new TableView<PokerTable>();
 
@@ -29,13 +30,9 @@ public class SelectTableState extends State {
 			.observableArrayList(new PokerTable(0, 100, 0, 3), new PokerTable(
 					1, 1000, 2, 4), new PokerTable(2, 23, 3, 3));
 
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public SelectTableState(ClientGUI clientGUI) {
 		this.clientGUI = clientGUI;
-	}
-
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	@Override
-	public Scene getScene() {
 		VBox root = new VBox();
 		root.setPadding(new Insets(20));
 		root.setSpacing(5);
@@ -82,7 +79,11 @@ public class SelectTableState extends State {
 		Button joinButton = new Button("Join selected table");
 
 		root.getChildren().addAll(text, tableView, addTableButton, joinButton);
-		Scene scene = new Scene(root);
+		scene = new Scene(root);
+	}
+
+	@Override
+	public Scene getScene() {
 		return scene;
 	}
 
@@ -117,7 +118,7 @@ public class SelectTableState extends State {
 							.getText());
 					int maxPlayers = Integer.parseInt(maxPlayersTextField
 							.getText());
-					data.add(new PokerTable(id, startMoney, 0, maxPlayers));
+					addPokerTable(new PokerTable(id, startMoney, 0, maxPlayers));
 				} catch (Exception e) {
 				} finally {
 					stage.close();

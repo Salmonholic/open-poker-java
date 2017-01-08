@@ -13,12 +13,11 @@ import javafx.scene.text.Text;
 
 public class ConnectState extends State {
 	private ClientGUI clientGUI;
+	private Scene scene;
 	
 	public ConnectState(ClientGUI clientGUI) {
 		this.clientGUI = clientGUI;
-	}
-	
-	public Scene getScene() {
+
 		VBox root = new VBox();
 		root.setPadding(new Insets(20));
 		root.setSpacing(5);
@@ -42,7 +41,10 @@ public class ConnectState extends State {
 		});
 		
 		root.getChildren().addAll(text, hostTextField, portTextField, connectButton);
-		Scene scene = new Scene(root);
+		scene = new Scene(root);
+	}
+	
+	public Scene getScene() {
 		return scene;
 	}
 	
