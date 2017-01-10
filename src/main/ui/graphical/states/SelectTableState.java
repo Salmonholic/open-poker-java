@@ -77,6 +77,13 @@ public class SelectTableState extends State {
 		});
 
 		Button joinButton = new Button("Join selected table");
+		joinButton.setOnAction(new EventHandler<ActionEvent>() {
+			
+			@Override
+			public void handle(ActionEvent event) {
+				clientGUI.setState(new GameState(clientGUI));
+			}
+		});
 
 		root.getChildren().addAll(text, tableView, addTableButton, joinButton);
 		scene = new Scene(root);
