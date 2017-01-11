@@ -11,7 +11,7 @@ import java.util.HashMap;
 
 public class AuthenticationController {
 	
-	public static String FILE_PATH = "users.json";
+	public static String FILE_PATH = "users";
 	HashMap<String, String> users;
 	
 	public AuthenticationController() {
@@ -35,11 +35,15 @@ public class AuthenticationController {
 		}
 	}
 	
-	private void save() throws FileNotFoundException, IOException {
-		File file = new File(FILE_PATH);
-		ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(file));
-		out.writeObject(users);
-		out.close();
+	public void save() {
+		try {
+			File file = new File(FILE_PATH);
+			ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(file));
+			out.writeObject(users);
+			out.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public void registerUser(String username, String password) {

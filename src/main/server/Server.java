@@ -8,10 +8,12 @@ import java.util.HashMap;
 public class Server implements Runnable {
 	private ServerSocket serverSocket;
 	private HashMap<Integer, TableController> tables = new HashMap<>();
+	private AuthenticationController authenticationController;
 	private Thread thread;
 	private boolean running = true;
 
 	public Server(int port) throws Exception {
+		authenticationController = new AuthenticationController();
 		serverSocket = new ServerSocket(port);
 		System.out.println("Server started");
 
@@ -81,6 +83,8 @@ public class Server implements Runnable {
 	public void close() {
 		// TODO send info to clients
 		running = false;
+		// Safe user info
+		getAuthenticationController().save();
 		try {
 			serverSocket.close();
 		} catch (Exception e) {
@@ -95,4 +99,9 @@ public class Server implements Runnable {
 	public int getPort() {
 		return serverSocket.getLocalPort();
 	}
+
+	public AuthenticationController getAuthenticationController() {
+		return authenticationController;
+	}
+	
 }

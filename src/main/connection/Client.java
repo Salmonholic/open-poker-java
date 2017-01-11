@@ -17,13 +17,11 @@ public class Client implements Runnable {
 	private boolean running = true;
 
 	private String username;
-	private int room;
 	
 	private Update update;
 
-	public Client(String host, int port, String username, int room) throws Exception {
+	public Client(String host, int port, String username, String password, boolean signUp) throws Exception {
 		this.username = username;
-		this.room = room;
 		
 		socket = new Socket(host, port);
 		in = new ObjectInputStream(socket.getInputStream());
@@ -31,9 +29,12 @@ public class Client implements Runnable {
 		
 		HashMap<String, Object> data = new HashMap<>();
 		data.put("username", username);
-		data.put("room", room);
-		data.put("type", "player");
-		out.writeObject(new Packet("connect", data));
+		data.put("password", password);
+		if (signUp) {
+			out.writeObject(new Packet("signup", data));
+		} else {
+			out.writeObject(new Packet("login", data));
+		}
 		out.flush();
 		
 		thread = new Thread(this);
@@ -86,8 +87,7 @@ public class Client implements Runnable {
 		HashMap<String, Object> data = new HashMap<>();
 		data.put("action", action);
 		data.put("amount", amount);
-		out.writeObject(new Packet("action", data));
-		out.flush();
+		sendPacket(new Packet("action", data));
 	}
 
 	/**
@@ -146,5 +146,20 @@ public class Client implements Runnable {
 
 	public boolean isRunning() {
 		return running;
+	}
+	
+	public void sendPacket(Packet packet) {
+		try {
+			out.writeObject(packet);
+			out.flush();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void joinTable(int id) {
+		HashMap<String, Object> data = new HashMap<>();
+		data.put("room", id);
+		sendPacket(new Packet("join", data));
 	}
 }
