@@ -20,25 +20,29 @@ public class Client implements Runnable {
 	
 	private Update update;
 
-	public Client(String host, int port, String username, String password, boolean signUp) throws Exception {
-		this.username = username;
-		
+	public Client(String host, int port) throws Exception {
 		socket = new Socket(host, port);
 		in = new ObjectInputStream(socket.getInputStream());
 		out = new ObjectOutputStream(socket.getOutputStream());
 		
+		thread = new Thread(this);
+		thread.start();
+	}
+	
+	public void login(String username, String password) {
+		this.username = username;
 		HashMap<String, Object> data = new HashMap<>();
 		data.put("username", username);
 		data.put("password", password);
-		if (signUp) {
-			out.writeObject(new Packet("signup", data));
-		} else {
-			out.writeObject(new Packet("login", data));
-		}
-		out.flush();
-		
-		thread = new Thread(this);
-		thread.start();
+		sendPacket(new Packet("login", data));
+	}
+	
+	public void signup(String username, String password) {
+		this.username = username;
+		HashMap<String, Object> data = new HashMap<>();
+		data.put("username", username);
+		data.put("password", password);
+		sendPacket(new Packet("signup", data));
 	}
 
 	/**

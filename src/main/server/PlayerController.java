@@ -96,6 +96,7 @@ public class PlayerController implements Runnable {
 				username = (String) data.get("username");
 				loggedIn = true;
 				sendPacket(new Packet("accept", null));
+				System.out.println("Player logged in with username " + username);
 			} else {
 				sendPacket(new Packet("decline", null));
 				close();
@@ -105,8 +106,10 @@ public class PlayerController implements Runnable {
 			if (loggedIn) break;
 			try {
 				server.getAuthenticationController().registerUser((String) data.get("username"), (String) data.get("password"));
+				username = (String) data.get("username");
 				loggedIn = true;
 				sendPacket(new Packet("accept", null));
+				System.out.println("Player signed up with username " + username);
 			} catch (Exception e) {
 				e.printStackTrace();
 				sendPacket(new Packet("decline", null));

@@ -55,7 +55,12 @@ public class ClientCLI extends CLI {
 		boolean signUp = Boolean.valueOf(signUpString);
 		
 		try {
-			client = new Client(host, port, username, password, signUp);
+			client = new Client(host, port);
+			if (signUp) {
+				client.signup(username, password);
+			} else {
+				client.login(username, password);
+			}
 		} catch (Exception e) {
 			System.out.println("Start up error!");
 			e.printStackTrace();

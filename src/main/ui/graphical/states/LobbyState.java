@@ -13,12 +13,15 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 
 public class LobbyState extends State {
+	
+	public static final String DEFAULT_USERNAME = System.getProperty("user.name");
+	
 	private ClientGUI clientGUI;
 	Scene scene;
 
 	public LobbyState(ClientGUI clientGUI) {
 		this.clientGUI = clientGUI;
-		
+
 		VBox root = new VBox();
 		root.setPadding(new Insets(20));
 		root.setSpacing(5);
@@ -27,27 +30,27 @@ public class LobbyState extends State {
 		root.getChildren().add(text);
 
 		Text loginText = new Text("Log in");
-		TextField loginUsernameTextField = new TextField();
+		TextField loginUsernameTextField = new TextField(DEFAULT_USERNAME);
 		loginUsernameTextField.setTooltip(new Tooltip("Username"));
 		loginUsernameTextField.setPromptText("Username");
 		PasswordField loginPasswordField = new PasswordField();
 		loginPasswordField.setTooltip(new Tooltip("Password"));
 		loginPasswordField.setPromptText("Password");
-		
+
 		Button loginButton = new Button("Log in");
 		loginButton.setOnAction(new EventHandler<ActionEvent>() {
-			
+
 			@Override
 			public void handle(ActionEvent e) {
+				clientGUI.getClient().login(loginUsernameTextField.getText(), loginPasswordField.getText());
 				clientGUI.setState(new SelectTableState(clientGUI));
 			}
 		});
-		
-		root.getChildren().addAll(loginText, loginUsernameTextField,
-				loginPasswordField, loginButton);
+
+		root.getChildren().addAll(loginText, loginUsernameTextField, loginPasswordField, loginButton);
 
 		Text signupText = new Text("Sign up");
-		TextField signupUsernameTextField = new TextField();
+		TextField signupUsernameTextField = new TextField(DEFAULT_USERNAME);
 		signupUsernameTextField.setTooltip(new Tooltip("Username"));
 		signupUsernameTextField.setPromptText("Username");
 		PasswordField signupPasswordField = new PasswordField();
@@ -56,11 +59,19 @@ public class LobbyState extends State {
 		PasswordField signupRepeatPasswordField = new PasswordField();
 		signupRepeatPasswordField.setTooltip(new Tooltip("Repeat password"));
 		signupRepeatPasswordField.setPromptText("Password");
-		
+
 		Button signupButton = new Button("Sign up");
-		
-		root.getChildren().addAll(signupText, signupUsernameTextField,
-				signupPasswordField, signupRepeatPasswordField, signupButton);
+		signupButton.setOnAction(new EventHandler<ActionEvent>() {
+
+			@Override
+			public void handle(ActionEvent e) {
+				clientGUI.getClient().signup(signupUsernameTextField.getText(), signupPasswordField.getText());
+				clientGUI.setState(new SelectTableState(clientGUI));
+			}
+		});
+
+		root.getChildren().addAll(signupText, signupUsernameTextField, signupPasswordField, signupRepeatPasswordField,
+				signupButton);
 
 		scene = new Scene(root);
 	}

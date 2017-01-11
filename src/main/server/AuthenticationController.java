@@ -33,6 +33,7 @@ public class AuthenticationController {
 			users = new HashMap<>();
 			save();
 		}
+		System.out.println("Finished loading of " + users.size() + " users.");
 	}
 	
 	public void save() {
