@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import main.core.Action;
@@ -19,6 +20,7 @@ public class Client implements Runnable {
 	private String username;
 	
 	private Update update;
+	private ArrayList<Table> tables;
 
 	public Client(String host, int port) throws Exception {
 		socket = new Socket(host, port);
@@ -60,11 +62,15 @@ public class Client implements Runnable {
 	 * @param packet
 	 *            Packet to parse
 	 */
+	@SuppressWarnings("unchecked")
 	private void parsePacket(Packet packet) {
+		HashMap<String, Object> data = packet.getData();
 		switch (packet.getType()) {
 		case "update":
-			HashMap<String, Object> data = packet.getData();
 			update = (Update) data.get("update");
+			break;
+		case "tables":
+			tables = (ArrayList<Table>) data.get("tables");
 			break;
 		default:
 			break;
@@ -166,4 +172,13 @@ public class Client implements Runnable {
 		data.put("room", id);
 		sendPacket(new Packet("join", data));
 	}
+
+	public void sendGetTablesPacket() {
+		sendPacket(new Packet("getTables", null));
+	}
+
+	public ArrayList<Table> getTables() {
+		return tables;
+	}
+	
 }

@@ -4,12 +4,13 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import main.connection.Packet;
+import main.connection.Table;
 import main.connection.Update;
 import main.core.Action;
-import main.core.Table;
 
 public class PlayerController implements Runnable {
 
@@ -91,8 +92,10 @@ public class PlayerController implements Runnable {
 		HashMap<String, Object> data = packet.getData();
 		switch (packet.getType()) {
 		case "login":
-			if (loggedIn) break;
-			if (server.getAuthenticationController().validate((String) data.get("username"), (String) data.get("password"))) {
+			if (loggedIn)
+				break;
+			if (server.getAuthenticationController().validate((String) data.get("username"),
+					(String) data.get("password"))) {
 				username = (String) data.get("username");
 				loggedIn = true;
 				sendPacket(new Packet("accept", null));
@@ -103,9 +106,11 @@ public class PlayerController implements Runnable {
 			}
 			break;
 		case "signup":
-			if (loggedIn) break;
+			if (loggedIn)
+				break;
 			try {
-				server.getAuthenticationController().registerUser((String) data.get("username"), (String) data.get("password"));
+				server.getAuthenticationController().registerUser((String) data.get("username"),
+						(String) data.get("password"));
 				username = (String) data.get("username");
 				loggedIn = true;
 				sendPacket(new Packet("accept", null));
@@ -116,11 +121,27 @@ public class PlayerController implements Runnable {
 				close();
 			}
 			break;
+		case "getTables":
+			if (loggedIn) {
+				HashMap<String, Object> infoData = new HashMap<>();
+				ArrayList<Table> tables = new ArrayList<>();
+				for (int tableControllerId : server.getTables().keySet()) {
+					TableController tableController = server.getTableController(id);
+					tables.add(new Table(tableControllerId, tableController.getMoney(),
+							tableController.getCurrentPlayer(), tableController.getPlayerAmount()));
+				}
+				infoData.put("tables", tables);
+				Packet infoPacket = new Packet("tables", infoData);
+				sendPacket(infoPacket);
+			} else {
+				sendPacket(new Packet("decline", null));
+			}
+			break;
 		case "join":
 			if (loggedIn && tableController == null) {
 				int tableId = (int) data.get("room");
 				tableController = server.getTableController(tableId);
-				
+
 				try {
 					tableController.addPlayerController(this);
 					sendPacket(new Packet("accept", null));
@@ -160,7 +181,7 @@ public class PlayerController implements Runnable {
 		}
 	}
 
-	public void resend(Table table) {
+	public void resend(main.core.Table table) {
 		System.out.println("Resend data to player " + id);
 		HashMap<String, Object> data = new HashMap<>();
 		data.put("update", new Update(table, id));
