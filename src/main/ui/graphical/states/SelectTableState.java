@@ -3,8 +3,6 @@ package main.ui.graphical.states;
 import java.util.Iterator;
 
 import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -80,7 +78,11 @@ public class SelectTableState extends State implements ListChangeListener<Table>
 
 			@Override
 			public void handle(ActionEvent event) {
-				clientGUI.setState(new GameState(clientGUI));
+				PokerTable pokerTable = tableView.getSelectionModel().getSelectedItem();
+				if (pokerTable != null) {
+					clientGUI.getClient().joinTable(pokerTable.getId());
+					clientGUI.setState(new GameState(clientGUI));
+				}
 			}
 		});
 
@@ -161,7 +163,6 @@ public class SelectTableState extends State implements ListChangeListener<Table>
 			PokerTable pokerTable = new PokerTable(table.getId(), table.getStartMoney(), table.getPlayersOnline(),
 					table.getMaxPlayers());
 			data.add(pokerTable);
-			System.out.println("Suppp");
 		}
 	}
 

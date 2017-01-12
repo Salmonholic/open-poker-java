@@ -2,8 +2,6 @@ package main.ui.graphical.states.game;
 
 import javafx.geometry.Insets;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
-import javafx.scene.text.Text;
 import main.core.Card;
 import main.core.GameState;
 

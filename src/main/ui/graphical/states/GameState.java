@@ -1,5 +1,7 @@
 package main.ui.graphical.states;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
@@ -10,7 +12,7 @@ import main.ui.graphical.ClientGUI;
 import main.ui.graphical.states.game.PlayerInfo;
 import main.ui.graphical.states.game.TableInfo;
 
-public class GameState extends State {
+public class GameState extends State implements ChangeListener<Update> {
 
 	private ClientGUI clientGUI;
 	private Scene scene;
@@ -20,6 +22,8 @@ public class GameState extends State {
 
 	public GameState(ClientGUI clientGUI) {
 		this.clientGUI = clientGUI;
+		
+		clientGUI.getClient().getUpdateProperty().addListener(this);
 		
 		BorderPane root = new BorderPane();
 
@@ -67,6 +71,10 @@ public class GameState extends State {
 			playerInfo.setPrimaryPlayer(false);
 			playersInfoVBox.getChildren().add(playerInfo);
 		}
+	}
+
+	@Override
+	public void changed(ObservableValue<? extends Update> observable, Update oldValue, Update newValue) {
 	}
 
 }
