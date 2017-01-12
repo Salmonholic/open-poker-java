@@ -7,7 +7,15 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleListProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.value.ObservableObjectValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableArray;
+import javafx.collections.ObservableList;
 import main.core.Action;
+import main.ui.graphical.states.SelectTableState.PokerTable;
 
 public class Client implements Runnable {
 
@@ -19,8 +27,8 @@ public class Client implements Runnable {
 
 	private String username;
 	
-	private Update update;
-	private ArrayList<Table> tables;
+	private final SimpleObjectProperty<Update> update = new SimpleObjectProperty<>();
+	private final ObservableList<Table> tables = FXCollections.observableArrayList();
 
 	public Client(String host, int port) throws Exception {
 		socket = new Socket(host, port);
@@ -67,10 +75,14 @@ public class Client implements Runnable {
 		HashMap<String, Object> data = packet.getData();
 		switch (packet.getType()) {
 		case "update":
-			update = (Update) data.get("update");
+			update.set((Update) data.get("update"));
 			break;
-		case "tables":
-			tables = (ArrayList<Table>) data.get("tables");
+		case "tables": 
+			tables.clear();
+			ArrayList<Table> tablesArray = (ArrayList<Table>) data.get("tables");
+			for (Table table : tablesArray) {
+				tables.addAll(table);
+			}
 			break;
 		default:
 			break;
@@ -81,6 +93,13 @@ public class Client implements Runnable {
 	 * Get the most recent update
 	 */
 	public Update getUpdate() {
+		return update.get();
+	}
+
+	/**
+	 * Get update property
+	 */
+	public SimpleObjectProperty<Update> getUpdateProperty() {
 		return update;
 	}
 
@@ -177,8 +196,13 @@ public class Client implements Runnable {
 		sendPacket(new Packet("getTables", null));
 	}
 
-	public ArrayList<Table> getTables() {
+	public ObservableList<Table> getTables() {
 		return tables;
 	}
+
+	public void setUpdate(Update update) {
+		this.update.set(update);
+	}
+	
 	
 }

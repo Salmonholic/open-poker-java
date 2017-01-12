@@ -2,7 +2,10 @@ package main.ui.text;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
+import javafx.beans.property.SimpleListProperty;
+import javafx.collections.ObservableList;
 import main.connection.Client;
 import main.connection.Player;
 import main.connection.Table;
@@ -82,7 +85,7 @@ public class ClientCLI extends CLI {
 					System.out.println("Getting info about tables");
 					client.sendGetTablesPacket();
 				} else if (args[0].equals("info")) {
-					ArrayList<Table> tables = client.getTables();
+					List<Table> tables = client.getTables();
 					if (tables == null) {
 						System.out.println("No information");
 					} else {
