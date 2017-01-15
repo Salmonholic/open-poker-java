@@ -14,7 +14,7 @@ public class TableController {
 	// Amount of players to start
 	private int playerAmount;
 	private int money;
-	// Id of last Player connected (Amount of online players)
+	// Id of last Player connected (NOT necessarily amount of online players)
 	private int currentPlayer = 0;
 	boolean started = false;
 

@@ -382,8 +382,9 @@ public class Table {
 		int sidepotSum = 0;
 		for (int[] sidepot : pot) {
 			sidepotSum += sidepot[0];
-			if (sidepotSum > totalBet) {
-				int amountForSidepot = sidepotSum - totalBet;
+			if (sidepotSum >= totalBet) {
+				// totalBet was set before this method is executed
+				int amountForSidepot = sidepotSum - totalBet + amount;
 				if (amountForSidepot < amount) {
 					sidepot[1] += amountForSidepot;
 					amount -= amountForSidepot;
@@ -394,7 +395,7 @@ public class Table {
 				}
 			}
 		}
-		pot.get(pot.size() - 1)[1] += amount;
+		//pot.get(pot.size() - 1)[1] += amount;
 	}
 	
 	public int getPotValue() {
