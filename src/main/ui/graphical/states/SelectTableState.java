@@ -23,10 +23,10 @@ import main.connection.Table;
 import main.ui.graphical.ClientGUI;
 
 public class SelectTableState extends State implements ListChangeListener<Table> {
-	ClientGUI clientGUI;
-	Scene scene;
+	private ClientGUI clientGUI;
+	private Scene scene;
 
-	TableView<PokerTable> tableView = new TableView<PokerTable>();
+	private TableView<PokerTable> tableView = new TableView<PokerTable>();
 
 	private final ObservableList<PokerTable> data = FXCollections.observableArrayList();
 
@@ -81,7 +81,7 @@ public class SelectTableState extends State implements ListChangeListener<Table>
 				PokerTable pokerTable = tableView.getSelectionModel().getSelectedItem();
 				if (pokerTable != null) {
 					clientGUI.getClient().joinTable(pokerTable.getId());
-					clientGUI.setState(new GameState(clientGUI));
+					clientGUI.setState(new GameState(clientGUI)); // TODO not working
 				}
 			}
 		});
@@ -144,16 +144,17 @@ public class SelectTableState extends State implements ListChangeListener<Table>
 
 		if (pokerTable.getMaxPlayers() < 2)
 			return;
-		if (pokerTable.getStartMoney() <= 0)
+		// TODO add fields for blinds and check start money accordingly (>10 until that)
+		if (pokerTable.getStartMoney() <= 10)
 			return;
 
 		// Check if id is unique
-		for (Iterator<PokerTable> iterator = data.iterator(); iterator.hasNext();) {
-			PokerTable otherPokerTable = iterator.next();
+		for (PokerTable otherPokerTable : data) {
 			if (pokerTable.getId() == otherPokerTable.getId()) {
 				return;
 			}
 		}
+		// TODO add table on server
 		data.add(pokerTable);
 	}
 
@@ -167,7 +168,8 @@ public class SelectTableState extends State implements ListChangeListener<Table>
 	}
 
 	@Override
-	public void onChanged(javafx.collections.ListChangeListener.Change<? extends Table> c) {
+	// TODO use somewhere? delete?
+	public void onChanged(Change<? extends Table> c) {
 		updateTable();
 	}
 

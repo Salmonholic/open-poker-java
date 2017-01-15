@@ -14,8 +14,8 @@ import main.ui.graphical.ClientGUI;
 
 public class ConnectState extends State {
 
-	public static final String DEFAULT_HOST = "127.0.0.1";
-	public static final String DEFAULT_PORT = "10101";
+	private static final String DEFAULT_HOST = "127.0.0.1";
+	private static final String DEFAULT_PORT = "10101";
 
 	@SuppressWarnings("unused")
 	private ClientGUI clientGUI;

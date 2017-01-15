@@ -64,6 +64,7 @@ public class Server implements Runnable {
 	 *            Start-money for Players
 	 */
 	public void createTableController(int id, int players, int money) {
+		// TODO check if id is used
 		tables.put(id, new TableController(players, money, id));
 
 	}

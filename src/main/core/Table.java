@@ -335,7 +335,7 @@ public class Table {
 		while(playerIterator.hasNext()) {
 			Player player = playerIterator.next();
 			if (player.getMoney() == 0) {
-				playerIterator.remove(); //TODO check if working
+				playerIterator.remove();
 				tableController.removePlayer(player.getId());
 			} else
 				player.reset();

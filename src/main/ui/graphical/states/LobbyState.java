@@ -14,10 +14,10 @@ import javafx.scene.text.Text;
 
 public class LobbyState extends State {
 	
-	public static final String DEFAULT_USERNAME = System.getProperty("user.name");
+	private static final String DEFAULT_USERNAME = System.getProperty("user.name");
 	
 	private ClientGUI clientGUI;
-	Scene scene;
+	private Scene scene;
 
 	public LobbyState(ClientGUI clientGUI) {
 		this.clientGUI = clientGUI;
@@ -43,6 +43,7 @@ public class LobbyState extends State {
 			@Override
 			public void handle(ActionEvent e) {
 				clientGUI.getClient().login(loginUsernameTextField.getText(), loginPasswordField.getText());
+				// TODO check if logged in correctly, don't change view if not
 				clientGUI.setState(new SelectTableState(clientGUI));
 			}
 		});
@@ -66,6 +67,7 @@ public class LobbyState extends State {
 			@Override
 			public void handle(ActionEvent e) {
 				clientGUI.getClient().signup(signupUsernameTextField.getText(), signupPasswordField.getText());
+				// TODO check if signed up correctly, don't change view if not
 				clientGUI.setState(new SelectTableState(clientGUI));
 			}
 		});

@@ -17,8 +17,8 @@ public class GameState extends State implements ChangeListener<Update> {
 	private ClientGUI clientGUI;
 	private Scene scene;
 
-	TableInfo tableInfo;
-	VBox playersInfoVBox;
+	private TableInfo tableInfo;
+	private VBox playersInfoVBox;
 
 	public GameState(ClientGUI clientGUI) {
 		this.clientGUI = clientGUI;
