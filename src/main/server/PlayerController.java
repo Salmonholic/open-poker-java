@@ -4,51 +4,39 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import main.connection.Packet;
+import main.connection.Table;
 import main.connection.Update;
 import main.core.Action;
-import main.core.Table;
 
 public class PlayerController implements Runnable {
 
 	private Socket socket;
+	private Server server;
 	private TableController tableController;
 	private Thread thread;
 	private boolean running = true;
-	
+	private boolean loggedIn = false;
+
 	private int id;
-	private int tableId;
 	private String username;
-	private String type;
 
 	private ObjectInputStream in;
 	private ObjectOutputStream out;
 
-	public PlayerController(Socket socket, Server server) throws IOException,
-			ClassNotFoundException, IllegalStateException, IllegalArgumentException {
+	public PlayerController(Socket socket, Server server)
+			throws IOException, ClassNotFoundException, IllegalStateException, IllegalArgumentException {
 		this.socket = socket;
+		this.server = server;
 
 		out = new ObjectOutputStream(socket.getOutputStream());
 		in = new ObjectInputStream(socket.getInputStream());
 
-		Packet packet = (Packet) in.readObject();
-		HashMap<String, Object> data = packet.getData();
-		tableId = (int) data.get("room");
-		username = (String) data.get("username");
-		tableController = server.getTableController(tableId);
-		type = (String) data.get("type");
+		System.out.println("New player connected");
 
-		tableController.addPlayerController(this);
-
-		System.out.println("New " + type + " connected with id " + id + " on table "
-				+ tableId + " with name " + username);
-		
-		packet = new Packet("accept", null);
-		out.writeObject(packet);
-		out.flush();
-		
 		thread = new Thread(this);
 		thread.start();
 	}
@@ -76,7 +64,7 @@ public class PlayerController implements Runnable {
 		}
 		System.out.println("Kick player " + id);
 		tableController.removePlayer(id);
-		//TODO send info to client
+		// TODO send info to client
 		if (!socket.isClosed()) {
 			try {
 				socket.close();
@@ -85,7 +73,7 @@ public class PlayerController implements Runnable {
 			}
 		}
 	}
-	
+
 	/**
 	 * Read all arrived packets
 	 */
@@ -101,9 +89,70 @@ public class PlayerController implements Runnable {
 	 *            Packet to parse
 	 */
 	private void parsePacket(Packet packet) {
+		HashMap<String, Object> data = packet.getData();
 		switch (packet.getType()) {
+		case "login":
+			if (loggedIn)
+				break;
+			if (server.getAuthenticationController().validate((String) data.get("username"),
+					(String) data.get("password"))) {
+				username = (String) data.get("username");
+				loggedIn = true;
+				sendPacket(new Packet("accept", null));
+				System.out.println("Player logged in with username " + username);
+			} else {
+				sendPacket(new Packet("decline", null));
+				close();
+			}
+			break;
+		case "signup":
+			if (loggedIn)
+				break;
+			try {
+				server.getAuthenticationController().registerUser((String) data.get("username"),
+						(String) data.get("password"));
+				username = (String) data.get("username");
+				loggedIn = true;
+				sendPacket(new Packet("accept", null));
+				System.out.println("Player signed up with username " + username);
+			} catch (Exception e) {
+				e.printStackTrace();
+				sendPacket(new Packet("decline", null));
+				close();
+			}
+			break;
+		case "getTables":
+			if (loggedIn) {
+				HashMap<String, Object> infoData = new HashMap<>();
+				ArrayList<Table> tables = new ArrayList<>();
+				for (int tableControllerId : server.getTables().keySet()) {
+					TableController tableController = server.getTableController(id);
+					tables.add(new Table(tableControllerId, tableController.getMoney(),
+							tableController.getCurrentPlayer(), tableController.getPlayerAmount()));
+				}
+				infoData.put("tables", tables);
+				Packet infoPacket = new Packet("tables", infoData);
+				sendPacket(infoPacket);
+			} else {
+				sendPacket(new Packet("decline", null));
+			}
+			break;
+		case "join":
+			if (loggedIn && tableController == null) {
+				int tableId = (int) data.get("room");
+				tableController = server.getTableController(tableId);
+
+				try {
+					tableController.addPlayerController(this);
+					sendPacket(new Packet("accept", null));
+				} catch (IllegalStateException e) {
+					sendPacket(new Packet("decline", null));
+				}
+			} else {
+				sendPacket(new Packet("decline", null));
+			}
+			break;
 		case "action":
-			HashMap<String, Object> data = packet.getData();
 			Action action = (Action) data.get("action");
 			int amount = (Integer) data.get("amount");
 			tableController.action(id, action, amount);
@@ -113,17 +162,13 @@ public class PlayerController implements Runnable {
 		}
 	}
 
-	public void resend(Table table) {
-		System.out.println("Resend data to player " + id);
-		HashMap<String, Object> data = new HashMap<>();
-		data.put("update", new Update(table, id));
-		Packet packet = new Packet("update", data);
+	private void sendPacket(Packet packet) {
 		try {
 			out.reset();
 			out.writeObject(packet);
 			out.flush();
 		} catch (IOException e) {
-			System.out.println("Failed to send update to client " + id);
+			System.out.println("Failed to send package " + packet.getType() + " to client " + id);
 			try {
 				out.reset();
 				out.writeObject(packet);
@@ -136,14 +181,22 @@ public class PlayerController implements Runnable {
 		}
 	}
 
+	public void resend(main.core.Table table) {
+		System.out.println("Resend data to player " + id);
+		HashMap<String, Object> data = new HashMap<>();
+		data.put("update", new Update(table, id));
+		Packet packet = new Packet("update", data);
+		sendPacket(packet);
+	}
+
 	public void setId(int id) {
 		this.id = id;
 	}
-	
+
 	public int getId() {
 		return id;
 	}
-	
+
 	public void close() {
 		running = false;
 		try {

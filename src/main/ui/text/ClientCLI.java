@@ -1,9 +1,14 @@
 package main.ui.text;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
+import javafx.beans.property.SimpleListProperty;
+import javafx.collections.ObservableList;
 import main.connection.Client;
 import main.connection.Player;
+import main.connection.Table;
 import main.connection.Update;
 import main.core.Action;
 import main.core.Card;
@@ -13,7 +18,7 @@ public class ClientCLI extends CLI {
 	public static final String DEFAULT_HOST = "127.0.0.1";
 	public static final String DEFAULT_PORT = "10101";
 	public static final String DEFAULT_USERNAME = System.getProperty("user.name");
-	public static final String DEFAULT_ROOM = "0";
+	public static final boolean DEFAULT_SIGNUP = false;
 
 	private Client client;
 
@@ -23,35 +28,44 @@ public class ClientCLI extends CLI {
 
 	public ClientCLI() {
 		super();
-		
+
 		// Host
 		System.out.println("Host / IP (" + DEFAULT_HOST + "):");
 		String host = scanner.nextLine();
 		if (host.isEmpty())
 			host = DEFAULT_HOST;
-		
+
 		// Port
 		System.out.println("Port (" + DEFAULT_PORT + "):");
 		String portString = scanner.nextLine();
 		if (portString.isEmpty())
 			portString = DEFAULT_PORT;
 		int port = Integer.parseInt(portString);
-		
+
 		// Username
 		System.out.println("Username (" + DEFAULT_USERNAME + "):");
 		String username = scanner.nextLine();
 		if (username.isEmpty())
 			username = DEFAULT_USERNAME;
-		
-		// Room
-		System.out.println("Room (" + DEFAULT_ROOM + "):");
-		String roomString = scanner.nextLine();
-		if (roomString.isEmpty())
-			roomString = DEFAULT_ROOM;
-		int room = Integer.parseInt(roomString);
-		
+
+		// Password
+		System.out.println("Password:");
+		String password = scanner.nextLine();
+
+		// Sign up
+		System.out.println("Sign up? (" + DEFAULT_SIGNUP + "):");
+		String signUpString = scanner.nextLine();
+		if (signUpString.isEmpty())
+			signUpString = String.valueOf(DEFAULT_SIGNUP);
+		boolean signUp = Boolean.valueOf(signUpString);
+
 		try {
-			client = new Client(host, port, username, room);
+			client = new Client(host, port);
+			if (signUp) {
+				client.signup(username, password);
+			} else {
+				client.login(username, password);
+			}
 		} catch (Exception e) {
 			System.out.println("Start up error!");
 			e.printStackTrace();
@@ -65,6 +79,37 @@ public class ClientCLI extends CLI {
 	protected void onCommand(String command, String[] args) {
 		System.out.println();
 		switch (command) {
+		case "tables":
+			if (args.length == 1) {
+				if (args[0].equals("get")) {
+					System.out.println("Getting info about tables");
+					client.sendGetTablesPacket();
+				} else if (args[0].equals("info")) {
+					List<Table> tables = client.getTables();
+					if (tables == null) {
+						System.out.println("No information");
+					} else {
+						System.out.println("Table information");
+						for (Table pokerTable : tables) {
+							System.out.println("  id: " + pokerTable.getId() + ", money: " + pokerTable.getStartMoney()
+									+ ", " + pokerTable.getPlayersOnline() + "/" + pokerTable.getMaxPlayers()
+									+ " players");
+						}
+					}
+				}
+			} else {
+				System.out.println("Wrong usage!");
+				onCommand("help", null);
+			}
+			break;
+		case "join":
+			if (args.length == 1) {
+				client.joinTable(Integer.parseInt(args[0]));
+			} else {
+				System.out.println("Wrong usage!");
+				onCommand("help", null);
+			}
+			break;
 		case "action":
 			System.out.println("Action");
 			switch (args.length) {
@@ -90,6 +135,7 @@ public class ClientCLI extends CLI {
 				break;
 			default:
 				System.out.println("Wrong usage!");
+				onCommand("help", null);
 				break;
 			}
 			break;
@@ -128,6 +174,9 @@ public class ClientCLI extends CLI {
 			break;
 		case "help":
 			System.out.println("Commands:");
+			System.out.println("tables <action> - Get information about tables");
+			System.out.println("  <action> may be one of: print, get");
+			System.out.println("join <id> - Join room with id");
 			System.out.println("info - Display game information");
 			System.out.println("action <action> [amount] - Send an action to the server");
 			System.out.println("  <action> may be one of: check, call, bet, raise, fold");

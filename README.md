@@ -5,6 +5,7 @@ Online Poker implementation
 - Clone repo
 - Open Eclipse in to any folder wich is not the cloned repo
 - Create a new `Java Project` and uncheck `Use default location` and then enter the path of the cloned repo
+- Download the image archive and extract all of its files to the res folder
 - Happy coding!
 
 ## TODO

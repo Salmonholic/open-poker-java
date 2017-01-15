@@ -4,9 +4,18 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.HashMap;
 
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleListProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.value.ObservableObjectValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableArray;
+import javafx.collections.ObservableList;
 import main.core.Action;
+import main.ui.graphical.states.SelectTableState.PokerTable;
 
 public class Client implements Runnable {
 
@@ -17,27 +26,33 @@ public class Client implements Runnable {
 	private boolean running = true;
 
 	private String username;
-	private int room;
 	
-	private Update update;
+	private final SimpleObjectProperty<Update> update = new SimpleObjectProperty<>();
+	private final ObservableList<Table> tables = FXCollections.observableArrayList();
 
-	public Client(String host, int port, String username, int room) throws Exception {
-		this.username = username;
-		this.room = room;
-		
+	public Client(String host, int port) throws Exception {
 		socket = new Socket(host, port);
 		in = new ObjectInputStream(socket.getInputStream());
 		out = new ObjectOutputStream(socket.getOutputStream());
 		
-		HashMap<String, Object> data = new HashMap<>();
-		data.put("username", username);
-		data.put("room", room);
-		data.put("type", "player");
-		out.writeObject(new Packet("connect", data));
-		out.flush();
-		
 		thread = new Thread(this);
 		thread.start();
+	}
+	
+	public void login(String username, String password) {
+		this.username = username;
+		HashMap<String, Object> data = new HashMap<>();
+		data.put("username", username);
+		data.put("password", password);
+		sendPacket(new Packet("login", data));
+	}
+	
+	public void signup(String username, String password) {
+		this.username = username;
+		HashMap<String, Object> data = new HashMap<>();
+		data.put("username", username);
+		data.put("password", password);
+		sendPacket(new Packet("signup", data));
 	}
 
 	/**
@@ -55,11 +70,19 @@ public class Client implements Runnable {
 	 * @param packet
 	 *            Packet to parse
 	 */
+	@SuppressWarnings("unchecked")
 	private void parsePacket(Packet packet) {
+		HashMap<String, Object> data = packet.getData();
 		switch (packet.getType()) {
 		case "update":
-			HashMap<String, Object> data = packet.getData();
-			update = (Update) data.get("update");
+			update.set((Update) data.get("update"));
+			break;
+		case "tables": 
+			tables.clear();
+			ArrayList<Table> tablesArray = (ArrayList<Table>) data.get("tables");
+			for (Table table : tablesArray) {
+				tables.addAll(table);
+			}
 			break;
 		default:
 			break;
@@ -70,6 +93,13 @@ public class Client implements Runnable {
 	 * Get the most recent update
 	 */
 	public Update getUpdate() {
+		return update.get();
+	}
+
+	/**
+	 * Get update property
+	 */
+	public SimpleObjectProperty<Update> getUpdateProperty() {
 		return update;
 	}
 
@@ -86,8 +116,7 @@ public class Client implements Runnable {
 		HashMap<String, Object> data = new HashMap<>();
 		data.put("action", action);
 		data.put("amount", amount);
-		out.writeObject(new Packet("action", data));
-		out.flush();
+		sendPacket(new Packet("action", data));
 	}
 
 	/**
@@ -147,4 +176,33 @@ public class Client implements Runnable {
 	public boolean isRunning() {
 		return running;
 	}
+	
+	public void sendPacket(Packet packet) {
+		try {
+			out.writeObject(packet);
+			out.flush();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void joinTable(int id) {
+		HashMap<String, Object> data = new HashMap<>();
+		data.put("room", id);
+		sendPacket(new Packet("join", data));
+	}
+
+	public void sendGetTablesPacket() {
+		sendPacket(new Packet("getTables", null));
+	}
+
+	public ObservableList<Table> getTables() {
+		return tables;
+	}
+
+	public void setUpdate(Update update) {
+		this.update.set(update);
+	}
+	
+	
 }

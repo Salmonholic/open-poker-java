@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.TreeMap;
 
 import main.core.Card;
+import main.core.GameState;
 import main.core.Table;
 
 public class Update implements Serializable {
@@ -12,6 +13,7 @@ public class Update implements Serializable {
 	private static final long serialVersionUID = 7051737781693426600L;
 	private ArrayList<Card> communityCards = new ArrayList<>(5);
 	private int currentPot;
+	private GameState gameState;
 
 	private int buttonId = -1;
 	private int smallBlindId;
@@ -29,6 +31,7 @@ public class Update implements Serializable {
 	public Update(Table table, int id) {
 		communityCards = table.getCards();
 		currentPot = table.getPotValue();
+		gameState = table.getGameState();
 
 		buttonId = table.getButtonId();
 		smallBlindId = table.getSmallBlindId();
@@ -61,6 +64,10 @@ public class Update implements Serializable {
 
 	public int getCurrentPot() {
 		return currentPot;
+	}
+	
+	public GameState getGameState() {
+		return gameState;
 	}
 
 	public int getButtonId() {
