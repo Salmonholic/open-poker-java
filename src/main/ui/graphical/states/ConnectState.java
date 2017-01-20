@@ -17,27 +17,26 @@ public class ConnectState extends State {
 	private static final String DEFAULT_HOST = "127.0.0.1";
 	private static final String DEFAULT_PORT = "10101";
 
-	@SuppressWarnings("unused")
 	private ClientGUI clientGUI;
 	private Scene scene;
 
-	public ConnectState(ClientGUI clientGUI) {
+	public ConnectState(final ClientGUI clientGUI) {
 		this.clientGUI = clientGUI;
 
-		VBox root = new VBox();
+		final VBox root = new VBox();
 		root.setPadding(new Insets(20));
 		root.setSpacing(5);
 		
-		Text text = new Text("Welcome to open-poker-java");
+		final Text text = new Text("Welcome to open-poker-java");
 		
-		TextField hostTextField = new TextField(DEFAULT_HOST);
+		final TextField hostTextField = new TextField(DEFAULT_HOST);
 		hostTextField.setTooltip(new Tooltip("Host"));
 		hostTextField.setPromptText("Username");
-		TextField portTextField = new TextField(DEFAULT_PORT);
+		final TextField portTextField = new TextField(DEFAULT_PORT);
 		portTextField.setTooltip(new Tooltip("Port"));
 		portTextField.setPromptText("Port");
 		
-		Button connectButton = new Button("Connect");
+		final Button connectButton = new Button("Connect");
 		connectButton.setOnAction(new EventHandler<ActionEvent>() {
 			
 			@Override

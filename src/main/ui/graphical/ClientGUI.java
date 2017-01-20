@@ -1,6 +1,7 @@
 package main.ui.graphical;
 
 import javafx.application.Application;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.stage.Stage;
 import main.connection.Client;
 import main.ui.graphical.states.ConnectState;
@@ -8,7 +9,7 @@ import main.ui.graphical.states.State;
 
 public class ClientGUI extends Application {
 	
-	private Client client;
+	private SimpleObjectProperty<Client> client;
 	
 	private Stage primaryStage;
 	private State state;
@@ -20,6 +21,7 @@ public class ClientGUI extends Application {
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		this.primaryStage = primaryStage;
+		client = new SimpleObjectProperty<>();
 		primaryStage.setTitle("open-poker-java");
 		setState(new ConnectState(this));
 		primaryStage.show();
@@ -35,11 +37,15 @@ public class ClientGUI extends Application {
 	}
 
 	public Client getClient() {
-		return client;
+		return client.get();
 	}
 
 	public void setClient(Client client) {
-		this.client = client;
+		this.client.set(client);
+	}
+	
+	public SimpleObjectProperty<Client> getClientProperty() {
+		return client;
 	}
 	
 }

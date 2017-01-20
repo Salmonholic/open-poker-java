@@ -1,7 +1,5 @@
 package main.ui.graphical.states;
 
-import java.util.Iterator;
-
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
@@ -22,16 +20,18 @@ import javafx.stage.Stage;
 import main.connection.Table;
 import main.ui.graphical.ClientGUI;
 
-public class SelectTableState extends State implements ListChangeListener<Table> {
+public class SelectTableState extends State implements
+		ListChangeListener<Table> {
 	private ClientGUI clientGUI;
 	private Scene scene;
 
 	private TableView<PokerTable> tableView = new TableView<PokerTable>();
 
-	private final ObservableList<PokerTable> data = FXCollections.observableArrayList();
+	private final ObservableList<PokerTable> data = FXCollections
+			.observableArrayList();
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public SelectTableState(ClientGUI clientGUI) {
+	public SelectTableState(final ClientGUI clientGUI) {
 		this.clientGUI = clientGUI;
 
 		// Get info about table
@@ -49,20 +49,28 @@ public class SelectTableState extends State implements ListChangeListener<Table>
 		tableView.setEditable(true);
 
 		TableColumn idTableColumn = new TableColumn("Id");
-		idTableColumn.setCellValueFactory(new PropertyValueFactory<PokerTable, Integer>("id"));
+		idTableColumn
+				.setCellValueFactory(new PropertyValueFactory<PokerTable, Integer>(
+						"id"));
 
 		TableColumn starMoneyTableColumn = new TableColumn("Start money");
-		starMoneyTableColumn.setCellValueFactory(new PropertyValueFactory<PokerTable, Integer>("startMoney"));
+		starMoneyTableColumn
+				.setCellValueFactory(new PropertyValueFactory<PokerTable, Integer>(
+						"startMoney"));
 
 		TableColumn playersOnlineTableColumn = new TableColumn("Players online");
-		playersOnlineTableColumn.setCellValueFactory(new PropertyValueFactory<PokerTable, Integer>("playersOnline"));
+		playersOnlineTableColumn
+				.setCellValueFactory(new PropertyValueFactory<PokerTable, Integer>(
+						"playersOnline"));
 
 		TableColumn maxPlayersTableColumn = new TableColumn("Max. Players");
-		maxPlayersTableColumn.setCellValueFactory(new PropertyValueFactory<PokerTable, Integer>("maxPlayers"));
+		maxPlayersTableColumn
+				.setCellValueFactory(new PropertyValueFactory<PokerTable, Integer>(
+						"maxPlayers"));
 
 		tableView.setItems(data);
-		tableView.getColumns().addAll(idTableColumn, starMoneyTableColumn, playersOnlineTableColumn,
-				maxPlayersTableColumn);
+		tableView.getColumns().addAll(idTableColumn, starMoneyTableColumn,
+				playersOnlineTableColumn, maxPlayersTableColumn);
 
 		Button addTableButton = new Button("Add table");
 		addTableButton.setOnAction(new EventHandler<ActionEvent>() {
@@ -78,10 +86,12 @@ public class SelectTableState extends State implements ListChangeListener<Table>
 
 			@Override
 			public void handle(ActionEvent event) {
-				PokerTable pokerTable = tableView.getSelectionModel().getSelectedItem();
+				PokerTable pokerTable = tableView.getSelectionModel()
+						.getSelectedItem();
 				if (pokerTable != null) {
 					clientGUI.getClient().joinTable(pokerTable.getId());
-					clientGUI.setState(new GameState(clientGUI)); // TODO not working
+					clientGUI.setState(new GameState(clientGUI, pokerTable
+							.getMaxPlayers())); // TODO not working
 				}
 			}
 		});
@@ -122,8 +132,10 @@ public class SelectTableState extends State implements ListChangeListener<Table>
 			public void handle(ActionEvent event) {
 				try {
 					int id = Integer.parseInt(idTextField.getText());
-					int startMoney = Integer.parseInt(startMoneyTextField.getText());
-					int maxPlayers = Integer.parseInt(maxPlayersTextField.getText());
+					int startMoney = Integer.parseInt(startMoneyTextField
+							.getText());
+					int maxPlayers = Integer.parseInt(maxPlayersTextField
+							.getText());
 					addPokerTable(new PokerTable(id, startMoney, 0, maxPlayers));
 				} catch (Exception e) {
 				} finally {
@@ -132,7 +144,8 @@ public class SelectTableState extends State implements ListChangeListener<Table>
 			}
 		});
 
-		root.getChildren().addAll(text, idTextField, startMoneyTextField, maxPlayersTextField, addTableButton);
+		root.getChildren().addAll(text, idTextField, startMoneyTextField,
+				maxPlayersTextField, addTableButton);
 
 		Scene scene = new Scene(root);
 		stage.setScene(scene);
@@ -144,7 +157,8 @@ public class SelectTableState extends State implements ListChangeListener<Table>
 
 		if (pokerTable.getMaxPlayers() < 2)
 			return;
-		// TODO add fields for blinds and check start money accordingly (>10 until that)
+		// TODO add fields for blinds and check start money accordingly (>10
+		// until that)
 		if (pokerTable.getStartMoney() <= 10)
 			return;
 
@@ -161,7 +175,8 @@ public class SelectTableState extends State implements ListChangeListener<Table>
 	private void updateTable() {
 		data.clear();
 		for (Table table : clientGUI.getClient().getTables()) {
-			PokerTable pokerTable = new PokerTable(table.getId(), table.getStartMoney(), table.getPlayersOnline(),
+			PokerTable pokerTable = new PokerTable(table.getId(),
+					table.getStartMoney(), table.getPlayersOnline(),
 					table.getMaxPlayers());
 			data.add(pokerTable);
 		}
@@ -179,7 +194,8 @@ public class SelectTableState extends State implements ListChangeListener<Table>
 		private final SimpleIntegerProperty playersOnline;
 		private final SimpleIntegerProperty maxPlayers;
 
-		public PokerTable(int id, int startMoney, int playersOnline, int maxPlayers) {
+		public PokerTable(int id, int startMoney, int playersOnline,
+				int maxPlayers) {
 			super();
 			this.id = new SimpleIntegerProperty(id);
 			this.startMoney = new SimpleIntegerProperty(startMoney);

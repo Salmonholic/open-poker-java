@@ -7,15 +7,11 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleListProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.value.ObservableObjectValue;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableArray;
 import javafx.collections.ObservableList;
 import main.core.Action;
-import main.ui.graphical.states.SelectTableState.PokerTable;
 
 public class Client implements Runnable {
 
@@ -23,12 +19,14 @@ public class Client implements Runnable {
 	private ObjectInputStream in;
 	private ObjectOutputStream out;
 	private Thread thread;
-	private boolean running = true;
+	private final SimpleBooleanProperty running = new SimpleBooleanProperty(false);
 
 	private String username;
 	
 	private final SimpleObjectProperty<Update> update = new SimpleObjectProperty<>();
 	private final ObservableList<Table> tables = FXCollections.observableArrayList();
+	private final SimpleObjectProperty<Packet> accept = new SimpleObjectProperty<>();
+	private final SimpleObjectProperty<Packet> decline = new SimpleObjectProperty<>();
 
 	public Client(String host, int port) throws Exception {
 		socket = new Socket(host, port);
@@ -37,6 +35,7 @@ public class Client implements Runnable {
 		
 		thread = new Thread(this);
 		thread.start();
+		running.set(true);
 	}
 	
 	public void login(String username, String password) {
@@ -74,6 +73,12 @@ public class Client implements Runnable {
 	private void parsePacket(Packet packet) {
 		HashMap<String, Object> data = packet.getData();
 		switch (packet.getType()) {
+		case "accept":
+			accept.set(packet);
+			break;
+		case "decline":
+			decline.set(packet);
+			break;
 		case "update":
 			update.set((Update) data.get("update"));
 			break;
@@ -132,7 +137,7 @@ public class Client implements Runnable {
 
 	@Override
 	public void run() {
-		while (running) {
+		while (running.get()) {
 			try {
 				read();
 			} catch (ClassNotFoundException e) {
@@ -142,13 +147,13 @@ public class Client implements Runnable {
 				} catch (IOException e1) {
 					System.out.println("Fatal: Could not reset input stream.");
 					e1.printStackTrace();
-					running = false;
+					running.set(false);
 				}
 			} catch (IOException e) {
-				if (running) {
+				if (running.get()) {
 					System.out.println("Fatal: Network error!\n");
 					e.printStackTrace();
-					running = false;
+					running.set(false);
 				}
 			}
 		}
@@ -165,7 +170,7 @@ public class Client implements Runnable {
 	
 	public void close() {
 		//TODO send info to server
-		running = false;
+		running.set(false);
 		try {
 			socket.close();
 		} catch (Exception e) {
@@ -174,9 +179,21 @@ public class Client implements Runnable {
 	}
 
 	public boolean isRunning() {
-		return running;
+		return running.get();
 	}
 	
+	public SimpleBooleanProperty getRunningProperty() {
+		return running;
+	}
+
+	public SimpleObjectProperty<Packet> getAcceptProperty() {
+		return accept;
+	}
+
+	public SimpleObjectProperty<Packet> getDeclineProperty() {
+		return decline;
+	}
+
 	public void sendPacket(Packet packet) {
 		try {
 			out.writeObject(packet);
@@ -198,10 +215,6 @@ public class Client implements Runnable {
 
 	public ObservableList<Table> getTables() {
 		return tables;
-	}
-
-	public void setUpdate(Update update) {
-		this.update.set(update);
 	}
 	
 	

@@ -1,6 +1,5 @@
 package main.ui.graphical.states;
 
-import main.ui.graphical.ClientGUI;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -11,6 +10,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
+import main.ui.graphical.ClientGUI;
 
 public class LobbyState extends State {
 	
@@ -19,25 +19,25 @@ public class LobbyState extends State {
 	private ClientGUI clientGUI;
 	private Scene scene;
 
-	public LobbyState(ClientGUI clientGUI) {
+	public LobbyState(final ClientGUI clientGUI) {
 		this.clientGUI = clientGUI;
 
 		VBox root = new VBox();
 		root.setPadding(new Insets(20));
 		root.setSpacing(5);
 
-		Text text = new Text("Lobby");
+		final Text text = new Text("Lobby");
 		root.getChildren().add(text);
 
-		Text loginText = new Text("Log in");
-		TextField loginUsernameTextField = new TextField(DEFAULT_USERNAME);
+		final Text loginText = new Text("Log in");
+		final TextField loginUsernameTextField = new TextField(DEFAULT_USERNAME);
 		loginUsernameTextField.setTooltip(new Tooltip("Username"));
 		loginUsernameTextField.setPromptText("Username");
-		PasswordField loginPasswordField = new PasswordField();
+		final PasswordField loginPasswordField = new PasswordField();
 		loginPasswordField.setTooltip(new Tooltip("Password"));
 		loginPasswordField.setPromptText("Password");
 
-		Button loginButton = new Button("Log in");
+		final Button loginButton = new Button("Log in");
 		loginButton.setOnAction(new EventHandler<ActionEvent>() {
 
 			@Override
@@ -50,18 +50,18 @@ public class LobbyState extends State {
 
 		root.getChildren().addAll(loginText, loginUsernameTextField, loginPasswordField, loginButton);
 
-		Text signupText = new Text("Sign up");
-		TextField signupUsernameTextField = new TextField(DEFAULT_USERNAME);
+		final Text signupText = new Text("Sign up");
+		final TextField signupUsernameTextField = new TextField(DEFAULT_USERNAME);
 		signupUsernameTextField.setTooltip(new Tooltip("Username"));
 		signupUsernameTextField.setPromptText("Username");
-		PasswordField signupPasswordField = new PasswordField();
+		final PasswordField signupPasswordField = new PasswordField();
 		signupPasswordField.setTooltip(new Tooltip("Password"));
 		signupPasswordField.setPromptText("Password");
-		PasswordField signupRepeatPasswordField = new PasswordField();
+		final PasswordField signupRepeatPasswordField = new PasswordField();
 		signupRepeatPasswordField.setTooltip(new Tooltip("Repeat password"));
 		signupRepeatPasswordField.setPromptText("Password");
 
-		Button signupButton = new Button("Sign up");
+		final Button signupButton = new Button("Sign up");
 		signupButton.setOnAction(new EventHandler<ActionEvent>() {
 
 			@Override
@@ -82,5 +82,7 @@ public class LobbyState extends State {
 	public Scene getScene() {
 		return scene;
 	}
+	
+	
 
 }

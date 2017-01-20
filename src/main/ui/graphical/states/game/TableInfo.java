@@ -1,5 +1,7 @@
 package main.ui.graphical.states.game;
 
+import java.util.ArrayList;
+
 import javafx.geometry.Insets;
 import javafx.scene.layout.HBox;
 import main.core.Card;
@@ -7,20 +9,23 @@ import main.core.GameState;
 
 public class TableInfo extends HBox {
 	
-	private CardInfo cardInfo1;
-	private CardInfo cardInfo2;
-	private CardInfo cardInfo3;
+	private ArrayList<CardInfo> cardInfos;
 	private InfoBox infoBox;
 	
 	public TableInfo() {
 		setPadding(new Insets(20));
 		setSpacing(5);
-		cardInfo1 = new CardInfo();
-		cardInfo2 = new CardInfo();
-		cardInfo3 = new CardInfo();
-		infoBox = new InfoBox(3);
 		
-		getChildren().addAll(cardInfo1, cardInfo2, cardInfo3, infoBox);
+		cardInfos = new ArrayList<>();
+		
+		for (int i = 0; i < 5; i++) {
+			CardInfo cardInfo = new CardInfo();
+			getChildren().add(cardInfo);
+			cardInfos.add(cardInfo);
+		}
+		
+		infoBox = new InfoBox(3);
+		getChildren().add(infoBox);
 	}
 	
 	public void setCurrentPot(int currentPot) {
@@ -28,17 +33,23 @@ public class TableInfo extends HBox {
 	}
 	
 	public void setCurrentBet(int currentBet) {
-		infoBox.setInfo(0, "Current bet:" + currentBet);
+		infoBox.setInfo(1, "Current bet:" + currentBet);
 	}
 	
 	public void setGameState(GameState gameState) {
-		infoBox.setInfo(0, "Game state:" + gameState.toString());
+		infoBox.setInfo(2, "Game state:" + gameState.toString());
 	}
 	
-	public void setCards(Card card1, Card card2, Card card3) {
-		cardInfo1.setCard(card1);
-		cardInfo2.setCard(card2);
-		cardInfo3.setCard(card3);
+	public void setCards(ArrayList<Card> cards) {
+		// Reset cards
+		for (int i = 0; i < 5; i++) {
+			cardInfos.get(i).setUnknownCard();
+		}
+		
+		// Set new cards
+		for (int i = 0; i < cards.size(); i++) {
+			cardInfos.get(i).setCard(cards.get(i));
+		}
 	}
 	
 }

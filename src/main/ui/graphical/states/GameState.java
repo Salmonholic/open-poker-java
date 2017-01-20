@@ -1,5 +1,7 @@
 package main.ui.graphical.states;
 
+import java.util.HashMap;
+
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
@@ -19,8 +21,9 @@ public class GameState extends State implements ChangeListener<Update> {
 
 	private TableInfo tableInfo;
 	private VBox playersInfoVBox;
+	private HashMap<Integer, PlayerInfo> playerInfos;
 
-	public GameState(ClientGUI clientGUI) {
+	public GameState(ClientGUI clientGUI, int playerAmount) {
 		this.clientGUI = clientGUI;
 		
 		clientGUI.getClient().getUpdateProperty().addListener(this);
@@ -35,6 +38,15 @@ public class GameState extends State implements ChangeListener<Update> {
 
 		playersInfoVBox = new VBox();
 		playersInfoVBox.setSpacing(5);
+		
+		// Create info boxes for players
+		
+		playerInfos = new HashMap<>();
+		for (int i = 0; i < playerAmount; i++) {
+			PlayerInfo playerInfo = new PlayerInfo();
+			playersInfoVBox.getChildren().add(playerInfo);
+			playerInfos.put(i, playerInfo);
+		}
 
 		gameInfoVBox.getChildren().addAll(tableInfo, playersInfoVBox);
 
@@ -48,17 +60,14 @@ public class GameState extends State implements ChangeListener<Update> {
 	}
 
 	public void update(Update update) {
-		// Clear Players
-		playersInfoVBox.getChildren().clear();
 		// Update Information
 		tableInfo.setCurrentPot(update.getCurrentPot());
-		tableInfo.setCurrentPot(update.getCurrentBet());
-		tableInfo.setCards(update.getCommunityCards().get(0), update.getCommunityCards().get(1),
-				update.getCommunityCards().get(2));
+		tableInfo.setCurrentBet(update.getCurrentBet());
+		tableInfo.setCards(update.getCommunityCards());
 		tableInfo.setGameState(update.getGameState());
 		// Add players
 		for (int playerId : update.getPlayers().keySet()) {
-			PlayerInfo playerInfo = new PlayerInfo();
+			PlayerInfo playerInfo = playerInfos.get(playerId);
 			Player player = update.getPlayers().get(playerId);
 			playerInfo.setMoney(player.getMoney());
 			playerInfo.setAllIn(player.isAllIn());
@@ -69,12 +78,12 @@ public class GameState extends State implements ChangeListener<Update> {
 				playerInfo.setCards(update.getYourCards().get(0), update.getYourCards().get(1));
 			}
 			playerInfo.setPrimaryPlayer(false);
-			playersInfoVBox.getChildren().add(playerInfo);
 		}
 	}
 
 	@Override
 	public void changed(ObservableValue<? extends Update> observable, Update oldValue, Update newValue) {
+		update(newValue);
 	}
 
 }
