@@ -63,6 +63,7 @@ public class PlayerController implements Runnable {
 			}
 		}
 		System.out.println("Kick player " + id);
+		server.getAuthenticationController().logOut(username);
 		tableController.removePlayer(id);
 		// TODO send info to client
 		if (!socket.isClosed()) {

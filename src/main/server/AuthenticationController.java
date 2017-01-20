@@ -8,11 +8,13 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.HashMap;
+import java.util.HashSet;
 
 public class AuthenticationController {
 	
-	public static String FILE_PATH = "users";
-	HashMap<String, String> users;
+	private static String FILE_PATH = "users";
+	private HashMap<String, String> users;
+	private HashSet<String> loggedInUsers = new HashSet<>();
 	
 	public AuthenticationController() {
 		try {
@@ -54,14 +56,21 @@ public class AuthenticationController {
 			//TODO handel exception...
 		} else {
 			users.put(username, password);
+			loggedInUsers.add(username);
 		}
 	}
 	
 	public boolean validate(String username, String password) {
-		if (users.containsKey(username)) {
-			return users.get(username).equals(password);
+		if (users.containsKey(username) && !loggedInUsers.contains(username)
+				&& users.get(username).equals(password)) {
+			loggedInUsers.add(username);
+			return true;
 		}
 		return false;
+	}
+	
+	public void logOut(String username) {
+		loggedInUsers.remove(username);
 	}
 	
 }
