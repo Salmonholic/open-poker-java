@@ -51,6 +51,7 @@ public class AuthenticationController {
 		//TODO add info to client's sign up page
 		if (username.length() < 3 || password.length() < 8 || users.containsKey(username)) {
 			throw new IllegalArgumentException();
+			//TODO handel exception...
 		} else {
 			users.put(username, password);
 		}
