@@ -49,7 +49,7 @@ public class AuthenticationController {
 	
 	public void registerUser(String username, String password) {
 		//TODO add info to client's sign up page
-		if (username.length() < 8 || password.length() < 8 || users.containsKey(username)) {
+		if (username.length() < 3 || password.length() < 8 || users.containsKey(username)) {
 			throw new IllegalArgumentException();
 		} else {
 			users.put(username, password);
