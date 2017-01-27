@@ -127,7 +127,7 @@ public class PlayerController implements Runnable {
 				HashMap<String, Object> infoData = new HashMap<>();
 				ArrayList<Table> tables = new ArrayList<>();
 				for (int tableControllerId : server.getTables().keySet()) {
-					TableController tableController = server.getTableController(id);
+					TableController tableController = server.getTableController(tableControllerId);
 					tables.add(new Table(tableControllerId, tableController.getMoney(),
 							tableController.getPlayerAmount(), tableController.getMaxPlayerAmount()));
 				}
