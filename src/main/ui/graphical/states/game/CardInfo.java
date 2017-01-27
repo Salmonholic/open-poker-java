@@ -7,17 +7,15 @@ import main.core.Card;
 
 public class CardInfo extends HBox {
 
-	public static String UNKNOWN_CARD_PATH = "/unknownCard.png";
-	public static Image UNKNOWN_CARD_IMAGE = new Image(UNKNOWN_CARD_PATH, 60, 60, true, true);
-	public static final float CARD_SCALE = 0.5f;
+	public static final float CARD_SIZE = 60;
+	public static final String UNKNOWN_CARD_PATH = "/unknownCard.png";
+	public static final Image UNKNOWN_CARD_IMAGE = getImage(UNKNOWN_CARD_PATH);
 
 	private ImageView imageView;
 
 	public CardInfo() {
 		super();
 		imageView = new ImageView();
-//		imageView.setScaleX(CARD_SCALE);
-//		imageView.setScaleY(CARD_SCALE);
 		setUnknownCard();
 		getChildren().add(imageView);
 	}
@@ -29,12 +27,16 @@ public class CardInfo extends HBox {
 	public void setCard(Card card) {
 		String path = "/" + card.getColor().name().toLowerCase() + "/" + card.getValue().getInt() + ".png";
 		imageView.setAccessibleText(card.getColor().name().toLowerCase() + " " + card.getValue());
-		setImage(new Image(getClass().getResourceAsStream(path)));
+		setImage(getImage(path));
 	}
 
 	public void setUnknownCard() {
 		imageView.setAccessibleText("Unknown card");
 		setImage(UNKNOWN_CARD_IMAGE);
+	}
+	
+	private static Image getImage(String path) {
+		return new Image(path, CARD_SIZE, CARD_SIZE, true, true);
 	}
 
 }
