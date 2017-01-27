@@ -2,7 +2,9 @@ package main.ui.graphical;
 
 import javafx.application.Application;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.event.EventHandler;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import main.connection.Client;
 import main.ui.graphical.states.ConnectState;
 import main.ui.graphical.states.State;
@@ -24,6 +26,14 @@ public class ClientGUI extends Application {
 		client = new SimpleObjectProperty<>();
 		primaryStage.setTitle("open-poker-java");
 		setState(new ConnectState(this));
+		
+		primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+			
+			@Override
+			public void handle(WindowEvent windowEvent) {
+				getClient().close();
+			}
+		});
 		primaryStage.show();
 	}
 	

@@ -60,7 +60,7 @@ public class ServerCLI extends CLI {
 					server.createTableController(id, players, money);
 					System.out.println("Created table with id " + id);
 				} catch (Exception e) {
-					e.printStackTrace();
+					System.out.println(e.getMessage());
 				}
 			} else {
 				System.out.println("Wrong usage!");

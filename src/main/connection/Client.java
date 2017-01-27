@@ -159,12 +159,7 @@ public class Client implements Runnable {
 		}
 		// Close client
 		if (!socket.isClosed()) {
-			//TODO send info to server
-			try {
-				socket.close();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+			close();
 		}
 	}
 	
