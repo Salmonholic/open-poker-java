@@ -64,7 +64,9 @@ public class PlayerController implements Runnable {
 		}
 		System.out.println("Kick player " + id);
 		server.getAuthenticationController().logOut(username);
-		tableController.removePlayer(id);
+		if(tableController != null) {
+			tableController.removePlayer(id);
+		}
 		// TODO send info to client
 		if (!socket.isClosed()) {
 			try {
@@ -154,10 +156,21 @@ public class PlayerController implements Runnable {
 			}
 			break;
 		case "action":
-			Action action = (Action) data.get("action");
-			int amount = (Integer) data.get("amount");
-			tableController.action(id, action, amount);
+			if(loggedIn && tableController != null) {
+				Action action = (Action) data.get("action");
+				int amount = (Integer) data.get("amount");
+				tableController.action(id, action, amount);
+			} else {
+				sendPacket(new Packet("decline", null));
+			}
 			break;
+		case "create":
+			if(loggedIn) {
+				int id = (Integer) data.get("id");
+				int money = (Integer) data.get("money");
+				int maxPlayerAmount = (Integer) data.get("maxPlayerAmount");
+				server.createTableController(id, maxPlayerAmount, money);
+			}
 		default:
 			break;
 		}

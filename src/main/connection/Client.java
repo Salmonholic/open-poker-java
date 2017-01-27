@@ -207,6 +207,14 @@ public class Client implements Runnable {
 	public void sendGetTablesPacket() {
 		sendPacket(new Packet("getTables", null));
 	}
+	
+	public void sendCreateTablePacket(int id, int money, int maxPlayerAmount) {
+		HashMap<String, Object> data = new HashMap<>();
+		data.put("id", id);
+		data.put("money", money);
+		data.put("maxPlayerAmount", maxPlayerAmount);
+		sendPacket(new Packet("create", data));
+	}
 
 	public ObservableList<Table> getTables() {
 		return tables;

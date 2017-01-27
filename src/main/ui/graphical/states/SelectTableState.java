@@ -169,6 +169,8 @@ public class SelectTableState extends State implements
 			}
 		}
 		// TODO add table on server
+		clientGUI.getClient().sendCreateTablePacket(pokerTable.getId(),
+				pokerTable.getStartMoney(), pokerTable.getMaxPlayers());
 		data.add(pokerTable);
 	}
 

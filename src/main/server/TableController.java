@@ -17,7 +17,7 @@ public class TableController {
 	private int money;
 	// Id of last Player connected (NOT necessarily amount of online players)
 	private int currentPlayer = 0;
-	boolean started = false;
+	private boolean started = false;
 
 	public TableController(int maxPlayerAmount, int money, int tableId) {
 		this.maxPlayerAmount = maxPlayerAmount;
@@ -31,6 +31,7 @@ public class TableController {
 		}
 		playerController.setId(currentPlayer);
 		currentPlayer++;
+		playerAmount++;
 		playerControllers.add(playerController);
 		if (playerAmount == maxPlayerAmount) {
 			started = true;
