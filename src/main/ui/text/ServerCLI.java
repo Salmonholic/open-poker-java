@@ -47,8 +47,8 @@ public class ServerCLI extends CLI {
 						.getTableController(tableId);
 				System.out.println("  id: " + tableId + ", money: "
 						+ tableController.getMoney() + ", "
-						+ tableController.getCurrentPlayer() + "/"
-						+ tableController.getPlayerAmount() + " players");
+						+ tableController.getPlayerAmount() + "/"
+						+ tableController.getMaxPlayerAmount() + " players");
 			}
 			break;
 		case "create":

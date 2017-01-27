@@ -129,7 +129,7 @@ public class PlayerController implements Runnable {
 				for (int tableControllerId : server.getTables().keySet()) {
 					TableController tableController = server.getTableController(id);
 					tables.add(new Table(tableControllerId, tableController.getMoney(),
-							tableController.getCurrentPlayer(), tableController.getPlayerAmount()));
+							tableController.getPlayerAmount(), tableController.getMaxPlayerAmount()));
 				}
 				infoData.put("tables", tables);
 				Packet infoPacket = new Packet("tables", infoData);

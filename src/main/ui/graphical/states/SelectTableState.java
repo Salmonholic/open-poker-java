@@ -183,7 +183,6 @@ public class SelectTableState extends State implements
 	}
 
 	@Override
-	// TODO use somewhere? delete?
 	public void onChanged(Change<? extends Table> c) {
 		updateTable();
 	}

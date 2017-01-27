@@ -12,14 +12,15 @@ public class TableController {
 	private int tableId;
 	private ArrayList<PlayerController> playerControllers = new ArrayList<>();
 	// Amount of players to start
+	private int maxPlayerAmount;
 	private int playerAmount;
 	private int money;
 	// Id of last Player connected (NOT necessarily amount of online players)
 	private int currentPlayer = 0;
 	boolean started = false;
 
-	public TableController(int playerAmount, int money, int tableId) {
-		this.playerAmount = playerAmount;
+	public TableController(int maxPlayerAmount, int money, int tableId) {
+		this.maxPlayerAmount = maxPlayerAmount;
 		this.money = money;
 		this.tableId = tableId;
 	}
@@ -31,7 +32,7 @@ public class TableController {
 		playerController.setId(currentPlayer);
 		currentPlayer++;
 		playerControllers.add(playerController);
-		if (currentPlayer == playerAmount) {
+		if (playerAmount == maxPlayerAmount) {
 			started = true;
 			table = new Table(this, playerAmount, money);
 			table.resend();
@@ -72,7 +73,7 @@ public class TableController {
 				break;
 			}
 		}
-		if (playerAmount == 1) {
+		if (started && playerAmount == 1) {
 			System.out.println("Table " + tableId + " finished.");
 			//TODO inform client, delete room
 		}
@@ -82,6 +83,10 @@ public class TableController {
 		while(playerControllers.size() > 0) {
 			playerControllers.get(0).close();
 		}
+	}
+	
+	public int getMaxPlayerAmount() {
+		return maxPlayerAmount;
 	}
 	
 	public int getPlayerAmount() {
