@@ -54,22 +54,14 @@ public class ServerCLI extends CLI {
 		case "create":
 			if (args.length == 3) {
 				int id = Integer.parseInt(args[0]);
-				if (server.getTables().containsKey(id)) {
-					System.out.println("Id has to be unique!");
-					break;
-				}
 				int players = Integer.parseInt(args[1]);
-				if (players <= 1) {
-					System.out.println("There have to be at least 2 players!");
-					break;
-				}
 				int money = Integer.parseInt(args[2]);
-				if (money <= 0) {
-					System.out.println("Start money has to be greater than 0!");
-					break;
+				try {
+					server.createTableController(id, players, money);
+					System.out.println("Created table with id " + id);
+				} catch (Exception e) {
+					e.printStackTrace();
 				}
-				server.createTableController(id, players, money);
-				System.out.println("Created table with id " + id);
 			} else {
 				System.out.println("Wrong usage!");
 			}

@@ -64,7 +64,15 @@ public class Server implements Runnable {
 	 *            Start-money for Players
 	 */
 	public void createTableController(int id, int players, int money) {
-		// TODO check if id is used
+		if (tables.containsKey(id)) {
+			throw new IllegalArgumentException("Id has to be unique!");
+		}
+		if (money <= 0) {
+			throw new IllegalArgumentException("Start money has to be greater than 0!");
+		}
+		if (players <= 1) {
+			throw new IllegalArgumentException("There have to be at least 2 players!");
+		}
 		tables.put(id, new TableController(players, money, id));
 
 	}
