@@ -91,12 +91,20 @@ public class SelectTableState extends State implements
 				if (pokerTable != null) {
 					clientGUI.getClient().joinTable(pokerTable.getId());
 					clientGUI.setState(new GameState(clientGUI, pokerTable
-							.getMaxPlayers()));//TODO info if res not found
+							.getMaxPlayers()));// TODO info if res not found
 				}
 			}
 		});
+		
+		Button refreshButton = new Button("Refresh");
+		refreshButton.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				clientGUI.getClient().sendGetTablesPacket();
+			}
+		});
 
-		root.getChildren().addAll(text, tableView, addTableButton, joinButton);
+		root.getChildren().addAll(text, tableView, addTableButton, joinButton, refreshButton);
 		scene = new Scene(root);
 	}
 
@@ -144,8 +152,15 @@ public class SelectTableState extends State implements
 			}
 		});
 
+		final Text idInfoText = new Text("Id has to be unique!");
+		final Text startMoneyInfoText = new Text(
+				"Start money has to be creater or equal than 0!");
+		final Text maxPlayersInfoText = new Text(
+				"Amount of players has to be greater than 1!");
+
 		root.getChildren().addAll(text, idTextField, startMoneyTextField,
-				maxPlayersTextField, addTableButton);
+				maxPlayersTextField, addTableButton, idInfoText,
+				startMoneyInfoText, maxPlayersInfoText);
 
 		Scene scene = new Scene(root);
 		stage.setScene(scene);
@@ -162,7 +177,6 @@ public class SelectTableState extends State implements
 		if (pokerTable.getStartMoney() <= 10)
 			return;
 
-		// Check if id is unique
 		for (PokerTable otherPokerTable : data) {
 			if (pokerTable.getId() == otherPokerTable.getId()) {
 				return;
