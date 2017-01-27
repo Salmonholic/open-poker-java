@@ -23,7 +23,7 @@ public class LobbyState extends State {
 		this.clientGUI = clientGUI;
 
 		VBox root = new VBox();
-		root.setPadding(new Insets(20));
+		root.setPadding(new Insets(10));
 		root.setSpacing(5);
 
 		final Text text = new Text("Lobby");

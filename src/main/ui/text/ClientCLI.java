@@ -175,7 +175,7 @@ public class ClientCLI extends CLI {
 		case "help":
 			System.out.println("Commands:");
 			System.out.println("tables <action> - Get information about tables");
-			System.out.println("  <action> may be one of: print, get");
+			System.out.println("  <action> may be one of: info, get");
 			System.out.println("join <id> - Join room with id");
 			System.out.println("info - Display game information");
 			System.out.println("action <action> [amount] - Send an action to the server");

@@ -24,7 +24,7 @@ public class ConnectState extends State {
 		this.clientGUI = clientGUI;
 
 		final VBox root = new VBox();
-		root.setPadding(new Insets(20));
+		root.setPadding(new Insets(10));
 		root.setSpacing(5);
 		
 		final Text text = new Text("Welcome to open-poker-java");
