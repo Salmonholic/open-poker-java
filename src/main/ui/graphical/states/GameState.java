@@ -42,7 +42,7 @@ public class GameState extends State implements ChangeListener<Update> {
 		BorderPane root = new BorderPane();
 
 		VBox gameInfoVBox = new VBox();
-		gameInfoVBox.setPadding(new Insets(20));
+		gameInfoVBox.setPadding(new Insets(10));
 		gameInfoVBox.setSpacing(5);
 
 		tableInfo = new TableInfo();
@@ -65,9 +65,9 @@ public class GameState extends State implements ChangeListener<Update> {
 
 		root.setCenter(gameInfoScrollPane);
 
-		HBox actionHBox = new HBox();
-		actionHBox.setPadding(new Insets(20));
-		actionHBox.setSpacing(5);
+		VBox actionVBox = new VBox();
+		actionVBox.setPadding(new Insets(10));
+		actionVBox.setSpacing(5);
 
 		final ComboBox<String> comboBox = new ComboBox<>();
 
@@ -114,9 +114,9 @@ public class GameState extends State implements ChangeListener<Update> {
 			}
 		});
 
-		actionHBox.getChildren().addAll(comboBox, moneyTextField, submitButton);
+		actionVBox.getChildren().addAll(comboBox, moneyTextField, submitButton);
 
-		root.setRight(actionHBox);
+		root.setRight(actionVBox);
 
 		scene = new Scene(root);
 	}

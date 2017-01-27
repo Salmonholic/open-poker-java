@@ -19,7 +19,7 @@ public class PlayerInfo extends HBox {
 	private boolean primaryPlayer;
 
 	public PlayerInfo() {
-		setPadding(new Insets(20));
+		setPadding(new Insets(10));
 		setSpacing(5);
 		cardInfo1 = new CardInfo();
 		cardInfo2 = new CardInfo();

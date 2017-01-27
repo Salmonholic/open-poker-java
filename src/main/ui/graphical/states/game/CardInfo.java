@@ -8,13 +8,16 @@ import main.core.Card;
 public class CardInfo extends HBox {
 
 	public static String UNKNOWN_CARD_PATH = "/unknownCard.png";
-	public static Image UNKNOWN_CARD_IMAGE = new Image(UNKNOWN_CARD_PATH);
+	public static Image UNKNOWN_CARD_IMAGE = new Image(UNKNOWN_CARD_PATH, 60, 60, true, true);
+	public static final float CARD_SCALE = 0.5f;
 
 	private ImageView imageView;
 
 	public CardInfo() {
 		super();
 		imageView = new ImageView();
+//		imageView.setScaleX(CARD_SCALE);
+//		imageView.setScaleY(CARD_SCALE);
 		setUnknownCard();
 		getChildren().add(imageView);
 	}

@@ -13,7 +13,7 @@ public class TableInfo extends HBox {
 	private InfoBox infoBox;
 	
 	public TableInfo() {
-		setPadding(new Insets(20));
+		setPadding(new Insets(10));
 		setSpacing(5);
 		
 		cardInfos = new ArrayList<>();

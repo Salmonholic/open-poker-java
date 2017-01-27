@@ -4,6 +4,8 @@ import java.io.Serializable;
 
 public class Table implements Serializable {
 	
+	private static final long serialVersionUID = -2793928917346062006L;
+	
 	private int id;
 	private int startMoney;
 	private int playersOnline;
