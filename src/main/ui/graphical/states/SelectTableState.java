@@ -95,8 +95,16 @@ public class SelectTableState extends State implements
 				}
 			}
 		});
+		
+		Button refreshButton = new Button("Refresh");
+		refreshButton.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				clientGUI.getClient().sendGetTablesPacket();
+			}
+		});
 
-		root.getChildren().addAll(text, tableView, addTableButton, joinButton);
+		root.getChildren().addAll(text, tableView, addTableButton, joinButton, refreshButton);
 		scene = new Scene(root);
 	}
 
@@ -146,7 +154,7 @@ public class SelectTableState extends State implements
 
 		final Text idInfoText = new Text("Id has to be unique!");
 		final Text startMoneyInfoText = new Text(
-				"Start money has to be creater or equal thon 0!");
+				"Start money has to be creater or equal than 0!");
 		final Text maxPlayersInfoText = new Text(
 				"Amount of players has to be greater than 1!");
 
