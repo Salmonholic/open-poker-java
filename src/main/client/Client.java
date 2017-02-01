@@ -30,6 +30,8 @@ public class Client implements Runnable {
 	private final ObservableList<Table> tables = FXCollections.observableArrayList();
 	private final SimpleObjectProperty<Packet> accept = new SimpleObjectProperty<>();
 	private final SimpleObjectProperty<Packet> decline = new SimpleObjectProperty<>();
+	
+	private final ArrayList<PacketObserver> packetObservers = new ArrayList<>();
 
 	public Client(String host, int port) throws Exception {
 		socket = new Socket(host, port);
@@ -169,6 +171,7 @@ public class Client implements Runnable {
 	public void close() {
 		//TODO send info to server
 		running.set(false);
+		packetObservers.clear();
 		try {
 			socket.close();
 		} catch (Exception e) {
@@ -223,5 +226,12 @@ public class Client implements Runnable {
 		return tables;
 	}
 	
+	public void addPacketObserver(PacketObserver packetObserver) {
+		packetObservers.add(packetObserver);
+	}
+	
+	public void removePacketObserver(PacketObserver packetObserver) {
+		packetObservers.remove(packetObserver);
+	}
 	
 }
