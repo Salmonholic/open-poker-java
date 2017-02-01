@@ -62,10 +62,15 @@ public class Client implements Runnable {
 	/**
 	 * Read all arrived packets
 	 */
+	@SuppressWarnings("unchecked")
 	private void read() throws ClassNotFoundException, IOException {
 		Packet packet = (Packet) in.readObject();
 		System.out.println(username + " got packet " + packet.getType());
 		parsePacket(packet);
+		
+		for (PacketObserver packetObserver : (ArrayList<PacketObserver>) packetObservers.clone()) {
+			packetObserver.onPacket(packet);
+		}
 	}
 
 	/**

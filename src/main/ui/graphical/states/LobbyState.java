@@ -1,5 +1,8 @@
 package main.ui.graphical.states;
 
+import com.sun.jmx.snmp.tasks.Task;
+
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -10,9 +13,11 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
+import main.client.PacketObserver;
+import main.connection.Packet;
 import main.ui.graphical.ClientGUI;
 
-public class LobbyState extends State {
+public class LobbyState extends State implements PacketObserver {
 
 	private static final String DEFAULT_USERNAME = System
 			.getProperty("user.name");
@@ -43,10 +48,9 @@ public class LobbyState extends State {
 
 			@Override
 			public void handle(ActionEvent e) {
+				addPackageObserver();
 				clientGUI.getClient().login(loginUsernameTextField.getText(),
 						loginPasswordField.getText());
-				// TODO check if logged in correctly, don't change view if not
-				clientGUI.setState(new SelectTableState(clientGUI));
 			}
 		});
 
@@ -70,10 +74,9 @@ public class LobbyState extends State {
 
 			@Override
 			public void handle(ActionEvent e) {
+				addPackageObserver();
 				clientGUI.getClient().signup(signupUsernameTextField.getText(),
 						signupPasswordField.getText());
-				// TODO check if signed up correctly, don't change view if not
-				clientGUI.setState(new SelectTableState(clientGUI));
 			}
 		});
 
@@ -92,6 +95,35 @@ public class LobbyState extends State {
 	@Override
 	public Scene getScene() {
 		return scene;
+	}
+	
+	public void addPackageObserver() {
+		clientGUI.getClient().addPacketObserver(this);
+	}
+	
+	public void removePackageObserver() {
+		clientGUI.getClient().removePacketObserver(this);
+	}
+
+	@Override
+	public void onPacket(Packet packet) {
+		switch (packet.getType()) {
+		case "accept":
+			Platform.runLater(new Runnable() {
+				@Override
+				public void run() {
+					clientGUI.setState(new SelectTableState(clientGUI));
+				}
+			});
+			removePackageObserver();
+			break;
+		case "decline":
+			// TODO stop program with pop up message
+			removePackageObserver();
+			break;
+		default:
+			break;
+		}
 	}
 
 }
