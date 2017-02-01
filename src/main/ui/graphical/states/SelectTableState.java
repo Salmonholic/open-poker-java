@@ -91,7 +91,7 @@ public class SelectTableState extends State implements
 				if (pokerTable != null) {
 					clientGUI.getClient().joinTable(pokerTable.getId());
 					clientGUI.setState(new GameState(clientGUI, pokerTable
-							.getMaxPlayers()));// TODO info if res not found
+							.getMaxPlayers()));
 				}
 			}
 		});
@@ -182,7 +182,6 @@ public class SelectTableState extends State implements
 				return;
 			}
 		}
-		// TODO add table on server
 		clientGUI.getClient().sendCreateTablePacket(pokerTable.getId(),
 				pokerTable.getStartMoney(), pokerTable.getMaxPlayers());
 		data.add(pokerTable);

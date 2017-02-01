@@ -120,7 +120,6 @@ public class ClientCLI extends CLI {
 					System.out.println("Action not found!");
 				} catch (IOException e) {
 					System.out.println("Network error! Could not send Action.");
-					// TODO restore connection?
 				}
 				break;
 			case 2:
@@ -130,7 +129,6 @@ public class ClientCLI extends CLI {
 					System.out.println("Action not found!");
 				} catch (IOException e) {
 					System.out.println("Network error! Could not send Action.");
-					// TODO restore connection?
 				}
 				break;
 			default:
