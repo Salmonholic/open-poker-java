@@ -9,7 +9,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
-import main.connection.Client;
+import main.client.Client;
 import main.ui.graphical.ClientGUI;
 
 public class ConnectState extends State {

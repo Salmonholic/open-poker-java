@@ -52,7 +52,6 @@ public class AuthenticationController {
 	public void registerUser(String username, String password) {
 		if (username.length() < 3 || password.length() < 8 || users.containsKey(username)) {
 			throw new IllegalArgumentException();
-			//TODO handle exception...
 		} else {
 			users.put(username, password);
 			loggedInUsers.add(username);

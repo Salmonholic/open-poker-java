@@ -6,7 +6,7 @@ import java.util.List;
 
 import javafx.beans.property.SimpleListProperty;
 import javafx.collections.ObservableList;
-import main.connection.Client;
+import main.client.Client;
 import main.connection.Player;
 import main.connection.Table;
 import main.connection.Update;

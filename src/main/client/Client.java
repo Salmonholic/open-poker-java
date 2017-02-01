@@ -1,4 +1,4 @@
-package main.connection;
+package main.client;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -11,6 +11,9 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import main.connection.Packet;
+import main.connection.Table;
+import main.connection.Update;
 import main.core.Action;
 
 public class Client implements Runnable {

@@ -5,7 +5,7 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.event.EventHandler;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
-import main.connection.Client;
+import main.client.Client;
 import main.ui.graphical.states.ConnectState;
 import main.ui.graphical.states.State;
 
