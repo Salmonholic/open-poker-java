@@ -77,6 +77,7 @@ public class TableController {
 			PlayerController playerController = iterator.next();
 			if (playerController.getId() == id) {
 				playerController.clearAfterRemovalFromTable();
+				assignedIds[id] = false;
 				iterator.remove();
 				break;
 			}
