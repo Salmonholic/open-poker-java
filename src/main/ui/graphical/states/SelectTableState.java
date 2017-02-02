@@ -19,6 +19,7 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import main.connection.Table;
 import main.ui.graphical.ClientGUI;
+import main.ui.graphical.GUIPacketObserver;
 
 public class SelectTableState extends State implements
 		ListChangeListener<Table> {
@@ -89,9 +90,8 @@ public class SelectTableState extends State implements
 				PokerTable pokerTable = tableView.getSelectionModel()
 						.getSelectedItem();
 				if (pokerTable != null) {
+					createPacketObserver(pokerTable);
 					clientGUI.getClient().joinTable(pokerTable.getId());
-					clientGUI.setState(new GameState(clientGUI, pokerTable
-							.getMaxPlayers()));
 				}
 			}
 		});
@@ -200,6 +200,13 @@ public class SelectTableState extends State implements
 	@Override
 	public void onChanged(Change<? extends Table> c) {
 		updateTable();
+	}
+	
+	private void createPacketObserver(PokerTable pokerTable) {
+		new GUIPacketObserver(clientGUI, new GameState(clientGUI, pokerTable
+				.getMaxPlayers()),
+				new ErrorState(clientGUI, "Failed to join table", new LobbyState(clientGUI)));
+
 	}
 
 	public class PokerTable {
