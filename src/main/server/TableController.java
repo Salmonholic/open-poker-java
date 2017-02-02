@@ -15,13 +15,15 @@ public class TableController {
 	// Amount of players to start
 	private int maxPlayerAmount;
 	private int money;
-	// Id of last Player connected (NOT necessarily amount of online players)
-	private int currentPlayer = 0;
+	// array index represents the Id
+	// value represents if already assigned to another PlayerController
+	private boolean[] assignedIds;
 	private boolean started = false;
 
 	public TableController(Server server, int maxPlayerAmount, int money, int tableId) {
 		this.server = server;
 		this.maxPlayerAmount = maxPlayerAmount;
+		assignedIds = new boolean[maxPlayerAmount];
 		this.money = money;
 		this.tableId = tableId;
 	}
@@ -30,8 +32,13 @@ public class TableController {
 		if (started) {
 			throw new IllegalStateException();
 		}
-		playerController.setId(currentPlayer);
-		currentPlayer++;
+		for(int id=0; id < maxPlayerAmount; id++) {
+			if(!assignedIds[id]) {
+				playerController.setId(id);
+				assignedIds[id] = true;
+				break;
+			}
+		}
 		playerControllers.add(playerController);
 		if (getPlayerAmount() == maxPlayerAmount) {
 			started = true;
@@ -99,10 +106,6 @@ public class TableController {
 
 	public int getMoney() {
 		return money;
-	}
-
-	public int getCurrentPlayer() {
-		return currentPlayer;
 	}
 
 	public boolean isStarted() {
