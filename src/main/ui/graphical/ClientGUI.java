@@ -32,7 +32,9 @@ public class ClientGUI extends Application {
 			
 			@Override
 			public void handle(WindowEvent windowEvent) {
-				getClient().close();
+				if(client.isNotNull().get()) {
+					getClient().close();
+				}
 			}
 		});
 		primaryStage.show();

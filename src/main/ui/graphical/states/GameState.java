@@ -80,6 +80,15 @@ public class GameState extends State implements ChangeListener<Update> {
 		moneyTextField.setTooltip(new Tooltip("Money"));
 		moneyTextField.setPromptText("Money");
 		moneyTextField.setEditable(false);
+		
+		moneyTextField.textProperty().addListener(new ChangeListener<String>() {
+	        @Override
+	        public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+	            if (!newValue.matches("\\d*")) {
+	                moneyTextField.setText(newValue.replaceAll("[^\\d]", ""));
+	            }
+	        }
+	    });
 
 		comboBox.setOnAction(new EventHandler<ActionEvent>() {
 
@@ -90,6 +99,7 @@ public class GameState extends State implements ChangeListener<Update> {
 				case "CHECK":
 				case "CALL":
 					moneyTextField.setEditable(false);
+					moneyTextField.setText("0");
 					break;
 				default:
 					moneyTextField.setEditable(true);
@@ -105,9 +115,12 @@ public class GameState extends State implements ChangeListener<Update> {
 			@Override
 			public void handle(ActionEvent arg0) {
 				try {
+					int money = 0;
+					if(!moneyTextField.getText().isEmpty())
+						money = Integer.parseInt(moneyTextField.getText());
+					
 					clientGUI.getClient().sendAction(
-							Action.valueOf(comboBox.getValue()),
-							Integer.parseInt(moneyTextField.getText()));
+							Action.valueOf(comboBox.getValue()), money);
 				} catch (NumberFormatException | IOException e) {
 					e.printStackTrace();
 				}
@@ -131,6 +144,7 @@ public class GameState extends State implements ChangeListener<Update> {
 		tableInfo.setCurrentBet(update.getCurrentBet());
 		tableInfo.setCards(update.getCommunityCards());
 		tableInfo.setGameState(update.getGameState());
+		tableInfo.setCurrentPlayer(update.getCurrentPlayer());
 		// Add players
 		for (int playerId : update.getPlayers().keySet()) {
 			PlayerInfo playerInfo = playerInfos.get(playerId);

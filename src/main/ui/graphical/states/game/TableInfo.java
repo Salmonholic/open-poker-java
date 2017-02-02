@@ -24,20 +24,24 @@ public class TableInfo extends HBox {
 			cardInfos.add(cardInfo);
 		}
 		
-		infoBox = new InfoBox(3);
+		infoBox = new InfoBox(4);
 		getChildren().add(infoBox);
 	}
 	
 	public void setCurrentPot(int currentPot) {
-		infoBox.setInfo(0, "Current pot:" + currentPot);
+		infoBox.setInfo(0, "Current pot: " + currentPot);
 	}
 	
 	public void setCurrentBet(int currentBet) {
-		infoBox.setInfo(1, "Current bet:" + currentBet);
+		infoBox.setInfo(1, "Current bet: " + currentBet);
 	}
 	
 	public void setGameState(GameState gameState) {
-		infoBox.setInfo(2, "Game state:" + gameState.toString());
+		infoBox.setInfo(2, "Game state: " + gameState.toString());
+	}
+	
+	public void setCurrentPlayer(int currentPlayer) {
+		infoBox.setInfo(3, "Current Player: " + currentPlayer);
 	}
 	
 	public void setCards(ArrayList<Card> cards) {
