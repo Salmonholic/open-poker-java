@@ -67,14 +67,7 @@ public class PlayerController implements Runnable {
 		if(tableController != null) {
 			tableController.removePlayer(id);
 		}
-		// TODO send info to client
-		if (!socket.isClosed()) {
-			try {
-				socket.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
+		close();
 	}
 
 	/**
@@ -143,13 +136,13 @@ public class PlayerController implements Runnable {
 		case "join":
 			if (loggedIn && tableController == null) {
 				int tableId = (int) data.get("room");
-				tableController = server.getTableController(tableId);
-
 				try {
+					tableController = server.getTableController(tableId);
 					tableController.addPlayerController(this);
 					sendPacket(new Packet("accept", null));
-				} catch (IllegalStateException e) {
+				} catch (Exception e) {
 					sendPacket(new Packet("decline", null));
+					tableController = null;
 				}
 			} else {
 				sendPacket(new Packet("decline", null));
@@ -213,10 +206,19 @@ public class PlayerController implements Runnable {
 
 	public void close() {
 		running = false;
-		try {
-			socket.close();
-		} catch (Exception e) {
-			e.printStackTrace();
+		if(!socket.isClosed()) {
+			// TODO send info to client
+			try {
+				socket.close();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
+	}
+	
+	// To be called from TableControler only
+	public void clearAfterRemovalFromTable() {
+		tableController = null;
+		// TODO send info to client to go back to table selection screen
 	}
 }

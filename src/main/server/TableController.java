@@ -8,18 +8,19 @@ import main.core.Table;
 
 public class TableController {
 	
+	private Server server;
 	private Table table;
 	private int tableId;
 	private ArrayList<PlayerController> playerControllers = new ArrayList<>();
 	// Amount of players to start
 	private int maxPlayerAmount;
-	private int playerAmount;
 	private int money;
 	// Id of last Player connected (NOT necessarily amount of online players)
 	private int currentPlayer = 0;
 	private boolean started = false;
 
-	public TableController(int maxPlayerAmount, int money, int tableId) {
+	public TableController(Server server, int maxPlayerAmount, int money, int tableId) {
+		this.server = server;
 		this.maxPlayerAmount = maxPlayerAmount;
 		this.money = money;
 		this.tableId = tableId;
@@ -31,11 +32,10 @@ public class TableController {
 		}
 		playerController.setId(currentPlayer);
 		currentPlayer++;
-		playerAmount++;
 		playerControllers.add(playerController);
-		if (playerAmount == maxPlayerAmount) {
+		if (getPlayerAmount() == maxPlayerAmount) {
 			started = true;
-			table = new Table(this, playerAmount, money);
+			table = new Table(this, getPlayerAmount(), money);
 			table.resend();
 		}
 	}
@@ -65,25 +65,28 @@ public class TableController {
 	public void removePlayer(int id) {
 		if (started)
 			table.removePlayer(id);
-		playerAmount--;
 		Iterator<PlayerController> iterator = playerControllers.iterator();
 		while (iterator.hasNext()) {
 			PlayerController playerController = iterator.next();
 			if (playerController.getId() == id) {
+				playerController.clearAfterRemovalFromTable();
 				iterator.remove();
 				break;
 			}
 		}
-		if (started && playerAmount == 1) {
+		if (started && getPlayerAmount() == 1) {
 			System.out.println("Table " + tableId + " finished.");
-			//TODO inform client, delete room
+			//TODO inform client (win)
+			playerControllers.get(0).clearAfterRemovalFromTable();
+			close();
 		}
 	}
 	
 	public void close() {
-		while(playerControllers.size() > 0) {
-			playerControllers.get(0).close();
+		for(PlayerController playerController : playerControllers) {
+			playerController.clearAfterRemovalFromTable();
 		}
+		server.removeTable(tableId);
 	}
 	
 	public int getMaxPlayerAmount() {
@@ -91,7 +94,7 @@ public class TableController {
 	}
 	
 	public int getPlayerAmount() {
-		return playerAmount;
+		return playerControllers.size();
 	}
 
 	public int getMoney() {

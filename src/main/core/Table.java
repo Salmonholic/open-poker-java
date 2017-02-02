@@ -514,7 +514,7 @@ public class Table {
 	
 	public void removePlayer(int id) {
 		Player player = players.get(id);
-			if(player != null) {
+		if(player != null) {
 			if (currentPlayer == id)
 				currentPlayer = nextPlayer(currentPlayer);
 			if (!(player.isAllIn()||player.isFold()))

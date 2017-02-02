@@ -73,8 +73,7 @@ public class Server implements Runnable {
 		if (players <= 1) {
 			throw new IllegalArgumentException("There have to be at least 2 players!");
 		}
-		tables.put(id, new TableController(players, money, id));
-
+		tables.put(id, new TableController(this, players, money, id));
 	}
 
 	public TableController getTableController(int id)
@@ -113,4 +112,7 @@ public class Server implements Runnable {
 		return authenticationController;
 	}
 	
+	public void removeTable(int id) {
+		tables.remove(id);
+	}
 }
