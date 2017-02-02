@@ -207,7 +207,7 @@ public class PlayerController implements Runnable {
 	public void close() {
 		running = false;
 		if(!socket.isClosed()) {
-			// TODO send info to client
+			// TODO send info to client (disconnect)
 			try {
 				socket.close();
 			} catch (Exception e) {

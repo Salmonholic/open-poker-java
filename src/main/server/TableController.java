@@ -54,7 +54,7 @@ public class TableController {
 				table.action(playerId, action, amount);
 			} catch (IllegalArgumentException e) {
 				System.out.println("Player " + playerId + " tried forbidden action.");
-				//TODO send info to client
+				//TODO send info to client (forbidden action)
 				resend();
 			}
 		}
@@ -95,6 +95,14 @@ public class TableController {
 			playerController.clearAfterRemovalFromTable();
 		}
 		server.removeTable(tableId);
+	}
+	
+	public void closeWithPlayerControllers() {
+		Iterator<PlayerController> it = playerControllers.iterator();
+		while(it.hasNext()) {
+			it.next().close();
+			it.remove();
+		}
 	}
 	
 	public int getMaxPlayerAmount() {

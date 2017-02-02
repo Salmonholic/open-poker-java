@@ -42,17 +42,7 @@ public class Server implements Runnable {
 						.println("A client tried to join a not existing room.");
 			}
 		}
-		// Close server
-		if (!serverSocket.isClosed()) {
-			// TODO send info to clients
-			try {
-				serverSocket.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-		for (TableController t : tables.values())
-			t.close();
+		close();
 	}
 
 	/**
@@ -89,14 +79,21 @@ public class Server implements Runnable {
 	}
 
 	public void close() {
-		// TODO send info to clients
 		running = false;
 		// Safe user info
 		getAuthenticationController().save();
-		try {
-			serverSocket.close();
-		} catch (Exception e) {
-			e.printStackTrace();
+		
+		for(TableController table : tables.values()) {
+			table.closeWithPlayerControllers();
+		}
+		
+		if (!serverSocket.isClosed()) {
+			// TODO send info to clients (disconnect)
+			try {
+				serverSocket.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
