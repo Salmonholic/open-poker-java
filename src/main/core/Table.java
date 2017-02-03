@@ -252,6 +252,8 @@ public class Table {
 		addCard(cardStack.getCard());
 		addCard(cardStack.getCard());
 		addCard(cardStack.getCard());
+		lastBetId = nextPlayer(buttonId);
+		currentPlayer = nextPlayer(buttonId);
 	}
 
 	/**
@@ -259,6 +261,8 @@ public class Table {
 	 */
 	private void turn() {
 		addCard(cardStack.getCard());
+		lastBetId = nextPlayer(buttonId);
+		currentPlayer = nextPlayer(buttonId);
 	}
 
 	/**
@@ -266,6 +270,8 @@ public class Table {
 	 */
 	private void river() {
 		addCard(cardStack.getCard());
+		lastBetId = nextPlayer(buttonId);
+		currentPlayer = nextPlayer(buttonId);
 	}
 
 	private void showDown() {
