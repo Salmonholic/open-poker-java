@@ -337,7 +337,9 @@ public class Table {
 			Player player = playerIterator.next();
 			if (player.getMoney() == 0) {
 				playerIterator.remove();
-				tableController.removePlayer(player.getId());
+				if (tableController != null) {
+					tableController.removePlayer(player.getId());
+				}
 			} else
 				player.reset();
 		}
