@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
@@ -178,10 +179,43 @@ public class GameState extends State implements ChangeListener<Update> {
 						playerId);
 				playerInfo.setCards(cards.get(0), cards.get(1));
 			}
+			
 			try {
 				Thread.sleep(10000);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
+			}
+
+			// check for loose
+			if(showdownUpdate.getPlayers().get(showdownUpdate.getYourId()).getMoney() == 0) {
+				System.out.println("loose");
+				Platform.runLater(new Runnable() {
+					
+					@Override
+					public void run() {
+						clientGUI.setState(new ErrorState(clientGUI, "You loose!", new SelectTableState(clientGUI)));
+					}
+				});
+			}
+			
+			// check for win
+			boolean win = true;
+			for(int playerId : showdownUpdate.getPlayers().keySet()) {
+				if (playerId != showdownUpdate.getYourId() &&
+						showdownUpdate.getPlayers().get(playerId).getMoney() != 0) {
+					win = false;
+					break;
+				}
+			}
+			if(win) {
+				System.out.println("win");
+				Platform.runLater(new Runnable() {
+					
+					@Override
+					public void run() {
+						clientGUI.setState(new ErrorState(clientGUI, "You win!", new SelectTableState(clientGUI)));
+					}
+				});
 			}
 		}
 	}
