@@ -35,10 +35,6 @@ public class SelectTableState extends State implements
 	public SelectTableState(final ClientGUI clientGUI) {
 		this.clientGUI = clientGUI;
 
-		// Get info about table
-		clientGUI.getClient().sendGetTablesPacket();
-		clientGUI.getClient().getTables().addListener(this);
-
 		VBox root = new VBox();
 		root.setPadding(new Insets(20));
 		root.setSpacing(5);
@@ -95,7 +91,7 @@ public class SelectTableState extends State implements
 				}
 			}
 		});
-		
+
 		Button refreshButton = new Button("Refresh");
 		refreshButton.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
@@ -104,12 +100,16 @@ public class SelectTableState extends State implements
 			}
 		});
 
-		root.getChildren().addAll(text, tableView, addTableButton, joinButton, refreshButton);
+		root.getChildren().addAll(text, tableView, addTableButton, joinButton,
+				refreshButton);
 		scene = new Scene(root);
 	}
 
 	@Override
 	public Scene getScene() {
+		// Get info about table
+		clientGUI.getClient().getTables().addListener(this);
+		clientGUI.getClient().sendGetTablesPacket();
 		return scene;
 	}
 
@@ -201,11 +201,11 @@ public class SelectTableState extends State implements
 	public void onChanged(Change<? extends Table> c) {
 		updateTable();
 	}
-	
+
 	private void createPacketObserver(PokerTable pokerTable) {
-		new GUIPacketObserver(clientGUI, new GameState(clientGUI, pokerTable
-				.getMaxPlayers()),
-				new ErrorState(clientGUI, "Failed to join table", new LobbyState(clientGUI)));
+		new GUIPacketObserver(clientGUI, new GameState(clientGUI,
+				pokerTable.getMaxPlayers()), new ErrorState(clientGUI,
+				"Failed to join table", new LobbyState(clientGUI)), "join");
 
 	}
 

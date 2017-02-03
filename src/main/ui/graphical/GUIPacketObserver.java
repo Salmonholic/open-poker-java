@@ -10,12 +10,14 @@ public class GUIPacketObserver implements PacketObserver {
 	private ClientGUI clientGUI;
 	private State acceptState;
 	private State declineState;
+	private String action;
 	
 
-	public GUIPacketObserver(ClientGUI clientGUI, State acceptState, State declineState) {
+	public GUIPacketObserver(ClientGUI clientGUI, State acceptState, State declineState, String action) {
 		this.clientGUI = clientGUI;
 		this.acceptState = acceptState;
 		this.declineState = declineState;
+		this.action = action;
 		addPackageObserver();
 	}
 	
@@ -29,28 +31,39 @@ public class GUIPacketObserver implements PacketObserver {
 
 	@Override
 	public void onPacket(Packet packet) {
+		System.out.println(action);
 		switch (packet.getType()) {
 		case "accept":
-			Platform.runLater(new Runnable() {
-				@Override
-				public void run() {
-					clientGUI.setState(acceptState);
-				}
-			});
-			removePackageObserver();
+			if (isRightAction(packet)) {
+				Platform.runLater(new Runnable() {
+					@Override
+					public void run() {
+						System.out.println("Switching state to " + acceptState);
+						clientGUI.setState(acceptState);
+					}
+				});
+				removePackageObserver();
+			}
 			break;
 		case "decline":
-			Platform.runLater(new Runnable() {
-				@Override
-				public void run() {
-					clientGUI.setState(declineState);
-				}
-			});
-			removePackageObserver();
+			if (isRightAction(packet)) {
+				Platform.runLater(new Runnable() {
+					@Override
+					public void run() {
+						clientGUI.setState(declineState);
+					}
+				});
+				removePackageObserver();
+			}
 			break;
 		default:
 			break;
 		}
+	}
+	
+	private boolean isRightAction(Packet packet) {
+		return packet.getData().get("action").equals(action);
+		
 	}
 
 }

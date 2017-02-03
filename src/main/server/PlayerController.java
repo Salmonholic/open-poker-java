@@ -94,10 +94,10 @@ public class PlayerController implements Runnable {
 					(String) data.get("password"))) {
 				username = (String) data.get("username");
 				loggedIn = true;
-				sendPacket(new Packet("accept", null));
+				sendInformationPacket("accept", "login");
 				System.out.println("Player logged in with username " + username);
 			} else {
-				sendPacket(new Packet("decline", null));
+				sendInformationPacket("decline", "login");
 				close();
 			}
 			break;
@@ -109,11 +109,11 @@ public class PlayerController implements Runnable {
 						(String) data.get("password"));
 				username = (String) data.get("username");
 				loggedIn = true;
-				sendPacket(new Packet("accept", null));
+				sendInformationPacket("accept", "signup");
 				System.out.println("Player signed up with username " + username);
 			} catch (Exception e) {
 				e.printStackTrace();
-				sendPacket(new Packet("decline", null));
+				sendInformationPacket("decline", "signup");
 				close();
 			}
 			break;
@@ -130,7 +130,7 @@ public class PlayerController implements Runnable {
 				Packet infoPacket = new Packet("tables", infoData);
 				sendPacket(infoPacket);
 			} else {
-				sendPacket(new Packet("decline", null));
+				sendInformationPacket("decline", "getTables");
 			}
 			break;
 		case "join":
@@ -139,13 +139,13 @@ public class PlayerController implements Runnable {
 				try {
 					tableController = server.getTableController(tableId);
 					tableController.addPlayerController(this);
-					sendPacket(new Packet("accept", null));
+					sendInformationPacket("accept", "join");
 				} catch (Exception e) {
-					sendPacket(new Packet("decline", null));
+					sendInformationPacket("decline", "join");
 					tableController = null;
 				}
 			} else {
-				sendPacket(new Packet("decline", null));
+				sendInformationPacket("decline", "join");
 			}
 			break;
 		case "action":
@@ -154,7 +154,7 @@ public class PlayerController implements Runnable {
 				int amount = (Integer) data.get("amount");
 				tableController.action(id, action, amount);
 			} else {
-				sendPacket(new Packet("decline", null));
+				sendInformationPacket("decline", "action");
 			}
 			break;
 		case "create":
@@ -163,6 +163,8 @@ public class PlayerController implements Runnable {
 				int money = (Integer) data.get("money");
 				int maxPlayerAmount = (Integer) data.get("maxPlayerAmount");
 				server.createTableController(id, maxPlayerAmount, money);
+			} else {
+				sendInformationPacket("decline", "create");
 			}
 		default:
 			break;
@@ -221,4 +223,14 @@ public class PlayerController implements Runnable {
 		tableController = null;
 		// TODO send info to client to go back to table selection screen
 	}
+
+
+	public void sendInformationPacket(String type, String action) {
+		System.out.println("Resend data to player " + id);
+		HashMap<String, Object> data = new HashMap<>();
+		data.put("action", action);
+		Packet packet = new Packet(type, data);
+		sendPacket(packet);
+	}
+	
 }

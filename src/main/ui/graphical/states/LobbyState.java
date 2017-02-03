@@ -20,7 +20,8 @@ import main.ui.graphical.GUIPacketObserver;
 
 public class LobbyState extends State {
 
-	private static final String DEFAULT_USERNAME = System.getProperty("user.name");
+	private static final String DEFAULT_USERNAME = System
+			.getProperty("user.name");
 
 	private ClientGUI clientGUI;
 	private Scene scene;
@@ -48,15 +49,18 @@ public class LobbyState extends State {
 
 			@Override
 			public void handle(ActionEvent e) {
-				createPacketObserver();
-				clientGUI.getClient().login(loginUsernameTextField.getText(), loginPasswordField.getText());
+				createPacketObserver("login");
+				clientGUI.getClient().login(loginUsernameTextField.getText(),
+						loginPasswordField.getText());
 			}
 		});
 
-		root.getChildren().addAll(loginText, loginUsernameTextField, loginPasswordField, loginButton);
+		root.getChildren().addAll(loginText, loginUsernameTextField,
+				loginPasswordField, loginButton);
 
 		final Text signupText = new Text("Sign up");
-		final TextField signupUsernameTextField = new TextField(DEFAULT_USERNAME);
+		final TextField signupUsernameTextField = new TextField(
+				DEFAULT_USERNAME);
 		signupUsernameTextField.setTooltip(new Tooltip("Username"));
 		signupUsernameTextField.setPromptText("Username");
 		final PasswordField signupPasswordField = new PasswordField();
@@ -70,16 +74,20 @@ public class LobbyState extends State {
 		signupButton.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent e) {
-				createPacketObserver();
-				clientGUI.getClient().signup(signupUsernameTextField.getText(), signupPasswordField.getText());
+				createPacketObserver("signup");
+				clientGUI.getClient().signup(signupUsernameTextField.getText(),
+						signupPasswordField.getText());
 			}
 		});
 
-		final Text usernameInfoText = new Text("Username has to be longer than 2 characters and unique!");
-		final Text passwordInfoText = new Text("Password has to be longer than 7 characters!");
+		final Text usernameInfoText = new Text(
+				"Username has to be longer than 2 characters and unique!");
+		final Text passwordInfoText = new Text(
+				"Password has to be longer than 7 characters!");
 
-		root.getChildren().addAll(signupText, signupUsernameTextField, signupPasswordField, signupRepeatPasswordField,
-				signupButton, usernameInfoText, passwordInfoText);
+		root.getChildren().addAll(signupText, signupUsernameTextField,
+				signupPasswordField, signupRepeatPasswordField, signupButton,
+				usernameInfoText, passwordInfoText);
 
 		scene = new Scene(root);
 	}
@@ -88,10 +96,11 @@ public class LobbyState extends State {
 	public Scene getScene() {
 		return scene;
 	}
-	
-	private void createPacketObserver() {
+
+	private void createPacketObserver(String action) {
 		new GUIPacketObserver(clientGUI, new SelectTableState(clientGUI),
-				new ErrorState(clientGUI, "Failed to login", new ConnectState(clientGUI)));
+				new ErrorState(clientGUI, "Failed to login", new ConnectState(
+						clientGUI)), action);
 
 	}
 
