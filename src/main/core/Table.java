@@ -178,8 +178,8 @@ public class Table {
 				player.check();
 				break;
 			case FOLD:
-				player.fold();
 				notFoldedOrAllInPlayers--;
+				player.fold();
 				break;
 			case RAISE:
 				if (currentBet == 0
