@@ -16,7 +16,7 @@ public class ErrorState extends State {
 	private Scene scene;
 	private State nextState;
 	
-	public ErrorState(ClientGUI clientGUI, String error, State nextState) {
+	public ErrorState(final ClientGUI clientGUI, String error, final State nextState) {
 		this.clientGUI = clientGUI;
 		this.nextState = nextState;
 		
