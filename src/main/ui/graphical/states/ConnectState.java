@@ -17,6 +17,7 @@ public class ConnectState extends State {
 	private static final String DEFAULT_HOST = "127.0.0.1";
 	private static final String DEFAULT_PORT = "10101";
 
+	@SuppressWarnings("unused")
 	private ClientGUI clientGUI;
 	private Scene scene;
 

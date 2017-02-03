@@ -68,6 +68,15 @@ public class TableController {
 			playerController.resend(table);
 		}
 	}
+
+	/**
+	 * Resends all data to clients
+	 */
+	public void resendShowdown() {
+		for (PlayerController playerController : playerControllers) {
+			playerController.resendShowdown(table);
+		}
+	}
 	
 	public void removePlayer(int id) {
 		if (started)

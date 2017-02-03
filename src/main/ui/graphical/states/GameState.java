@@ -1,6 +1,7 @@
 package main.ui.graphical.states;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import javafx.beans.value.ChangeListener;
@@ -15,11 +16,12 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import main.connection.Player;
+import main.connection.ShowdownUpdate;
 import main.connection.Update;
 import main.core.Action;
+import main.core.Card;
 import main.ui.graphical.ClientGUI;
 import main.ui.graphical.states.game.PlayerInfo;
 import main.ui.graphical.states.game.TableInfo;
@@ -80,15 +82,16 @@ public class GameState extends State implements ChangeListener<Update> {
 		moneyTextField.setTooltip(new Tooltip("Money"));
 		moneyTextField.setPromptText("Money");
 		moneyTextField.setEditable(false);
-		
+
 		moneyTextField.textProperty().addListener(new ChangeListener<String>() {
-	        @Override
-	        public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-	            if (!newValue.matches("\\d*")) {
-	                moneyTextField.setText(newValue.replaceAll("[^\\d]", ""));
-	            }
-	        }
-	    });
+			@Override
+			public void changed(ObservableValue<? extends String> observable,
+					String oldValue, String newValue) {
+				if (!newValue.matches("\\d*")) {
+					moneyTextField.setText(newValue.replaceAll("[^\\d]", ""));
+				}
+			}
+		});
 
 		comboBox.setOnAction(new EventHandler<ActionEvent>() {
 
@@ -116,9 +119,9 @@ public class GameState extends State implements ChangeListener<Update> {
 			public void handle(ActionEvent arg0) {
 				try {
 					int money = 0;
-					if(!moneyTextField.getText().isEmpty())
+					if (!moneyTextField.getText().isEmpty())
 						money = Integer.parseInt(moneyTextField.getText());
-					
+
 					clientGUI.getClient().sendAction(
 							Action.valueOf(comboBox.getValue()), money);
 				} catch (NumberFormatException | IOException e) {
@@ -161,8 +164,25 @@ public class GameState extends State implements ChangeListener<Update> {
 				playerInfo.setPrimaryPlayer(true);
 				playerInfo.setCards(update.getYourCards().get(0), update
 						.getYourCards().get(1));
+			} else {
+				playerInfo.setPrimaryPlayer(false);
+				playerInfo.setUnknownCards();
 			}
-			playerInfo.setPrimaryPlayer(false);
+		}
+
+		if (update instanceof ShowdownUpdate) {
+			ShowdownUpdate showdownUpdate = (ShowdownUpdate) update;
+			for (int playerId : showdownUpdate.getPlayers().keySet()) {
+				PlayerInfo playerInfo = playerInfos.get(playerId);
+				ArrayList<Card> cards = showdownUpdate.getPlayersCards().get(
+						playerId);
+				playerInfo.setCards(cards.get(0), cards.get(1));
+			}
+			try {
+				Thread.sleep(10000);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 

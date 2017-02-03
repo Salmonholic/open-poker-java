@@ -252,6 +252,8 @@ public class Table {
 		addCard(cardStack.getCard());
 		addCard(cardStack.getCard());
 		addCard(cardStack.getCard());
+		lastBetId = nextPlayer(buttonId);
+		currentPlayer = nextPlayer(buttonId);
 	}
 
 	/**
@@ -259,6 +261,8 @@ public class Table {
 	 */
 	private void turn() {
 		addCard(cardStack.getCard());
+		lastBetId = nextPlayer(buttonId);
+		currentPlayer = nextPlayer(buttonId);
 	}
 
 	/**
@@ -266,6 +270,8 @@ public class Table {
 	 */
 	private void river() {
 		addCard(cardStack.getCard());
+		lastBetId = nextPlayer(buttonId);
+		currentPlayer = nextPlayer(buttonId);
 	}
 
 	private void showDown() {
@@ -324,6 +330,7 @@ public class Table {
 		}
 		// Last winners payed but pot still not empty (stupid players :D)
 		// Casino gets rest of pot
+		resendShowdown();
 	}
 
 	/**
@@ -336,7 +343,9 @@ public class Table {
 			Player player = playerIterator.next();
 			if (player.getMoney() == 0) {
 				playerIterator.remove();
-				tableController.removePlayer(player.getId());
+				if (tableController != null) {
+					tableController.removePlayer(player.getId());
+				}
 			} else
 				player.reset();
 		}
@@ -509,6 +518,15 @@ public class Table {
 	public void resend() {
 		if (tableController != null) {
 			tableController.resend();
+		}
+	}
+	
+	/**
+	 * Notify tableController to resend data if it exists
+	 */
+	public void resendShowdown() {
+		if (tableController != null) {
+			tableController.resendShowdown();
 		}
 	}
 	

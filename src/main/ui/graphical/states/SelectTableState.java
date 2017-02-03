@@ -19,6 +19,7 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import main.connection.Table;
 import main.ui.graphical.ClientGUI;
+import main.ui.graphical.GUIPacketObserver;
 
 public class SelectTableState extends State implements
 		ListChangeListener<Table> {
@@ -33,10 +34,6 @@ public class SelectTableState extends State implements
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public SelectTableState(final ClientGUI clientGUI) {
 		this.clientGUI = clientGUI;
-
-		// Get info about table
-		clientGUI.getClient().sendGetTablesPacket();
-		clientGUI.getClient().getTables().addListener(this);
 
 		VBox root = new VBox();
 		root.setPadding(new Insets(20));
@@ -89,13 +86,12 @@ public class SelectTableState extends State implements
 				PokerTable pokerTable = tableView.getSelectionModel()
 						.getSelectedItem();
 				if (pokerTable != null) {
+					createPacketObserver(pokerTable);
 					clientGUI.getClient().joinTable(pokerTable.getId());
-					clientGUI.setState(new GameState(clientGUI, pokerTable
-							.getMaxPlayers()));
 				}
 			}
 		});
-		
+
 		Button refreshButton = new Button("Refresh");
 		refreshButton.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
@@ -104,12 +100,16 @@ public class SelectTableState extends State implements
 			}
 		});
 
-		root.getChildren().addAll(text, tableView, addTableButton, joinButton, refreshButton);
+		root.getChildren().addAll(text, tableView, addTableButton, joinButton,
+				refreshButton);
 		scene = new Scene(root);
 	}
 
 	@Override
 	public Scene getScene() {
+		// Get info about table
+		clientGUI.getClient().getTables().addListener(this);
+		clientGUI.getClient().sendGetTablesPacket();
 		return scene;
 	}
 
@@ -200,6 +200,13 @@ public class SelectTableState extends State implements
 	@Override
 	public void onChanged(Change<? extends Table> c) {
 		updateTable();
+	}
+
+	private void createPacketObserver(PokerTable pokerTable) {
+		new GUIPacketObserver(clientGUI, new GameState(clientGUI,
+				pokerTable.getMaxPlayers()), new ErrorState(clientGUI,
+				"Failed to join table", new LobbyState(clientGUI)), "join");
+
 	}
 
 	public class PokerTable {
