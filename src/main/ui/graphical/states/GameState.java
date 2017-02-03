@@ -160,13 +160,13 @@ public class GameState extends State implements ChangeListener<Update> {
 			playerInfo.setMoney(player.getMoney());
 			playerInfo.setAllIn(player.isAllIn());
 			playerInfo.setFold(player.isFold());
+			playerInfo.setUsername("" + playerId); // TODO set real username
 			playerInfo.setCurrentBet(player.getCurrentBet());
+			playerInfo.setCurrentPlayer(playerId == update.getCurrentPlayer());
 			if (playerId == update.getYourId()) {
-				playerInfo.setPrimaryPlayer(true);
 				playerInfo.setCards(update.getYourCards().get(0), update
 						.getYourCards().get(1));
 			} else {
-				playerInfo.setPrimaryPlayer(false);
 				playerInfo.setUnknownCards();
 			}
 		}

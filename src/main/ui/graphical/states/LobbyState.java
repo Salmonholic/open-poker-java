@@ -99,7 +99,7 @@ public class LobbyState extends State {
 
 	private void createPacketObserver(String action) {
 		new GUIPacketObserver(clientGUI, new SelectTableState(clientGUI),
-				new ErrorState(clientGUI, "Failed to login", new ConnectState(
+				new ErrorState(clientGUI, "Failed to authorize", new ConnectState(
 						clientGUI)), action);
 
 	}
