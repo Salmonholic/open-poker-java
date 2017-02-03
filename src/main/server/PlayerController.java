@@ -98,7 +98,7 @@ public class PlayerController implements Runnable {
 				System.out.println("Player logged in with username " + username);
 			} else {
 				sendPacket(new Packet("decline", null));
-				close();
+				System.out.println("Player failed to log in.");
 			}
 			break;
 		case "signup":
@@ -112,9 +112,8 @@ public class PlayerController implements Runnable {
 				sendPacket(new Packet("accept", null));
 				System.out.println("Player signed up with username " + username);
 			} catch (Exception e) {
-				e.printStackTrace();
 				sendPacket(new Packet("decline", null));
-				close();
+				System.out.println("Player failed to sign up.");
 			}
 			break;
 		case "getTables":

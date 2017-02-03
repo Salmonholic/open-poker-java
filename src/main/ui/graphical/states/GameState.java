@@ -132,6 +132,10 @@ public class GameState extends State implements ChangeListener<Update> {
 		root.setRight(actionVBox);
 
 		scene = new Scene(root);
+		
+		if(clientGUI.getClient().getUpdate() != null) {
+			update(clientGUI.getClient().getUpdate());
+		}
 	}
 
 	public Scene getScene() {
