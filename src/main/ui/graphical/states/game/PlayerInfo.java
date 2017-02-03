@@ -76,6 +76,11 @@ public class PlayerInfo extends HBox {
 		cardInfo1.setCard(card1);
 		cardInfo2.setCard(card2);
 	}
+
+	public void setUnknownCards() {
+		cardInfo1.setUnknownCard();
+		cardInfo2.setUnknownCard();
+	}
 	
 	private void setColor(Color color) {
 		setBackground(new Background(new BackgroundFill(Color.DODGERBLUE, new CornerRadii(10), new Insets(0))));

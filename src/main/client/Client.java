@@ -96,6 +96,7 @@ public class Client implements Runnable {
 		case "decline":
 			decline.set(packet);
 			break;
+		case "showdownUpdate":
 		case "update":
 			update.set((Update) data.get("update"));
 			break;

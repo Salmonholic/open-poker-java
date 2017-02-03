@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import main.connection.Packet;
+import main.connection.ShowdownUpdate;
 import main.connection.Table;
 import main.connection.Update;
 import main.core.Action;
@@ -195,6 +196,14 @@ public class PlayerController implements Runnable {
 		HashMap<String, Object> data = new HashMap<>();
 		data.put("update", new Update(table, id));
 		Packet packet = new Packet("update", data);
+		sendPacket(packet);
+	}
+
+	public void resendShowdown(main.core.Table table) {
+		System.out.println("Resend data to player " + id + " (showdown)");
+		HashMap<String, Object> data = new HashMap<>();
+		data.put("update", new ShowdownUpdate(table, id));
+		Packet packet = new Packet("showdownUpdate", data);
 		sendPacket(packet);
 	}
 

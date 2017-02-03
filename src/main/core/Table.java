@@ -324,6 +324,7 @@ public class Table {
 		}
 		// Last winners payed but pot still not empty (stupid players :D)
 		// Casino gets rest of pot
+		resendShowdown();
 	}
 
 	/**
@@ -509,6 +510,15 @@ public class Table {
 	public void resend() {
 		if (tableController != null) {
 			tableController.resend();
+		}
+	}
+	
+	/**
+	 * Notify tableController to resend data if it exists
+	 */
+	public void resendShowdown() {
+		if (tableController != null) {
+			tableController.resendShowdown();
 		}
 	}
 	

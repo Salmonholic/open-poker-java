@@ -23,4 +23,8 @@ public class ShowdownUpdate extends Update implements Serializable {
 		}
 	}
 
+	public TreeMap<Integer, ArrayList<Card>> getPlayersCards() {
+		return playersCards;
+	}
+
 }
