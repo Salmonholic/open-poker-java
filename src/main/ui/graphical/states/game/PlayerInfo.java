@@ -16,7 +16,7 @@ public class PlayerInfo extends HBox {
 
 	private boolean fold;
 	private boolean allIn;
-	private boolean primaryPlayer;
+	private boolean currentPlayer;
 
 	public PlayerInfo() {
 		setPadding(new Insets(10));
@@ -30,7 +30,7 @@ public class PlayerInfo extends HBox {
 	}
 
 	public void setUsername(String username) {
-		infoBox.setInfo(0, "Username: " + username);
+		infoBox.setInfo(0, "User " + username);
 	}
 
 	public void setMoney(int money) {
@@ -42,7 +42,7 @@ public class PlayerInfo extends HBox {
 	}
 
 	private void redraw() {
-		if (primaryPlayer) {
+		if (currentPlayer) {
 			infoBox.setColor(Color.GREENYELLOW);
 		} else {
 			infoBox.setColor(Color.WHITE);
@@ -57,8 +57,8 @@ public class PlayerInfo extends HBox {
 		}
 	}
 
-	public void setPrimaryPlayer(boolean primaryPlayer) {
-		this.primaryPlayer = primaryPlayer;
+	public void setCurrentPlayer(boolean primaryPlayer) {
+		this.currentPlayer = primaryPlayer;
 		redraw();
 	}
 
@@ -76,9 +76,14 @@ public class PlayerInfo extends HBox {
 		cardInfo1.setCard(card1);
 		cardInfo2.setCard(card2);
 	}
+
+	public void setUnknownCards() {
+		cardInfo1.setUnknownCard();
+		cardInfo2.setUnknownCard();
+	}
 	
 	private void setColor(Color color) {
-		setBackground(new Background(new BackgroundFill(Color.DODGERBLUE, new CornerRadii(10), new Insets(0))));
+		setBackground(new Background(new BackgroundFill(color, new CornerRadii(10), new Insets(0))));
 	}
 
 }

@@ -24,7 +24,7 @@ public class InfoBox extends VBox {
 	}
 
 	public void setColor(Color color) {
-		setBackground(new Background(new BackgroundFill(Color.DODGERBLUE,
+		setBackground(new Background(new BackgroundFill(color,
 				new CornerRadii(10), new Insets(0))));
 	}
 

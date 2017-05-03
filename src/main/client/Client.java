@@ -22,27 +22,29 @@ public class Client implements Runnable {
 	private ObjectInputStream in;
 	private ObjectOutputStream out;
 	private Thread thread;
-	private final SimpleBooleanProperty running = new SimpleBooleanProperty(false);
+	private final SimpleBooleanProperty running = new SimpleBooleanProperty(
+			false);
 
 	private String username;
-	
+
 	private final SimpleObjectProperty<Update> update = new SimpleObjectProperty<>();
-	private final ObservableList<Table> tables = FXCollections.observableArrayList();
+	private final ObservableList<Table> tables = FXCollections
+			.observableArrayList();
 	private final SimpleObjectProperty<Packet> accept = new SimpleObjectProperty<>();
 	private final SimpleObjectProperty<Packet> decline = new SimpleObjectProperty<>();
-	
+
 	private final ArrayList<PacketObserver> packetObservers = new ArrayList<>();
 
 	public Client(String host, int port) throws Exception {
 		socket = new Socket(host, port);
 		in = new ObjectInputStream(socket.getInputStream());
 		out = new ObjectOutputStream(socket.getOutputStream());
-		
+
 		thread = new Thread(this);
 		thread.start();
 		running.set(true);
 	}
-	
+
 	public void login(String username, String password) {
 		this.username = username;
 		HashMap<String, Object> data = new HashMap<>();
@@ -50,7 +52,7 @@ public class Client implements Runnable {
 		data.put("password", password);
 		sendPacket(new Packet("login", data));
 	}
-	
+
 	public void signup(String username, String password) {
 		this.username = username;
 		HashMap<String, Object> data = new HashMap<>();
@@ -66,9 +68,14 @@ public class Client implements Runnable {
 	private void read() throws ClassNotFoundException, IOException {
 		Packet packet = (Packet) in.readObject();
 		System.out.println(username + " got packet " + packet.getType());
+		for (String dataObject : packet.getData().keySet()) {
+			System.out.println("  " + dataObject + " : "
+					+ packet.getData().get(dataObject));
+		}
 		parsePacket(packet);
-		
-		for (PacketObserver packetObserver : (ArrayList<PacketObserver>) packetObservers.clone()) {
+
+		for (PacketObserver packetObserver : (ArrayList<PacketObserver>) packetObservers
+				.clone()) {
 			packetObserver.onPacket(packet);
 		}
 	}
@@ -89,12 +96,14 @@ public class Client implements Runnable {
 		case "decline":
 			decline.set(packet);
 			break;
+		case "showdownUpdate":
 		case "update":
 			update.set((Update) data.get("update"));
 			break;
-		case "tables": 
+		case "tables":
 			tables.clear();
-			ArrayList<Table> tablesArray = (ArrayList<Table>) data.get("tables");
+			ArrayList<Table> tablesArray = (ArrayList<Table>) data
+					.get("tables");
 			for (Table table : tablesArray) {
 				tables.addAll(table);
 			}
@@ -172,9 +181,9 @@ public class Client implements Runnable {
 			close();
 		}
 	}
-	
+
 	public void close() {
-		//TODO send info to server
+		// TODO send info to server
 		running.set(false);
 		packetObservers.clear();
 		try {
@@ -187,7 +196,7 @@ public class Client implements Runnable {
 	public boolean isRunning() {
 		return running.get();
 	}
-	
+
 	public SimpleBooleanProperty getRunningProperty() {
 		return running;
 	}
@@ -218,7 +227,7 @@ public class Client implements Runnable {
 	public void sendGetTablesPacket() {
 		sendPacket(new Packet("getTables", null));
 	}
-	
+
 	public void sendCreateTablePacket(int id, int money, int maxPlayerAmount) {
 		HashMap<String, Object> data = new HashMap<>();
 		data.put("id", id);
@@ -230,13 +239,13 @@ public class Client implements Runnable {
 	public ObservableList<Table> getTables() {
 		return tables;
 	}
-	
+
 	public void addPacketObserver(PacketObserver packetObserver) {
 		packetObservers.add(packetObserver);
 	}
-	
+
 	public void removePacketObserver(PacketObserver packetObserver) {
 		packetObservers.remove(packetObserver);
 	}
-	
+
 }
