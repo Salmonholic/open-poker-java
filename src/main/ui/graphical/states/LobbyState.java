@@ -1,8 +1,5 @@
 package main.ui.graphical.states;
 
-import com.sun.jmx.snmp.tasks.Task;
-
-import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -13,8 +10,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
-import main.client.PacketObserver;
-import main.connection.Packet;
 import main.ui.graphical.ClientGUI;
 import main.ui.graphical.GUIPacketObserver;
 

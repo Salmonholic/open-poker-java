@@ -1,11 +1,8 @@
 package main.ui.text;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
-import javafx.beans.property.SimpleListProperty;
-import javafx.collections.ObservableList;
 import main.client.Client;
 import main.connection.Player;
 import main.connection.Table;
